@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Step 1: Pilih Alamat - RuangRestu</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        rRed: '#FF5A5A',
+                        rOrange: '#FF8B5A',
+                        rDark: '#1A1D21',
+                    },
+                    borderRadius: { '4xl': '2rem', '5xl': '3rem' }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; letter-spacing: -0.01em; }
+
+        .gradient-text {
+            background: linear-gradient(135deg, #FF5A5A 0%, #FF8B5A 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .input-box:focus-within {
+            border-color: #FF5A5A;
+            box-shadow: 0 20px 40px -15px rgba(255, 90, 90, 0.15);
+        }
+
+        .bg-pattern {
+            background-color: #F8FAFC;
+            background-image: radial-gradient(#E2E8F0 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+
+        @keyframes pulse-soft {
+            0%, 100% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.05); opacity: 0.8; }
+        }
+        .blob-anim { animation: pulse-soft 6s infinite ease-in-out; }
+    </style>
+</head>
+<body class="bg-pattern min-h-screen flex flex-col overflow-x-hidden">
+
+    <nav class="bg-white/80 backdrop-blur-md border-b border-slate-100 px-6 h-20 flex items-center justify-between sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto w-full flex items-center justify-between">
+            <div class="flex items-center gap-4">
+                <div class="flex items-center gap-3">
+                    <span class="w-8 h-8 rounded-full bg-rDark flex items-center justify-center text-white font-bold text-xs shadow-lg shadow-rDark/20">1</span>
+                    <div class="h-[2px] w-6 bg-slate-200"></div>
+                    <span class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 font-bold text-xs">2</span>
+                    <div class="h-[2px] w-6 bg-slate-200"></div>
+                    <span class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 font-bold text-xs">3</span>
+                </div>
+                <h1 class="ml-2 font-extrabold text-rDark hidden md:block">Alamat Undangan</h1>
+            </div>
+            
+            <div class="hidden sm:block text-right">
+                <p class="text-[10px] font-black text-slate-300 uppercase tracking-widest">Progress</p>
+                <p class="text-xs font-bold text-rDark">Langkah Awal</p>
+            </div>
+        </div>
+    </nav>
+
+    <main class="flex-1 flex items-center justify-center p-6 relative">
+        <div class="absolute top-20 -left-20 w-96 h-96 bg-rRed/10 rounded-full blur-[100px] blob-anim"></div>
+        <div class="absolute bottom-20 -right-20 w-96 h-96 bg-rOrange/10 rounded-full blur-[100px] blob-anim" style="animation-delay: 2s;"></div>
+
+        <div class="max-w-3xl w-full relative z-10 text-center">
+            <div class="mb-12">
+                <span class="px-4 py-2 bg-white rounded-full text-[10px] font-black text-rRed uppercase tracking-[0.2em] shadow-sm border border-slate-50">Custom URL</span>
+                <h2 class="text-5xl md:text-7xl font-extrabold text-rDark mt-6 mb-6 tracking-tight leading-[1.1]">
+                    Mulai dengan <br><span class="gradient-text">Link Unik Anda.</span>
+                </h2>
+                <p class="text-slate-500 text-lg md:text-xl font-medium max-w-xl mx-auto italic">
+                    "Alamat digital untuk momen yang tak terlupakan."
+                </p>
+            </div>
+
+            <div class="bg-white p-4 md:p-6 rounded-5xl shadow-2xl shadow-slate-200/50 border border-slate-100">
+                <div class="input-box flex flex-col md:flex-row items-center bg-slate-50 rounded-4xl p-2 transition-all duration-300 border-2 border-transparent">
+                    <div class="flex items-center px-6 py-4 md:py-0">
+                        <span class="text-slate-400 font-bold text-lg">ruangrestu.com/</span>
+                    </div>
+                    <input type="text" 
+                           id="domainInput"
+                           placeholder="nama-mempelai" 
+                           class="flex-1 w-full px-6 py-4 md:py-6 bg-transparent outline-none text-2xl font-black text-rDark placeholder:text-slate-200"
+                           onkeyup="checkDomain()">
+                    <button onclick="window.location.href='create-step2-theme.html'" 
+                            class="w-full md:w-auto mt-2 md:mt-0 bg-rDark text-white px-10 py-5 rounded-[2rem] font-black text-lg hover:bg-rRed transition-all duration-300 shadow-xl active:scale-95 flex items-center justify-center gap-3 group">
+                        Cek Link
+                    </button>
+                </div>
+                
+                <div id="statusCheck" class="mt-8 transition-all duration-500 opacity-0 transform translate-y-4 scale-95 pointer-events-none">
+                    <div class="bg-green-50 border border-green-100 p-6 rounded-[2.5rem] flex flex-col md:flex-row items-center justify-between gap-6">
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center text-white shadow-lg shadow-green-200">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                            </div>
+                            <div class="text-left">
+                                <p class="text-green-800 font-extrabold text-lg">Domain Kosong!</p>
+                                <p class="text-green-600/70 text-sm font-medium">Link <span id="displayDomain" class="font-bold underline"></span> bisa Anda gunakan.</p>
+                            </div>
+                        </div>
+
+                        <button onclick="window.location.href='create-step2-theme.html'" class="w-full md:w-auto px-8 py-4 bg-green-500 text-white rounded-2xl font-black text-sm hover:bg-green-600 transition-all shadow-md active:scale-95 flex items-center justify-center gap-2">
+                            Ingin gunakan ini?
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-white/50 backdrop-blur-sm p-6 rounded-3xl border border-white/50">
+                    <p class="text-[10px] font-black text-slate-300 uppercase mb-2">Tips 1</p>
+                    <p class="text-xs font-bold text-slate-500 italic">"Gunakan nama panggilan agar lebih akrab."</p>
+                </div>
+                <div class="bg-white/50 backdrop-blur-sm p-6 rounded-3xl border border-white/50">
+                    <p class="text-[10px] font-black text-slate-300 uppercase mb-2">Tips 2</p>
+                    <p class="text-xs font-bold text-slate-500 italic">"Gunakan tanda hubung (-) jika lebih dari satu kata."</p>
+                </div>
+                <div class="bg-white/50 backdrop-blur-sm p-6 rounded-3xl border border-white/50">
+                    <p class="text-[10px] font-black text-slate-300 uppercase mb-2">Tips 3</p>
+                    <p class="text-xs font-bold text-slate-500 italic">"Hindari angka jika tidak diperlukan."</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        function checkDomain() {
+            const input = document.getElementById('domainInput');
+            const status = document.getElementById('statusCheck');
+            const display = document.getElementById('displayDomain');
+            
+            // Simulasi pengecekan: Jika karakter lebih dari 2
+            if(input.value.length > 2) {
+                display.innerText = "ruangrestu.com/" + input.value;
+                
+                // Menampilkan indikator dengan animasi fade & scale
+                status.classList.remove('opacity-0', 'translate-y-4', 'scale-95', 'pointer-events-none');
+                status.classList.add('opacity-100', 'translate-y-0', 'scale-100');
+            } else {
+                // Sembunyikan jika input dihapus atau terlalu pendek
+                status.classList.add('opacity-0', 'translate-y-4', 'scale-95', 'pointer-events-none');
+                status.classList.remove('opacity-100', 'translate-y-0', 'scale-100');
+            }
+        }
+    </script>
+
+</body>
+</html>
