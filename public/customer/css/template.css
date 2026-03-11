@@ -1,0 +1,11 @@
+.glass-card {
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 1);
+}
+
+.filter-btn.active {
+    background: linear-gradient(to right, #FF5A5A, #FF8B5A);
+    color: white;
+    box-shadow: 0 4px 15px rgba(255, 90, 90, 0.3);
+}

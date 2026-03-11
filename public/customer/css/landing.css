@@ -1,0 +1,77 @@
+ /* CSS untuk Mekanis Animasi Scroll JS */
+ .reveal {
+     opacity: 0;
+     transform: translateY(40px);
+     transition: all 0.8s cubic-bezier(0.5, 0, 0, 1);
+ }
+
+ .reveal.active {
+     opacity: 1;
+     transform: translateY(0);
+ }
+
+ /* Glassmorphism Light Mode Utility */
+ .glass-light {
+     background: rgba(255, 255, 255, 0.7);
+     backdrop-filter: blur(16px);
+     -webkit-backdrop-filter: blur(16px);
+     border: 1px solid rgba(255, 255, 255, 1);
+     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
+ }
+
+ /* Glow Utility */
+ .glow-btn {
+     box-shadow: 0 8px 20px rgba(255, 90, 90, 0.3);
+     transition: all 0.3s ease;
+ }
+
+ .glow-btn:hover {
+     box-shadow: 0 12px 25px rgba(255, 139, 90, 0.5);
+     transform: translateY(-2px);
+ }
+
+ /* Blob Animation for Background */
+ @keyframes blob {
+     0% {
+         transform: translate(0px, 0px) scale(1);
+     }
+
+     33% {
+         transform: translate(30px, -50px) scale(1.1);
+     }
+
+     66% {
+         transform: translate(-20px, 20px) scale(0.9);
+     }
+
+     100% {
+         transform: translate(0px, 0px) scale(1);
+     }
+ }
+
+ .animate-blob {
+     animation: blob 7s infinite;
+ }
+
+ .animation-delay-2000 {
+     animation-delay: 2s;
+ }
+
+ #modal-body b {
+     color: #FF5A5A;
+     /* Memberikan warna rRed pada teks tebal di dalam modal */
+ }
+
+ #modal-body::-webkit-scrollbar {
+     width: 6px;
+ }
+
+ #modal-body::-webkit-scrollbar-thumb {
+     background: #FFD45A;
+     border-radius: 10px;
+ }
+
+ .collapse-item {
+     border-bottom: 1px solid #f1f5f9;
+     padding-bottom: 1rem;
+ }

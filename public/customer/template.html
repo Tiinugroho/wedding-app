@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pilih Desain Undangan - RuangRestu</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="css/template.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        rRed: '#FF5A5A',
+                        rOrange: '#FF8B5A',
+                        rLightOrange: '#FFA95A',
+                        rYellow: '#FFD45A',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-slate-50 text-slate-800">
+
+    <nav class="fixed w-full z-50 glass-light top-0 left-0 transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20">
+                <div class="flex-shrink-0">
+                    <a href="index.html" class="text-3xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-rRed to-rOrange">
+                        RuangRestu
+                    </a>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-center space-x-8">
+                        <a href="#home" class="text-slate-600 hover:text-rRed font-medium transition duration-300">Home</a>
+                        <a href="#produk" class="text-slate-600 hover:text-rRed font-medium transition duration-300">Produk</a>
+                        <a href="#harga" class="text-slate-600 hover:text-rRed font-medium transition duration-300">Harga</a>
+                        <a href="auth.html" class="bg-gradient-to-r from-rRed to-rOrange text-white px-6 py-2.5 rounded-full font-semibold glow-btn">
+                            Login
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+    <header class="py-16 bg-white pt-32 pb-20 lg:pt-48 lg:pb-32">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <h1 class="text-4xl md:text-5xl font-extrabold text-slate-800 mb-4">Katalog Desain <span class="text-rOrange">Premium</span></h1>
+            <p class="text-slate-500 max-w-2xl mx-auto">Temukan tema yang paling menggambarkan perjalanan cinta kalian. Semua desain sudah mendukung fitur RSVP, Google Maps, dan Musik.</p>
+        </div>
+    </header>
+
+    <section class="py-8 sticky top-20 z-40 bg-slate-50/50 backdrop-blur-sm">
+        <div class="max-w-7xl mx-auto px-4 flex flex-col md:flex-row gap-4 items-center justify-between">
+            <div class="flex flex-wrap justify-center gap-2">
+                <button class="filter-btn active px-6 py-2 rounded-full border border-slate-200 font-medium transition">Semua</button>
+                <button class="filter-btn px-6 py-2 rounded-full bg-white border border-slate-200 font-medium hover:border-rRed transition">Modern</button>
+                <button class="filter-btn px-6 py-2 rounded-full bg-white border border-slate-200 font-medium hover:border-rRed transition">Tradisional</button>
+                <button class="filter-btn px-6 py-2 rounded-full bg-white border border-slate-200 font-medium hover:border-rRed transition">Minimalis</button>
+                <button class="filter-btn px-6 py-2 rounded-full bg-white border border-slate-200 font-medium hover:border-rRed transition">Floral</button>
+            </div>
+            <div class="relative w-full md:w-72">
+                <input type="text" placeholder="Cari nama tema..." class="w-full pl-10 pr-4 py-2 rounded-full border border-slate-200 focus:outline-none focus:border-rRed focus:ring-1 focus:ring-rRed transition">
+                <svg class="w-5 h-5 absolute left-3 top-2.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+            </div>
+        </div>
+    </section>
+
+    <main class="max-w-7xl mx-auto px-4 py-12">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
+            
+            <div class="group">
+                <div class="relative rounded-[2rem] overflow-hidden shadow-lg border border-white bg-white aspect-[3/4]">
+                    <img src="https://images.unsplash.com/photo-1511795409834-ef04bbd61622?auto=format&fit=crop&w=600&q=80" alt="Tema 1" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+                    <div class="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-3">
+                        <a href="preview.html" class="bg-white text-slate-900 px-6 py-2 rounded-full font-bold shadow-xl hover:bg-rRed hover:text-white transition">Live Preview</a>
+                        <button class="bg-rOrange text-white px-6 py-2 rounded-full font-bold shadow-xl hover:bg-rRed transition">Gunakan Tema</button>
+                    </div>
+                </div>
+                <div class="mt-4 px-2 flex justify-between items-center">
+                    <div>
+                        <h3 class="font-bold text-lg text-slate-800">Royal Javanese</h3>
+                        <p class="text-sm text-slate-500 italic">Tradisional • Elegan</p>
+                    </div>
+                    <div class="bg-green-100 text-green-600 px-3 py-1 rounded-full text-xs font-bold">GRATIS</div>
+                </div>
+            </div>
+
+            <div class="group">
+                <div class="relative rounded-[2rem] overflow-hidden shadow-lg border border-white bg-white aspect-[3/4]">
+                    <img src="https://images.unsplash.com/photo-1522673607200-164883eecd0c?auto=format&fit=crop&w=600&q=80" alt="Tema 2" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+                    <div class="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-3">
+                        <a href="#" class="bg-white text-slate-900 px-6 py-2 rounded-full font-bold shadow-xl">Live Preview</a>
+                        <button class="bg-rOrange text-white px-6 py-2 rounded-full font-bold shadow-xl">Gunakan Tema</button>
+                    </div>
+                </div>
+                <div class="mt-4 px-2 flex justify-between items-center">
+                    <div>
+                        <h3 class="font-bold text-lg text-slate-800">Summer Bloom</h3>
+                        <p class="text-sm text-slate-500 italic">Floral • Ceria</p>
+                    </div>
+                    <div class="bg-rRed/10 text-rRed px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">Premium</div>
+                </div>
+            </div>
+
+            <div class="group">
+                <div class="relative rounded-[2rem] overflow-hidden shadow-lg border border-white bg-white aspect-[3/4]">
+                    <img src="https://images.unsplash.com/photo-1519225421980-715cb0215aed?auto=format&fit=crop&w=600&q=80" alt="Tema 3" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+                    <div class="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-3">
+                        <a href="#" class="bg-white text-slate-900 px-6 py-2 rounded-full font-bold shadow-xl">Live Preview</a>
+                        <button class="bg-rOrange text-white px-6 py-2 rounded-full font-bold shadow-xl">Gunakan Tema</button>
+                    </div>
+                </div>
+                <div class="mt-4 px-2 flex justify-between items-center">
+                    <div>
+                        <h3 class="font-bold text-lg text-slate-800">Urban Scandi</h3>
+                        <p class="text-sm text-slate-500 italic">Modern • Minimalis</p>
+                    </div>
+                    <div class="bg-rRed/10 text-rRed px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">Premium</div>
+                </div>
+            </div>
+
+            </div>
+    </main>
+
+<footer class="bg-white border-t border-slate-100 pt-16 pb-8">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="mb-6 md:mb-0">
+                    <a href="#" class="text-2xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-rRed to-rOrange">
+                        RuangRestu
+                    </a>
+                    <p class="text-slate-500 mt-2 text-sm font-medium">Dimulai dengan Doa, Diabadikan dengan Restu.</p>
+                </div>
+                <div class="flex space-x-6 text-slate-500 font-medium">
+    <a href="javascript:void(0)" onclick="openModal('syarat')" class="hover:text-rRed transition">Syarat & Ketentuan</a>
+    <a href="javascript:void(0)" onclick="openModal('privasi')" class="hover:text-rRed transition">Kebijakan Privasi</a>
+    <a href="javascript:void(0)" onclick="openModal('bantuan')" class="hover:text-rRed transition">Bantuan</a>
+</div>
+            </div>
+            <div class="border-t border-slate-100 mt-8 pt-8 text-center text-slate-400 text-sm">
+                &copy; 2026 RuangRestu.com. All rights reserved.
+            </div>
+        </div>
+    </footer>
+<section id="modals-here">
+<div id="modal-overlay" class="fixed inset-0 z-[100] hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+    
+    <div id="modal-content" class="bg-white w-full max-w-2xl max-h-[80vh] rounded-[2.5rem] shadow-2xl overflow-hidden relative flex flex-col scale-95 opacity-0 transition-all duration-300">
+        
+        <div class="p-8 border-b border-slate-100 flex justify-between items-center bg-white sticky top-0 z-10">
+            <h3 id="modal-title" class="text-2xl font-bold text-slate-800">Judul Modal</h3>
+            <button onclick="closeModal()" class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-slate-100 text-slate-400 hover:text-slate-800 transition">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+        </div>
+
+        <div id="modal-body" class="p-8 overflow-y-auto text-slate-600 leading-relaxed">
+            </div>
+
+        <div class="p-6 border-t border-slate-100 bg-slate-50 flex justify-end">
+            <button onclick="closeModal()" class="px-6 py-2.5 bg-slate-800 text-white rounded-xl font-semibold hover:bg-slate-700 transition">
+                Tutup
+            </button>
+        </div>
+    </div>
+</div>
+    </section>
+    <script>
+        const buttons = document.querySelectorAll('.filter-btn');
+        buttons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                buttons.forEach(b => b.classList.remove('active', 'bg-white'));
+                btn.classList.add('active');
+            });
+        });
+    </script>
+        <script src="js/landing.js"></script>
+</body>
+</html>
