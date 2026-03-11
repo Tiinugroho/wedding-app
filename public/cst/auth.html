@@ -197,6 +197,22 @@
     </div>
 </div>
     </section>
+
+    <div id="alert-modal" class="fixed inset-0 z-[200] hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div id="alert-content" class="bg-white w-full max-w-sm rounded-[2.5rem] shadow-2xl overflow-hidden transform scale-95 opacity-0 transition-all duration-300">
+            <div class="p-10 text-center">
+                <div id="alert-icon-box" class="w-20 h-20 mx-auto rounded-full flex items-center justify-center mb-6">
+                    </div>
+                
+                <h3 id="alert-title" class="text-2xl font-extrabold text-slate-800 mb-2">Judul</h3>
+                <p id="alert-message" class="text-slate-500 font-medium mb-8 leading-relaxed italic text-sm">Pesan akan muncul di sini.</p>
+                
+                <button onclick="closeAlert()" class="w-full py-4 bg-slate-900 text-white rounded-2xl font-bold hover:bg-slate-800 transition shadow-lg active:scale-95">
+                    Mengerti
+                </button>
+            </div>
+        </div>
+    </div>
     <script>
         function switchAuth(type) {
             const loginSec = document.getElementById('login-sec');
@@ -208,6 +224,52 @@
             } else {
                 registerSec.classList.replace('active-auth', 'hidden-auth');
                 loginSec.classList.replace('hidden-auth', 'active-auth');
+            }
+        }
+
+        // FUNGSI MODAL DINAMIS
+        function showAlert(type, title, message) {
+            const modal = document.getElementById('alert-modal');
+            const content = document.getElementById('alert-content');
+            const iconBox = document.getElementById('alert-icon-box');
+            const titleEl = document.getElementById('alert-title');
+            const messageEl = document.getElementById('alert-message');
+
+            titleEl.innerText = title;
+            messageEl.innerText = message;
+
+            // Reset & Set Icon/Color
+            if(type === 'success') {
+                iconBox.innerHTML = '<svg class="w-10 h-10 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>';
+                iconBox.className = 'w-20 h-20 mx-auto rounded-full bg-green-50 flex items-center justify-center mb-6';
+            } else if (type === 'error') {
+                iconBox.innerHTML = '<svg class="w-10 h-10 text-rRed" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"></path></svg>';
+                iconBox.className = 'w-20 h-20 mx-auto rounded-full bg-red-50 flex items-center justify-center mb-6';
+            }
+
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                content.classList.remove('scale-95', 'opacity-0');
+            }, 10);
+        }
+
+        function closeAlert() {
+            const modal = document.getElementById('alert-modal');
+            const content = document.getElementById('alert-content');
+            content.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 300);
+        }
+
+        // SIMULASI HANDLING FORM
+        function handleAuth(event, type) {
+            event.preventDefault();
+            if(type === 'login') {
+                // Contoh jika gagal login (Simulasi)
+                showAlert('error', 'Gagal Masuk', 'Password yang Anda masukkan salah. Silakan coba lagi.');
+            } else {
+                showAlert('success', 'Akun Dibuat!', 'Selamat! Akun Anda berhasil didaftarkan. Silakan cek email untuk verifikasi.');
             }
         }
     </script>
