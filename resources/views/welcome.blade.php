@@ -4,10 +4,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RuangRestu - Undangan Digital</title>
-    
+    <title>RuangRestu | Undangan Digital</title>
+
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-    
+
     <link rel="stylesheet" href="{{ asset('cst/css/landing.css') }}">
 </head>
 
@@ -30,10 +30,19 @@
                             class="text-slate-600 hover:text-rRed font-medium transition duration-300">Produk</a>
                         <a href="#harga"
                             class="text-slate-600 hover:text-rRed font-medium transition duration-300">Harga</a>
-                        <a href="{{ route('login') }}"
-                            class="bg-gradient-to-r from-rRed to-rOrange text-white px-6 py-2.5 rounded-full font-semibold glow-btn">
-                            Login
-                        </a>
+                        @auth
+                            <a href="{{ route('dashboard') }}"
+                                class="text-slate-600 hover:text-rRed font-medium transition duration-300">
+                                Dashboard
+                            </a>
+                        @endauth
+
+                        @guest
+                            <a href="{{ route('login') }}"
+                                class="bg-gradient-to-r from-rRed to-rOrange text-white px-6 py-2.5 rounded-full font-semibold glow-btn">
+                                Login
+                            </a>
+                        @endguest
                     </div>
                 </div>
             </div>
@@ -111,7 +120,7 @@
                                 </div>
                                 <div>
                                     <p class="text-[10px] text-slate-400 font-medium">Konfirmasi Hadir</p>
-                                    <p class="text-xs font-bold text-slate-800">Budi & Sinta</p>
+                                    <p class="text-xs font-bold text-slate-800">Jati & Nabila</p>
                                 </div>
                             </div>
                         </div>
@@ -286,7 +295,7 @@
                             Bahagiamu?</h2>
                         <p class="text-slate-600 text-lg mb-10 max-w-2xl mx-auto">Gabung bersama kami dan bagikan
                             kebahagiaanmu dalam bentuk undangan digital yang elegan dan fungsional.</p>
-                        <a href="#register"
+                        <a href="{{ route('login') }}"
                             class="inline-block bg-gradient-to-r from-rRed to-rOrange text-white px-10 py-5 rounded-full font-bold text-xl glow-btn hover:scale-105 transition-transform">
                             Mulai Buat Sekarang
                         </a>
@@ -305,7 +314,7 @@
                             responsif dan sangat mudah disesuaikan.</p>
                     </div>
                     <div class="mt-6 md:mt-0">
-                        <a href="template.html"
+                        <a href="#"
                             class="text-rRed font-bold flex items-center hover:translate-x-2 transition-transform">
                             Lihat Semua Tema <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor"
                                 viewBox="0 0 24 24">
@@ -317,65 +326,32 @@
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    <div
-                        class="group relative bg-slate-50 rounded-[2.5rem] overflow-hidden border border-slate-100 transition-all duration-500 hover:shadow-2xl hover:shadow-rRed/10">
-                        <div class="h-[400px] overflow-hidden">
-                            <img src="https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=600&q=80"
-                                alt="Template 1"
-                                class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
-                        </div>
+                    @forelse($templates as $template)
                         <div
-                            class="absolute inset-0 bg-gradient-to-t from-white via-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex flex-col justify-end p-8">
+                            class="group relative bg-slate-50 rounded-[2.5rem] overflow-hidden border border-slate-100 transition-all duration-500 hover:shadow-2xl hover:shadow-rOrange/10">
+                            <div class="h-[400px] overflow-hidden">
+                                <img src="{{ $template->thumbnail ? asset('storage/' . $template->thumbnail) : 'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=600&q=80' }}"
+                                    alt="{{ $template->name }}"
+                                    class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                            </div>
                             <div
-                                class="glass-light p-6 rounded-3xl translate-y-10 group-hover:translate-y-0 transition-transform duration-500">
-                                <h3 class="text-xl font-bold text-slate-800">Elegance Gold</h3>
-                                <p class="text-slate-500 text-sm mb-4">Nuansa mewah dengan aksen emas klasik.</p>
-                                <button
-                                    class="w-full py-3 bg-slate-800 text-white rounded-2xl font-semibold hover:bg-rRed transition">Preview
-                                    Tema</button>
+                                class="absolute inset-0 bg-gradient-to-t from-white via-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex flex-col justify-end p-8">
+                                <div
+                                    class="glass-light p-6 rounded-3xl translate-y-10 group-hover:translate-y-0 transition-transform duration-500">
+                                    <h3 class="text-xl font-bold text-slate-800">{{ $template->name }}</h3>
+                                    <p class="text-slate-500 text-sm mb-4">Kategori:
+                                        {{ $template->category->name ?? 'Umum' }}</p>
+                                    <button
+                                        class="w-full py-3 bg-slate-800 text-white rounded-2xl font-semibold hover:bg-rOrange transition">Preview
+                                        Tema</button>
+                                </div>
                             </div>
                         </div>
-                    </div>
-
-                    <div
-                        class="group relative bg-slate-50 rounded-[2.5rem] overflow-hidden border border-slate-100 transition-all duration-500 hover:shadow-2xl hover:shadow-rOrange/10">
-                        <div class="h-[400px] overflow-hidden">
-                            <img src="https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?auto=format&fit=crop&w=600&q=80"
-                                alt="Template 2"
-                                class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                    @empty
+                        <div class="col-span-3 text-center py-10 text-slate-500">
+                            Belum ada template yang diunggah.
                         </div>
-                        <div
-                            class="absolute inset-0 bg-gradient-to-t from-white via-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex flex-col justify-end p-8">
-                            <div
-                                class="glass-light p-6 rounded-3xl translate-y-10 group-hover:translate-y-0 transition-transform duration-500">
-                                <h3 class="text-xl font-bold text-slate-800">Floral Bloom</h3>
-                                <p class="text-slate-500 text-sm mb-4">Kombinasi bunga estetik dan modern.</p>
-                                <button
-                                    class="w-full py-3 bg-slate-800 text-white rounded-2xl font-semibold hover:bg-rOrange transition">Preview
-                                    Tema</button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div
-                        class="group relative bg-slate-50 rounded-[2.5rem] overflow-hidden border border-slate-100 transition-all duration-500 hover:shadow-2xl hover:shadow-rYellow/10">
-                        <div class="h-[400px] overflow-hidden">
-                            <img src="https://images.unsplash.com/photo-1523438885200-e635ba2c371e?auto=format&fit=crop&w=600&q=80"
-                                alt="Template 3"
-                                class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
-                        </div>
-                        <div
-                            class="absolute inset-0 bg-gradient-to-t from-white via-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex flex-col justify-end p-8">
-                            <div
-                                class="glass-light p-6 rounded-3xl translate-y-10 group-hover:translate-y-0 transition-transform duration-500">
-                                <h3 class="text-xl font-bold text-slate-800">Minimalist White</h3>
-                                <p class="text-slate-500 text-sm mb-4">Bersih, simpel, dan fokus pada foto.</p>
-                                <button
-                                    class="w-full py-3 bg-slate-800 text-white rounded-2xl font-semibold hover:bg-rYellow transition">Preview
-                                    Tema</button>
-                            </div>
-                        </div>
-                    </div>
+                    @endforelse
                 </div>
             </div>
         </section>
@@ -387,118 +363,96 @@
                     <p class="text-slate-500">Satu kali bayar, aktif selamanya. Tanpa biaya langganan bulanan.</p>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch">
+                    @forelse($packages as $package)
 
-                    <div
-                        class="glass-light p-10 rounded-[3rem] border border-white hover:scale-105 transition-all duration-300">
-                        <h3 class="text-xl font-bold text-slate-800 mb-2">Paket Dasar</h3>
-                        <div class="flex items-baseline mb-6">
-                            <span class="text-4xl font-extrabold text-slate-800">Rp 99rb</span>
-                        </div>
-                        <ul class="space-y-4 mb-10 text-slate-600">
-                            <li class="flex items-center"><svg class="w-5 h-5 text-green-500 mr-3" fill="none"
-                                    stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
-                                        d="M5 13l4 4L19 7"></path>
-                                </svg> Masa Aktif Selamanya</li>
-                            <li class="flex items-center"><svg class="w-5 h-5 text-green-500 mr-3" fill="none"
-                                    stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
-                                        d="M5 13l4 4L19 7"></path>
-                                </svg> Galeri 5 Foto</li>
-                            <li class="flex items-center"><svg class="w-5 h-5 text-green-500 mr-3" fill="none"
-                                    stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
-                                        d="M5 13l4 4L19 7"></path>
-                                </svg> Google Maps Navigasi</li>
-                            <li class="flex items-center text-slate-400"><svg class="w-5 h-5 mr-3" fill="none"
-                                    stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
-                                        d="M6 18L18 6M6 6l12 12"></path>
-                                </svg> Amplop Digital</li>
-                        </ul>
-                        <button
-                            class="w-full py-4 border-2 border-slate-800 text-slate-800 rounded-2xl font-bold hover:bg-slate-800 hover:text-white transition">Pilih
-                            Paket</button>
-                    </div>
-
-                    <div
-                        class="bg-white p-12 rounded-[3.5rem] border-2 border-rRed shadow-2xl shadow-rRed/20 relative scale-110 z-10 overflow-hidden">
                         <div
-                            class="absolute top-0 right-0 bg-rRed text-white px-6 py-2 rounded-bl-3xl font-bold text-sm">
-                            TERPOPULER</div>
-                        <h3 class="text-2xl font-bold text-slate-800 mb-2">Paket Premium</h3>
-                        <div class="flex items-baseline mb-6">
-                            <span class="text-5xl font-extrabold text-slate-800">Rp 149rb</span>
-                        </div>
-                        <ul class="space-y-4 mb-10 text-slate-600">
-                            <li class="flex items-center"><svg class="w-5 h-5 text-rRed mr-3" fill="none"
-                                    stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
-                                        d="M5 13l4 4L19 7"></path>
-                                </svg> <b>Semua Fitur Dasar</b></li>
-                            <li class="flex items-center"><svg class="w-5 h-5 text-rRed mr-3" fill="none"
-                                    stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
-                                        d="M5 13l4 4L19 7"></path>
-                                </svg> Galeri Foto & Video</li>
-                            <li class="flex items-center"><svg class="w-5 h-5 text-rRed mr-3" fill="none"
-                                    stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
-                                        d="M5 13l4 4L19 7"></path>
-                                </svg> Amplop Digital / QRIS</li>
-                            <li class="flex items-center"><svg class="w-5 h-5 text-rRed mr-3" fill="none"
-                                    stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
-                                        d="M5 13l4 4L19 7"></path>
-                                </svg> QR Code Check-in Tamu</li>
-                            <li class="flex items-center"><svg class="w-5 h-5 text-rRed mr-3" fill="none"
-                                    stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
-                                        d="M5 13l4 4L19 7"></path>
-                                </svg> Pilihan Musik Background</li>
-                        </ul>
-                        <button
-                            class="w-full py-4 bg-gradient-to-r from-rRed to-rOrange text-white rounded-2xl font-bold glow-btn">Pilih
-                            Paket Ini</button>
-                    </div>
+                            class="flex flex-col h-full {{ $loop->iteration == 2 ? 'bg-white p-12 rounded-[3.5rem] border-2 border-rRed shadow-2xl shadow-rRed/20 relative scale-105 z-10 overflow-hidden' : 'glass-light p-10 rounded-[3rem] border border-white transition-all duration-300 hover:-translate-y-2' }}">
 
-                    <div
-                        class="glass-light p-10 rounded-[3rem] border border-white hover:scale-105 transition-all duration-300">
-                        <h3 class="text-xl font-bold text-slate-800 mb-2">Paket Eksklusif</h3>
-                        <div class="flex items-baseline mb-6">
-                            <span class="text-4xl font-extrabold text-slate-800">Rp 249rb</span>
-                        </div>
-                        <ul class="space-y-4 mb-10 text-slate-600">
-                            <li class="flex items-center"><svg class="w-5 h-5 text-green-500 mr-3" fill="none"
-                                    stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
-                                        d="M5 13l4 4L19 7"></path>
-                                </svg> <b>Semua Fitur Premium</b></li>
-                            <li class="flex items-center"><svg class="w-5 h-5 text-green-500 mr-3" fill="none"
-                                    stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
-                                        d="M5 13l4 4L19 7"></path>
-                                </svg> Custom Nama Domain</li>
-                            <li class="flex items-center"><svg class="w-5 h-5 text-green-500 mr-3" fill="none"
-                                    stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
-                                        d="M5 13l4 4L19 7"></path>
-                                </svg> Tanpa Logo RuangRestu</li>
-                            <li class="flex items-center"><svg class="w-5 h-5 text-green-500 mr-3" fill="none"
-                                    stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
-                                        d="M5 13l4 4L19 7"></path>
-                                </svg> Prioritas Support 24/7</li>
-                        </ul>
-                        <button
-                            class="w-full py-4 border-2 border-slate-800 text-slate-800 rounded-2xl font-bold hover:bg-slate-800 hover:text-white transition">Hubungi
-                            Admin</button>
-                    </div>
+                            @if ($loop->iteration == 2)
+                                <div
+                                    class="absolute top-0 right-0 bg-rRed text-white px-6 py-2 rounded-bl-3xl font-bold text-sm z-20">
+                                    TERPOPULER</div>
+                            @endif
 
+                            <h3
+                                class="{{ $loop->iteration == 2 ? 'text-2xl' : 'text-xl' }} font-bold text-slate-800 mb-2">
+                                {{ $package->name }}</h3>
+
+                            <div class="flex items-end mb-6 gap-3 flex-wrap">
+                                <span
+                                    class="{{ $loop->iteration == 2 ? 'text-5xl' : 'text-4xl' }} font-extrabold text-slate-800">
+                                    Rp {{ number_format($package->price / 1000, 0, ',', '.') }}rb
+                                </span>
+
+                                @if ($package->original_price)
+                                    <span class="text-lg md:text-xl font-bold text-slate-400 line-through mb-1">
+                                        Rp {{ number_format($package->original_price / 1000, 0, ',', '.') }}rb
+                                    </span>
+                                @endif
+                            </div>
+
+                            <p class="text-sm text-slate-500 mb-6 font-medium">{{ $package->description }}</p>
+
+                            <ul class="space-y-3 mb-10 text-slate-600 text-sm flex-1">
+                                @php
+                                    $features = is_array($package->features)
+                                        ? $package->features
+                                        : json_decode($package->features, true) ?? [];
+                                @endphp
+
+                                @if (isset($features['included']) && is_array($features['included']))
+                                    @foreach ($features['included'] as $included_feature)
+                                        <li class="flex items-start text-slate-700 font-medium">
+                                            <svg class="w-5 h-5 text-green-500 mr-3 flex-shrink-0 mt-0.5"
+                                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
+                                                    d="M5 13l4 4L19 7"></path>
+                                            </svg>
+                                            <span>{{ $included_feature }}</span>
+                                        </li>
+                                    @endforeach
+                                @endif
+
+                                @if (isset($features['excluded']) && is_array($features['excluded']))
+                                    @foreach ($features['excluded'] as $excluded_feature)
+                                        <li class="flex items-start text-slate-400 line-through">
+                                            <svg class="w-5 h-5 text-slate-300 mr-3 flex-shrink-0 mt-0.5"
+                                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
+                                                    d="M6 18L18 6M6 6l12 12"></path>
+                                            </svg>
+                                            <span>{{ $excluded_feature }}</span>
+                                        </li>
+                                    @endforeach
+                                @endif
+                            </ul>
+
+                            @auth
+
+                                <a href="#"
+                                    class="mt-auto block text-center w-full py-4 {{ $loop->iteration == 2 ? 'bg-gradient-to-r from-rRed to-rOrange text-white border-0 glow-btn' : 'border-2 border-slate-800 text-slate-800 hover:bg-slate-800 hover:text-white' }} rounded-2xl font-bold transition relative z-20">
+                                    Pilih Paket
+                                </a>
+                            @endauth
+
+                            @guest
+                                <a href="{{ route('login') }}"
+                                    class="mt-auto block text-center w-full py-4 {{ $loop->iteration == 2 ? 'bg-gradient-to-r from-rRed to-rOrange text-white border-0 glow-btn' : 'border-2 border-slate-800 text-slate-800 hover:bg-slate-800 hover:text-white' }} rounded-2xl font-bold transition relative z-20">
+                                    Daftar Sekarang
+                                </a>
+                            @endguest
+                        </div>
+                    @empty
+                        <div class="col-span-3 text-center py-10 text-slate-500">
+                            Belum ada paket harga yang tersedia.
+                        </div>
+                    @endforelse
                 </div>
             </div>
         </section>
+
+
     </main>
     <footer class="bg-white border-t border-slate-100 pt-16 pb-8">
         <div class="max-w-7xl mx-auto px-4">

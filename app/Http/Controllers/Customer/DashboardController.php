@@ -21,6 +21,6 @@ class DashboardController extends Controller
             ->get();
 
         // Kirim data ke view
-        return view('dashboard', compact('invitations'));
+        return view('customer.dashboard', compact('invitations'));
     }
 }

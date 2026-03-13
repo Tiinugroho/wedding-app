@@ -1,4 +1,7 @@
  /* CSS untuk Mekanis Animasi Scroll JS */
+html, body, * {
+     scroll-behavior: smooth;
+ }
  .reveal {
      opacity: 0;
      transform: translateY(40px);

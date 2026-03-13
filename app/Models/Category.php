@@ -9,8 +9,9 @@ class Category extends Model
 {
     use HasFactory;
 
-    protected $guarded = ['id'];
+    protected $fillable = ['name', 'slug'];
 
+    // Relasi: Satu Kategori memiliki banyak Template
     public function templates()
     {
         return $this->hasMany(Template::class);

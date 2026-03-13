@@ -9,8 +9,14 @@ class Music extends Model
 {
     use HasFactory;
 
-    protected $guarded = ['id'];
+    // 1. TAMBAHKAN BARIS INI UNTUK MEMAKSA NAMA TABEL
     protected $table = 'musics';
+
+    protected $fillable = [
+        'title',
+        'category', // <--- Tambahkan ini
+        'file_path',
+    ];
 
     public function invitations()
     {

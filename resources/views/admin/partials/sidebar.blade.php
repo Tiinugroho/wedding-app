@@ -1,111 +1,99 @@
 <nav class="pc-sidebar">
-        <div class="navbar-wrapper">
-            <div class="m-header">
-                <a href="../dashboard/index.html" class="b-brand text-primary">
-                    <!-- ========   Change your logo from here   ============ -->
-                    <img src="../assets/images/logo-white.svg" alt="logo image" class="logo-lg" />
-                </a>
-            </div>
-            <div class="navbar-content">
-                <ul class="pc-navbar">
-                    <li class="pc-item pc-caption">
-                        <label>Navigation</label>
-                    </li>
-                    <li class="pc-item">
-                        <a href="../dashboard/index.html" class="pc-link"><span class="pc-micon"> <i
-                                    class="ph ph-gauge"></i></span><span class="pc-mtext">Dashboard</span></a>
-                    </li>
-
-                    <li class="pc-item pc-caption">
-                        <label>UI Components</label>
-                        <i class="ph ph-compass-tool"></i>
-                    </li>
-                    <li class="pc-item">
-                        <a href="../elements/bc_typography.html" class="pc-link">
-                            <span class="pc-micon"><i class="ph ph-text-aa"></i></span>
-                            <span class="pc-mtext">Typography</span>
-                        </a>
-                    </li>
-                    <li class="pc-item">
-                        <a href="../elements/bc_color.html" class="pc-link">
-                            <span class="pc-micon"><i class="ph ph-palette"></i></span>
-                            <span class="pc-mtext">Color</span>
-                        </a>
-                    </li>
-                    <li class="pc-item">
-                        <a href="../elements/icon-feather.html" class="pc-link">
-                            <span class="pc-micon"><i class="ph ph-flower-lotus"></i></span>
-                            <span class="pc-mtext">Icons</span>
-                        </a>
-                    </li>
-
-                    <li class="pc-item pc-caption">
-                        <label>Pages</label>
-                        <i class="ph ph-devices"></i>
-                    </li>
-                    <li class="pc-item">
-                        <a href="../pages/login-v1.html" target="_blank" class="pc-link">
-                            <span class="pc-micon"><i class="ph ph-lock"></i></span>
-                            <span class="pc-mtext">Login</span>
-                        </a>
-                    </li>
-                    <li class="pc-item">
-                        <a href="../pages/register-v1.html" target="_blank" class="pc-link">
-                            <span class="pc-micon"><i class="ph ph-user-circle-plus"></i></span>
-                            <span class="pc-mtext">Register</span>
-                        </a>
-                    </li>
-                    <li class="pc-item pc-caption">
-                        <label>Other</label>
-                        <i class="ph ph-suitcase"></i>
-                    </li>
-                    <li class="pc-item pc-hasmenu">
-                        <a href="#!" class="pc-link"><span class="pc-micon"> <i class="ph ph-tree-structure"></i>
-                            </span><span class="pc-mtext">Menu levels</span><span class="pc-arrow"><i
-                                    data-feather="chevron-right"></i></span></a>
-                        <ul class="pc-submenu">
-                            <li class="pc-item"><a class="pc-link" href="#!">Level 2.1</a></li>
-                            <li class="pc-item pc-hasmenu">
-                                <a href="#!" class="pc-link">Level 2.2<span class="pc-arrow"><i
-                                            data-feather="chevron-right"></i></span></a>
-                                <ul class="pc-submenu">
-                                    <li class="pc-item"><a class="pc-link" href="#!">Level 3.1</a></li>
-                                    <li class="pc-item"><a class="pc-link" href="#!">Level 3.2</a></li>
-                                    <li class="pc-item pc-hasmenu">
-                                        <a href="#!" class="pc-link">Level 3.3<span class="pc-arrow"><i
-                                                    data-feather="chevron-right"></i></span></a>
-                                        <ul class="pc-submenu">
-                                            <li class="pc-item"><a class="pc-link" href="#!">Level 4.1</a></li>
-                                            <li class="pc-item"><a class="pc-link" href="#!">Level 4.2</a></li>
-                                        </ul>
-                                    </li>
-                                </ul>
-                            </li>
-                            <li class="pc-item pc-hasmenu">
-                                <a href="#!" class="pc-link">Level 2.3<span class="pc-arrow"><i
-                                            data-feather="chevron-right"></i></span></a>
-                                <ul class="pc-submenu">
-                                    <li class="pc-item"><a class="pc-link" href="#!">Level 3.1</a></li>
-                                    <li class="pc-item"><a class="pc-link" href="#!">Level 3.2</a></li>
-                                    <li class="pc-item pc-hasmenu">
-                                        <a href="#!" class="pc-link">Level 3.3<span class="pc-arrow"><i
-                                                    data-feather="chevron-right"></i></span></a>
-                                        <ul class="pc-submenu">
-                                            <li class="pc-item"><a class="pc-link" href="#!">Level 4.1</a></li>
-                                            <li class="pc-item"><a class="pc-link" href="#!">Level 4.2</a></li>
-                                        </ul>
-                                    </li>
-                                </ul>
-                            </li>
-                        </ul>
-                    </li>
-                    <li class="pc-item"><a href="../other/sample-page.html" class="pc-link">
-                            <span class="pc-micon">
-                                <i class="ph ph-desktop"></i>
-                            </span>
-                            <span class="pc-mtext">Sample page</span></a></li>
-
-                </ul>
-            </div>
+    <div class="navbar-wrapper">
+        <div class="m-header">
+            <a href="{{ route('admin.dashboard') }}" class="b-brand text-primary">
+                <h3 class="text-white font-bold m-0 tracking-wide">RUANG<span class="text-warning">RESTU</span></h3>
+            </a>
         </div>
-    </nav>
+        <div class="navbar-content">
+            <ul class="pc-navbar">
+                
+                <li class="pc-item pc-caption">
+                    <label>Main Menu</label>
+                </li>
+                
+                <li class="pc-item {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
+                    <a href="{{ route('admin.dashboard') }}" class="pc-link">
+                        <span class="pc-micon"><i class="ph ph-gauge"></i></span>
+                        <span class="pc-mtext">Dashboard</span>
+                    </a>
+                </li>
+
+                <li class="pc-item pc-caption">
+                    <label>Master Data</label>
+                    <i class="ph ph-database"></i>
+                </li>
+
+                <li class="pc-item {{ request()->routeIs('admin.packages.*') ? 'active' : '' }}">
+                    <a href="{{ route('admin.packages.index') }}" class="pc-link"> 
+                        <span class="pc-micon"><i class="ph ph-tag"></i></span>
+                        <span class="pc-mtext">Paket Harga</span>
+                    </a>
+                </li>
+
+                <li class="pc-item {{ request()->routeIs('admin.categories.*') ? 'active' : '' }}">
+                    <a href="{{ route('admin.categories.index') }}" class="pc-link">
+                        <span class="pc-micon"><i class="ph ph-squares-four"></i></span>
+                        <span class="pc-mtext">Kategori Tema</span>
+                    </a>
+                </li>
+
+                <li class="pc-item {{ request()->routeIs('admin.templates.*') ? 'active' : '' }}">
+                    <a href="{{ route('admin.templates.index') }}" class="pc-link">
+                        <span class="pc-micon"><i class="ph ph-palette"></i></span>
+                        <span class="pc-mtext">Tema / Template</span>
+                    </a>
+                </li>
+
+                <li class="pc-item {{ request()->routeIs('admin.musics.*') ? 'active' : '' }}">
+                    <a href="{{ route('admin.musics.index') }}" class="pc-link">
+                        <span class="pc-micon"><i class="ph ph-music-notes"></i></span>
+                        <span class="pc-mtext">Daftar Musik</span>
+                    </a>
+                </li>
+
+                <li class="pc-item pc-caption">
+                    <label>Transaksi & Klien</label>
+                    <i class="ph ph-shopping-cart"></i>
+                </li>
+
+                <li class="pc-item {{ request()->routeIs('admin.orders.*') ? 'active' : '' }}">
+                    <a href="#" class="pc-link">
+                        <span class="pc-micon"><i class="ph ph-receipt"></i></span>
+                        <span class="pc-mtext">Pesanan (Orders)</span>
+                    </a>
+                </li>
+
+                <li class="pc-item {{ request()->routeIs('admin.invitations.*') ? 'active' : '' }}">
+                    <a href="#" class="pc-link">
+                        <span class="pc-micon"><i class="ph ph-envelope-open"></i></span>
+                        <span class="pc-mtext">Data Undangan</span>
+                    </a>
+                </li>
+
+                <li class="pc-item {{ request()->routeIs('admin.users.*') ? 'active' : '' }}">
+                    <a href="#" class="pc-link">
+                        <span class="pc-micon"><i class="ph ph-users"></i></span>
+                        <span class="pc-mtext">Data Pengguna</span>
+                    </a>
+                </li>
+
+                <li class="pc-item pc-caption">
+                    <label>Sistem</label>
+                    <i class="ph ph-gear"></i>
+                </li>
+                
+                <li class="pc-item">
+                    <form method="POST" action="{{ route('logout') }}" id="logout-form">
+                        @csrf
+                        <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" class="pc-link text-danger">
+                            <span class="pc-micon"><i class="ph ph-sign-out text-danger"></i></span>
+                            <span class="pc-mtext">Keluar</span>
+                        </a>
+                    </form>
+                </li>
+
+            </ul>
+        </div>
+    </div>
+</nav>

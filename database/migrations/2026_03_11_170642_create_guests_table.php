@@ -16,6 +16,8 @@ return new class extends Migration
             $table->string('slug_name'); // URL unik tamu
             $table->string('qr_code')->nullable();
             $table->boolean('is_present')->default(false);
+            $table->boolean('is_blasted')->default(false);
+            $table->timestamp('blasted_at')->nullable();
             $table->timestamps();
         });
     }

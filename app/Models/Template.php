@@ -9,21 +9,25 @@ class Template extends Model
 {
     use HasFactory;
 
-    protected $guarded = ['id'];
+    protected $fillable = [
+        'category_id',
+        'name',
+        'price',
+        'view_path',
+        'thumbnail',
+        'required_fields',
+        'is_active',
+    ];
 
-    // Kunci Dinamis: Otomatis ubah JSON di database menjadi Array saat dipanggil
+    // Konversi otomatis ke format JSON / Array dan Boolean
     protected $casts = [
         'required_fields' => 'array',
         'is_active' => 'boolean',
     ];
 
+    // Relasi: Template dimiliki oleh satu Kategori
     public function category()
     {
         return $this->belongsTo(Category::class);
-    }
-
-    public function invitations()
-    {
-        return $this->hasMany(Invitation::class);
     }
 }

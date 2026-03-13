@@ -1,7 +1,8 @@
 <header class="pc-header">
-    <div class="m-header">
-        <a href="{{ route('admin.dashboard') }}" class="b-brand text-primary">
-            <img src="{{ asset('adm/assets/images/logo-white.svg') }}" alt="logo image" class="logo-lg" />
+    <div class="m-header d-flex justify-content-center align-items-center text-center me-auto">
+        <a href="{{ route('admin.dashboard') }}" class="b-brand">
+            <h4 class="text-white">RuangRestu</h4>
+            {{-- <img src="{{ asset('adm/assets/images/logo-white.svg') }}" alt="logo image" class="logo-lg" /> --}}
         </a>
     </div>
     <div class="header-wrapper"> <div class="me-auto pc-mob-drp">

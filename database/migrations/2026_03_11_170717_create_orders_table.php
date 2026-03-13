@@ -16,6 +16,10 @@ return new class extends Migration
             $table->bigInteger('amount');
             $table->string('snap_token')->nullable();
             $table->enum('status', ['pending', 'success', 'failed', 'expired'])->default('pending');
+            $table->foreignId('package_id')
+                  ->nullable()
+                  ->constrained('packages')
+                  ->onDelete('set null'); // Jika paket dihapus, order tidak ikut terhapus
             $table->timestamps();
         });
     }

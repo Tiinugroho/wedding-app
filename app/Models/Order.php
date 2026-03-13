@@ -25,4 +25,9 @@ class Order extends Model
     {
         return $this->hasOne(Payment::class);
     }
+    // Tambahkan relasi ini di dalam class Order
+    public function package()
+    {
+        return $this->belongsTo(Package::class);
+    }
 }
