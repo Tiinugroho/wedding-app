@@ -1,0 +1,87 @@
+:root {
+    --primary: #1c1917;
+    /* Stone 900 */
+    --accent: #d4d4d8;
+    /* Stone 300 */
+    --bg-light: #fafaf9;
+    /* Stone 50 */
+}
+
+.font-aesthetic {
+    font-family: 'Great Vibes', cursive;
+}
+
+.font-main {
+    font-family: 'Montserrat', sans-serif;
+}
+
+.font-serif-elegant {
+    font-family: 'Playfair Display', serif;
+}
+
+body {
+    scroll-behavior: smooth;
+}
+
+/* Custom Pattern Background */
+.bg-pattern {
+    background-color: var(--bg-light);
+    background-image: url("https://www.transparenttextures.com/patterns/natural-paper.png");
+}
+
+/* Glassmorphism */
+.glass-card {
+    background: rgba(255, 255, 255, 0.45);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+/* Float Animations */
+@keyframes softFloat {
+
+    0%,
+    100% {
+        transform: translateY(0) rotate(0deg);
+    }
+
+    50% {
+        transform: translateY(-20px) rotate(2deg);
+    }
+}
+
+.animate-float {
+    animation: softFloat 6s ease-in-out infinite;
+}
+
+.delay-1 {
+    animation-delay: 1s;
+}
+
+.delay-2 {
+    animation-delay: 2s;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 5px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bg-light);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--primary);
+    border-radius: 10px;
+}
+
+/* Modal Image Transition */
+#modalImg {
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+#modalImg.show {
+    transform: scale(1);
+    opacity: 1;
+}
