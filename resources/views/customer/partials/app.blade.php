@@ -1,116 +1,77 @@
-<!doctype html>
-<html lang="en">
-<!-- [Head] start -->
+<!DOCTYPE html>
+<html lang="id">
 
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RuangRestu | @yield('title')</title>
-    <!-- [Meta] -->
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="description"
-        content="Gradient Able is trending dashboard template made using Bootstrap 5 design framework. Gradient Able is available in Bootstrap, React, CodeIgniter, Angular,  and .net Technologies." />
-    <meta name="keywords"
-        content="Bootstrap admin template, Dashboard UI Kit, Dashboard Template, Backend Panel, react dashboard, angular dashboard" />
-    <meta name="author" content="codedthemes" />
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 
-    <!-- [Favicon] icon -->
-    <link rel="icon" href="{{ asset('adm/assets/images/favicon.svg') }}" type="image/x-icon" />
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
 
-    <!-- map-vector css -->
-    <link rel="stylesheet" href="{{ asset('adm/assets/css/plugins/jsvectormap.min.css') }}" />
-    <!-- [Google Font : Poppins] icon -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet" />
+        .glass-sidebar {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border-right: 1px solid #f1f5f9;
+        }
 
-    <!-- [Tabler Icons] https://tablericons.com -->
-    <link rel="stylesheet" href="{{ asset('adm/assets/fonts/tabler-icons.min.css') }}" />
-    <!-- [Feather Icons] https://feathericons.com -->
-    <link rel="stylesheet" href="{{ asset('adm/assets/fonts/feather.css') }}" />
-    <!-- [Font Awesome Icons] https://fontawesome.com/icons -->
-    <link rel="stylesheet" href="{{ asset('adm/assets/fonts/fontawesome.css') }}" />
-    <!-- [Material Icons] https://fonts.google.com/icons -->
-    <link rel="stylesheet" href="{{ asset('adm/assets/fonts/material.css') }}" />
-    <!-- [Template CSS Files] -->
-    <link rel="stylesheet" href="{{ asset('adm/assets/css/style.css') }}" id="main-style-link" />
-    <link rel="stylesheet" href="{{ asset('adm/assets/css/style-preset.css') }}" />
+        .nav-item.active {
+            background: linear-gradient(to right, #FF5A5A, #FF8B5A);
+            color: white;
+            box-shadow: 0 10px 20px -5px rgba(255, 90, 90, 0.3);
+        }
 
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #FFD45A;
+            border-radius: 10px;
+        }
+
+        .dashboard-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05);
+        }
+    </style>
     @stack('styles')
 </head>
-<!-- [Head] end -->
-<!-- [Body] Start -->
 
-<body data-pc-header="header-1" data-pc-preset="preset-1" data-pc-sidebar-theme="light" data-pc-sidebar-caption="true"
-    data-pc-direction="ltr" data-pc-theme="light">
-    <!-- [ Pre-loader ] start -->
-    <div class="loader-bg">
-        <div class="loader-track">
-            <div class="loader-fill"></div>
-        </div>
+<body class="bg-slate-50 min-h-screen text-slate-800">
+
+    <div class="w-full flex min-h-screen">
+
+        @include('customer.partials.sidebar')
+
+
+        <main class="flex-1 w-full p-6 md:p-10 lg:p-12 pb-32 lg:pb-12 h-screen overflow-y-auto overflow-x-hidden">
+
+            @yield('content')
+
+        </main>
+        
     </div>
-    <!-- [ Pre-loader ] End -->
+    {{-- @include('customer.partials.footer') --}}
 
-    <!-- [ Sidebar Menu ] start -->
-    @include('admin.partials.sidebar')
-    <!-- [ Sidebar Menu ] end -->
+    @include('customer.partials.mobile_nav')
 
-    <!-- [ Header Topbar ] start -->
-    @include('admin.partials.header')
-    <!-- [ Header ] end -->
-
-    <!-- [ Main Content ] start -->
-    @yield('content')
-    <!-- [ Main Content ] end -->
-
-    @include('admin.partials.footer')
-
-    <!-- [Page Specific JS] start -->
-    <script src="{{ asset('adm/assets/js/plugins/apexcharts.min.js') }}"></script>
-    <script src="{{ asset('adm/assets/js/plugins/jsvectormap.min.js') }}"></script>
-    <script src="{{ asset('adm/assets/js/plugins/world.js') }}"></script>
-    <script src="{{ asset('adm/assets/js/plugins/world-merc.js') }}"></script>
-    <script src="{{ asset('adm/assets/js/pages/dashboard-sales.js') }}"></script>
-    <!-- [Page Specific JS] end -->
-    <!-- Required Js -->
-    <script src="{{ asset('adm/assets/js/plugins/popper.min.js') }}"></script>
-    <script src="{{ asset('adm/assets/js/plugins/simplebar.min.js') }}"></script>
-    <script src="{{ asset('adm/assets/js/plugins/bootstrap.min.js') }}"></script>
-    <script src="{{ asset('adm/assets/js/fonts/custom-font.js') }}"></script>
-    <script src="{{ asset('adm/assets/js/script.js') }}"></script>
-    <script src="{{ asset('adm/assets/js/theme.js') }}"></script>
-    <script src="{{ asset('adm/assets/js/plugins/feather.min.js') }}"></script>
-
-
-    <script>
-        layout_change('light');
-    </script>
-
-    <script>
-        layout_sidebar_change('light');
-    </script>
-
-    <script>
-        change_box_container('false');
-    </script>
-
-    <script>
-        layout_caption_change('true');
-    </script>
-
-    <script>
-        layout_rtl_change('false');
-    </script>
-
-    <script>
-        preset_change('preset-1');
-    </script>
-
-    <script>
-        header_change('header-1');
-    </script>
 
     @stack('scripts')
 
 </body>
-<!-- [Body] end -->
 
 </html>

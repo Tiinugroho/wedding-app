@@ -51,11 +51,11 @@
                         </div>
                         <div class="card-body">
 
-                            <form id="send-verification" method="post" action="{{ route('verification.send') }}">
+                            <form id="send-verification" method="post" action="{{ route('admin.verification.send') }}">
                                 @csrf
                             </form>
 
-                            <form method="post" action="{{ route('profile.update') }}" enctype="multipart/form-data">
+                            <form method="post" action="{{ route('admin.profile.update') }}" enctype="multipart/form-data">
                                 @csrf
                                 @method('patch')
 
@@ -142,7 +142,7 @@
                                 secure.</p>
                         </div>
                         <div class="card-body">
-                            <form method="post" action="{{ route('password.update') }}">
+                            <form method="post" action="{{ route('admin.password.update') }}">
                                 @csrf
                                 @method('put')
 
@@ -219,7 +219,7 @@
         aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
-                <form method="post" action="{{ route('profile.destroy') }}">
+                <form method="post" action="{{ route('admin.profile.destroy') }}">
                     @csrf
                     @method('delete')
 

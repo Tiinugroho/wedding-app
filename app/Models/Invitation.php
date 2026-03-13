@@ -30,7 +30,7 @@ class Invitation extends Model
     }
 
     // Relasi ke Detail Konten (One-to-One)
-    public function detail()
+    public function details()
     {
         return $this->hasOne(InvitationDetail::class);
     }

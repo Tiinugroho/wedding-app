@@ -18,7 +18,10 @@ class ProfileController extends Controller
      */
     public function edit(Request $request): View
     {
-        return view('profile.edit', [
+        // Cek role user yang login
+        $viewPath = $request->user()->role === 'admin' ? 'admin.profile.edit' : 'customer.profile.edit';
+
+        return view($viewPath, [
             'user' => $request->user(),
         ]);
     }
@@ -26,10 +29,13 @@ class ProfileController extends Controller
     /**
      * Update the user's profile information.
      */
+    /**
+     * Update the user's profile information.
+     */
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
         $user = $request->user();
-        
+
         // 1. Update data standar dari form
         $user->fill($request->validated());
 
@@ -39,31 +45,29 @@ class ProfileController extends Controller
 
         // 2. Logika Menangani Crop Avatar Base64
         if ($request->filled('avatar_base64')) {
-            // Hapus gambar lama jika ada (dan bukan gambar dari URL Google)
             if ($user->avatar && !filter_var($user->avatar, FILTER_VALIDATE_URL)) {
                 Storage::disk('public')->delete($user->avatar);
             }
 
-            // Dekode Base64 menjadi file
             $base64Image = $request->avatar_base64;
-            $imageParts = explode(";base64,", $base64Image);
-            $imageTypeAux = explode("image/", $imageParts[0]);
-            $imageType = $imageTypeAux[1]; // misal: jpeg
+            $imageParts = explode(';base64,', $base64Image);
+            $imageTypeAux = explode('image/', $imageParts[0]);
+            $imageType = $imageTypeAux[1]; 
             $imageBase64 = base64_decode($imageParts[1]);
 
-            // Buat nama file unik dan path penyimpanannya
             $fileName = 'avatars/' . Str::random(20) . '.' . $imageType;
-            
-            // Simpan ke storage/app/public/avatars/
             Storage::disk('public')->put($fileName, $imageBase64);
-
-            // Simpan nama path ke database
             $user->avatar = $fileName;
         }
 
         $user->save();
 
-        return Redirect::route('profile.edit')->with('status', 'profile-updated');
+        // ==============================================================
+        // PERBAIKAN REDIRECT BERDASARKAN ROLE
+        // ==============================================================
+        $routeName = $user->role === 'admin' ? 'admin.profile.edit' : 'customer.profile.edit';
+
+        return Redirect::route($routeName)->with('status', 'profile-updated');
     }
 
     /**

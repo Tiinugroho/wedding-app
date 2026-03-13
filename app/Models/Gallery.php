@@ -9,7 +9,7 @@ class Gallery extends Model
 {
     use HasFactory;
 
-    protected $guarded = ['id'];
+    protected $fillable = ['invitation_id', 'file_path', 'type'];
 
     public function invitation()
     {

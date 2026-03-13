@@ -38,34 +38,57 @@ class DatabaseSeeder extends Seeder
         $catMinimalist = Category::create(['name' => 'Minimalist', 'slug' => 'minimalist']);
 
         // =========================================================
-        // 3. SEEDER MUSIK LATAR (Ditambah Kolom Kategori)
+        // 3. SEEDER MUSIK LATAR (Disesuaikan dengan opsi Dropdown)
         // =========================================================
+        
+        Music::create([
+            'title' => 'Janji Suci - Yovie & Nuno', 
+            'category' => 'Musik Indonesia',
+        ]);
+
+        Music::create([
+            'title' => 'Gamelan Jawa Wedding (Panggih)', 
+            'category' => 'Musik Traditional',
+        ]);
+
+        Music::create([
+            'title' => 'Kiroro - Mirai e', 
+            'category' => 'Musik Jepang',
+        ]);
+
+        Music::create([
+            'title' => 'Canon in D - Pachelbel (Piano)', 
+            'category' => 'Musik Instrumental',
+        ]);
+
+        Music::create([
+            'title' => 'Barakallah - Maher Zain', 
+            'category' => 'Musik Islami',
+        ]);
+
         Music::create([
             'title' => 'A Thousand Years - Christina Perri', 
-            'category' => 'Romantis', // <-- Perbaikan: Tambah Kategori
-            'file_path' => 'musics/a-thousand-years.mp3'
+            'category' => 'Musik Barat',
         ]);
         
         Music::create([
             'title' => 'Beautiful In White - Westlife', 
-            'category' => 'Romantis', // <-- Perbaikan: Tambah Kategori
-            'file_path' => 'musics/beautiful-in-white.mp3'
+            'category' => 'Musik Barat',
         ]);
 
         Music::create([
-            'title' => 'Janji Suci - Yovie & Nuno', 
-            'category' => 'Pop', // <-- Contoh tambahan kategori berbeda
-            'file_path' => 'musics/janji-suci.mp3'
+            'title' => 'Marry You - Bruno Mars', 
+            'category' => 'Musik Celebration',
         ]);
 
         // =========================================================
-        // 4. SEEDER TEMPLATE DINAMIS (Menggunakan Kode Tema 'wed-X')
+        // 4. SEEDER TEMPLATE DINAMIS
         // =========================================================
         Template::create([
             'category_id' => $catModern->id,
             'name' => 'Luxury Gold',
             'price' => 0, 
-            'view_path' => 'wed-1', // <-- Perbaikan: Gunakan Kode Tema
+            'view_path' => 'wed-1', 
             'thumbnail' => 'thumbnails/luxury-gold.jpg',
             'is_active' => true,
             'required_fields' => [
@@ -79,7 +102,7 @@ class DatabaseSeeder extends Seeder
             'category_id' => $catMinimalist->id,
             'name' => 'Clean White',
             'price' => 0,
-            'view_path' => 'wed-2', // <-- Perbaikan: Gunakan Kode Tema
+            'view_path' => 'wed-2', 
             'thumbnail' => 'thumbnails/clean-white.jpg',
             'is_active' => true,
             'required_fields' => [
@@ -90,33 +113,25 @@ class DatabaseSeeder extends Seeder
         ]);
 
         // =========================================================
-        // 5. SEEDER PAKET HARGA (Format Array Murni)
+        // 5. SEEDER PAKET HARGA (Dengan Logika Fitur)
         // =========================================================
         
         // --- PAKET 1: BASIC ---
         Package::create([
             'name' => 'BASIC',
             'price' => 49000, 
-            'description' => 'Paket hemat untuk kebutuhan undangan digital yang simpel dan elegan.',
+            'description' => 'Paket hemat untuk kebutuhan undangan digital yang simpel.',
             'features' => [
-                'included' => [
-                    'Masa Aktif 1 Bulan',
-                    'Share dan Buku Tamu Unlimited',
-                    'Bebas Memilih Tema (50+ Pilihan)',
-                    'Bebas Memilih Musik (250+ Pilihan)',
-                    'Countdown Acara',
-                    'Google Map Lokasi Acara',
-                    'Galeri 5 Foto',
-                    'Bisa Input 2 Jenis Acara di 1 Undangan',
+                'display' => [
+                    'included' => ['Masa Aktif 1 Bulan', 'Galeri 5 Foto', 'Bisa Input 2 Acara'],
+                    'excluded' => ['Fitur Love Story', 'Kado Digital / Amplop', 'Video Galeri']
                 ],
-                'excluded' => [
-                    'Auto Blast Smart Whatsapp',
-                    'Buku Tamu Dengan QR Code',
-                    'Fitur Kirim Amplop Untuk Mempelai',
-                    'Fitur Love Story Mempelai',
-                    'Voice Comment untuk Tamu',
-                    'Custom Nama Domain Sendiri (.com/.id)',
-                    'Tanpa Watermark RuangRestu'
+                'logic' => [
+                    'event_limit' => 2,
+                    'gallery_limit' => 5,
+                    'has_love_story' => false,
+                    'has_digital_gift' => false,
+                    'has_video' => false
                 ]
             ],
         ]);
@@ -126,32 +141,19 @@ class DatabaseSeeder extends Seeder
             'name' => 'PLATINUM',
             'price' => 76000,          
             'original_price' => 149999, 
-            'description' => 'Paket terpopuler dengan fitur interaktif lengkap untuk para tamu.',
+            'description' => 'Paket terpopuler dengan fitur interaktif lengkap untuk tamu.',
             'features' => [
-                'included' => [
-                    'Masa Aktif 3 Bulan',
-                    'Share dan Buku Tamu Unlimited',
-                    'Auto Blast Smart Whatsapp 200 Tamu',
-                    'Bebas Memilih Tema (50+ Pilihan)',
-                    'Bebas Memilih Musik (250+ Pilihan)',
-                    'Bebas Custom Font Tema',
-                    'Autoplay Musik',
-                    'Countdown Acara',
-                    'Buku Tamu Dengan QR Code',
-                    'Google Map Lokasi Acara',
-                    'Bebas Custom Quotes di Undangan',
-                    'Bisa Input Link Streaming Youtube, Instagram & Tiktok',
-                    'Custom Preview Whatsapp Saat Share Undangan',
-                    'Fitur love story mempelai',
-                    'Galeri 9 Foto',
-                    'Fitur Kirim Amplop Untuk Mempelai',
-                    'Bisa Input 3 Jenis Acara di 1 Undangan',
-                    'Voice Comment untuk Tamu'
+                'display' => [
+                    'included' => ['Masa Aktif 3 Bulan', 'Galeri 9 Foto', 'Fitur Love Story', 'Kado Digital / Amplop'],
+                    'excluded' => ['Video Galeri']
                 ],
-                'excluded' => [
-                    'Custom Nama Domain Sendiri (.com/.id)',
-                    'Tanpa Watermark RuangRestu'
-                ] 
+                'logic' => [
+                    'event_limit' => 3,
+                    'gallery_limit' => 9,
+                    'has_love_story' => true,
+                    'has_digital_gift' => true,
+                    'has_video' => false
+                ]
             ],
         ]);
 
@@ -161,29 +163,17 @@ class DatabaseSeeder extends Seeder
             'price' => 149000, 
             'description' => 'Masa aktif tanpa batas dengan prioritas layanan khusus.',
             'features' => [
-                'included' => [
-                    'Masa Aktif Selamanya (Unlimited)',
-                    'Share dan Buku Tamu Unlimited',
-                    'Auto Blast Smart Whatsapp 1000 Tamu',
-                    'Bebas Memilih Tema (50+ Pilihan)',
-                    'Bebas Memilih Musik (250+ Pilihan)',
-                    'Bebas Custom Font Tema',
-                    'Autoplay Musik',
-                    'Countdown Acara',
-                    'Buku Tamu Dengan QR Code',
-                    'Google Map Lokasi Acara',
-                    'Bebas Custom Quotes di Undangan',
-                    'Bisa Input Link Streaming Youtube, Instagram & Tiktok',
-                    'Custom Preview Whatsapp Saat Share Undangan',
-                    'Fitur love story mempelai',
-                    'Galeri 20 Foto & 2 Video',
-                    'Fitur Kirim Amplop Untuk Mempelai',
-                    'Bisa Input 5 Jenis Acara di 1 Undangan',
-                    'Voice Comment untuk Tamu',
-                    'Custom Nama Domain Sendiri (.com/.id)',
-                    'Tanpa Watermark RuangRestu'
+                'display' => [
+                    'included' => ['Masa Aktif Selamanya', 'Galeri 20 Foto & 2 Video', 'Semua Fitur Terbuka'],
+                    'excluded' => []
                 ],
-                'excluded' => []
+                'logic' => [
+                    'event_limit' => 5,
+                    'gallery_limit' => 20,
+                    'has_love_story' => true,
+                    'has_digital_gift' => true,
+                    'has_video' => true
+                ]
             ],
         ]);
     }
