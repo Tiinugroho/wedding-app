@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Wedding of Rama & Shinta</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Montserrat:wght@300;400;600&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        /* CSS Animasi Amplop */
+        .rotate-x-180 {
+            transform: rotateX(180deg);
+        }
+        /* Custom Fonts */
+        .font-main { font-family: 'Montserrat', sans-serif; }
+        .font-aesthetic { font-family: 'Great Vibes', cursive; }
+        .font-serif-elegant { font-family: 'Playfair Display', serif; }
+        html { scroll-behavior: smooth; }
+        
+        /* Animasi Kustom Floating */
+        @keyframes float-slow {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-20px) scale(1.05); }
+        }
+        .animate-float-slow { animation: float-slow 6s ease-in-out infinite; }
+        .delay-1 { animation-delay: 2s; }
+    </style>
+</head>
+<body id="body-main" class="font-main bg-rose-50 text-rose-950 antialiased overflow-hidden h-screen selection:bg-rose-200 selection:text-rose-900">
+
+    <div id="envelope-wrapper" class="fixed inset-0 z-[200] flex items-center justify-center bg-rose-100 transition-all duration-[1500ms] ease-in-out">
+        
+        <div class="absolute inset-0 bg-gradient-to-br from-rose-200/40 to-pink-100/40 max-w-2xl mx-auto h-[80vh] top-[10vh] rounded-xl shadow-[0_20px_50px_rgba(225,29,72,0.1)]"></div>
+
+        <div id="envelope-flap" class="absolute top-0 left-0 w-full h-1/2 bg-rose-300 origin-top transition-transform duration-1000 ease-in-out z-30 drop-shadow-md border-b border-rose-200/50" style="clip-path: polygon(0 0, 100% 0, 50% 100%);"></div>
+        
+        <div class="absolute bottom-0 left-0 w-full h-full bg-rose-200 z-10 drop-shadow-2xl border-t border-rose-100/50" style="clip-path: polygon(0 100%, 100% 100%, 100% 35%, 50% 65%, 0 35%);"></div>
+
+        <div id="envelope-letter" class="relative z-20 bg-white/95 backdrop-blur-md p-10 md:p-14 rounded-t-2xl shadow-[0_10px_40px_rgba(244,63,94,0.15)] max-w-md w-[85%] text-center transition-all duration-1000 ease-in-out transform translate-y-16 border border-rose-100">
+            <div class="space-y-4">
+                <p class="uppercase tracking-[0.4em] text-[10px] sm:text-xs text-rose-400 font-semibold">The Wedding Of</p>
+                <h1 class="font-aesthetic text-5xl sm:text-6xl text-rose-800">Rama & Shinta</h1>
+            </div>
+
+            <div class="my-8">
+                <p class="font-serif-elegant italic text-sm text-rose-500 mb-2">Kepada Yth. Bapak/Ibu/Saudara/i</p>
+                <h3 class="font-serif-elegant text-xl font-semibold text-rose-900 border-b border-rose-300 inline-block pb-1 px-4">Tamu Undangan</h3>
+            </div>
+
+            <button onclick="bukaUndangan()" class="mt-4 px-8 py-3 bg-rose-700 text-white rounded-full text-[10px] tracking-widest uppercase hover:bg-rose-800 transition-all duration-300 shadow-xl shadow-rose-700/30 group">
+                Buka Undangan 
+                <span class="inline-block transition-transform group-hover:translate-y-1 ml-2">↓</span>
+            </button>
+        </div>
+    </div>
+    <section class="relative h-screen flex items-center justify-center text-center p-6 bg-cover bg-center overflow-hidden" 
+             style="background-image: url('https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&q=80&w=2070');">
+        
+        <div class="absolute inset-0 bg-rose-950/50 mix-blend-multiply z-0"></div>
+        
+        <div class="absolute top-10 left-10 w-48 h-48 bg-rose-400/30 rounded-full blur-[80px] animate-float-slow z-0"></div>
+        <div class="absolute bottom-20 right-10 w-64 h-64 bg-amber-200/20 rounded-full blur-[100px] animate-float-slow delay-1 z-0"></div>
+
+        <div class="relative z-10 text-white space-y-8" data-aos="zoom-out" data-aos-duration="2000">
+            <div class="space-y-2">
+                <p class="uppercase tracking-[0.4em] text-[10px] sm:text-xs text-rose-200 font-medium">The Wedding of</p>
+                <h1 class="font-aesthetic text-7xl sm:text-9xl text-white drop-shadow-[0_4px_8px_rgba(225,29,72,0.3)]">Rama & Shinta</h1>
+            </div>
+
+            <div class="space-y-4">
+                <div class="h-[1px] w-24 bg-rose-300/50 mx-auto"></div>
+                <h3 id="guest-name" class="font-serif-elegant text-2xl md:text-3xl italic font-light tracking-wide text-rose-50">
+                    Tamu Undangan
+                </h3>
+                <div class="h-[1px] w-24 bg-rose-300/50 mx-auto"></div>
+            </div>
+
+            <p class="text-sm sm:text-base tracking-[0.2em] uppercase text-rose-100">Sabtu, 17 Agustus 2026</p>
+
+            <div class="mt-12">
+                <a href="#mempelai" class="inline-block px-8 py-3 bg-white/10 border border-rose-200/50 rounded-full text-xs tracking-widest uppercase text-white hover:bg-white hover:text-rose-900 transition-all duration-500 backdrop-blur-sm">
+                    Lihat Detail
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <div id="mempelai"></div>
+    <section class="py-20 md:py-32 px-6 overflow-hidden bg-rose-50">
+        <div class="max-w-6xl mx-auto space-y-24">
+            <div class="text-center" data-aos="fade-up">
+                <h2 class="font-aesthetic text-6xl text-rose-800 mb-6">Assalamu’alaikum Wr. Wb.</h2>
+                <p class="max-w-xl mx-auto text-rose-950/70 leading-relaxed font-serif-elegant text-lg">
+                    Dengan memohon rahmat Allah SWT, kami mengundang Anda untuk merayakan ikatan suci pernikahan kami.
+                </p>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-20 items-center">
+                <div class="text-center group" data-aos="fade-right">
+                    <div class="relative w-64 h-80 mx-auto mb-8">
+                        <div class="absolute inset-0 border-2 border-rose-300 translate-x-4 translate-y-4 rounded-t-full transition-transform duration-500 group-hover:translate-x-2 group-hover:translate-y-2"></div>
+                        <img src="https://images.soco.id/230-58.jpg.jpeg" 
+                             class="w-full h-full object-cover rounded-t-full shadow-lg relative z-10" alt="Rama">
+                    </div>
+                    <h3 class="font-aesthetic text-6xl text-rose-800 mb-2">Rama</h3>
+                    <p class="font-serif-elegant text-xl font-bold tracking-widest text-rose-950">Rama Raditya Putra</p>
+                    <p class="text-rose-600/80 text-sm mt-4 italic">Putra Pertama dari <br> Bpk. Nama Ayah & Ibu Nama Ibu</p>
+                    <div class="mt-6 flex justify-center gap-4">
+                        <a href="#" class="text-rose-400 hover:text-rose-700 transition-colors text-xs uppercase tracking-widest">Instagram</a>
+                    </div>
+                </div>
+
+                <div class="text-center group" data-aos="fade-left">
+                    <div class="relative w-64 h-80 mx-auto mb-8">
+                        <div class="absolute inset-0 border-2 border-rose-300 -translate-x-4 translate-y-4 rounded-t-full transition-transform duration-500 group-hover:-translate-x-2 group-hover:translate-y-2"></div>
+                        <img src="https://images.pexels.com/photos/157757/wedding-dresses-fashion-character-bride-157757.jpeg?cs=srgb&dl=pexels-pixabay-157757.jpg&fm=jpg" 
+                             class="w-full h-full object-cover rounded-t-full shadow-lg relative z-10" alt="Shinta">
+                    </div>
+                    <h3 class="font-aesthetic text-6xl text-rose-800 mb-2">Shinta</h3>
+                    <p class="font-serif-elegant text-xl font-bold tracking-widest text-rose-950">Shinta Amelia Putri</p>
+                    <p class="text-rose-600/80 text-sm mt-4 italic">Putri Kedua dari <br> Bpk. Nama Ayah & Ibu Nama Ibu</p>
+                    <div class="mt-6 flex justify-center gap-4">
+                        <a href="#" class="text-rose-400 hover:text-rose-700 transition-colors text-xs uppercase tracking-widest">Instagram</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-20 md:py-32 px-6 bg-white overflow-hidden relative" data-aos="fade-up">
+        <div class="max-w-4xl mx-auto relative z-10">
+            <div class="text-center mb-16">
+                <p class="uppercase tracking-[0.3em] text-[10px] text-rose-400 mb-4 font-bold">Hormat Kami</p>
+                <h2 class="font-aesthetic text-6xl text-rose-800 mb-4">Turut Mengundang</h2>
+                <div class="h-[1px] w-20 bg-rose-200 mx-auto"></div>
+                <p class="mt-6 text-rose-600 font-serif-elegant italic text-sm md:text-base">Keluarga Besar & Kerabat</p>
+            </div>
+
+            <div class="bg-rose-50/50 p-10 md:p-16 rounded-[3rem] border border-rose-100 shadow-[0_8px_30px_rgb(0,0,0,0.02)] relative overflow-hidden">
+                <div class="absolute -top-10 -right-10 w-32 h-32 bg-rose-200/50 rounded-full blur-3xl"></div>
+                <div class="absolute -bottom-10 -left-10 w-32 h-32 bg-pink-200/40 rounded-full blur-3xl"></div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-16 gap-y-12 relative z-10">
+                    
+                    <div class="space-y-6" data-aos="fade-right" data-aos-delay="200">
+                        <div class="flex items-center gap-4 border-b border-rose-200 pb-3">
+                            <span class="text-[10px] font-bold uppercase tracking-widest text-rose-800">Keluarga Pria</span>
+                            <div class="h-[1px] flex-grow bg-rose-200/50"></div>
+                        </div>
+                        <ul class="text-rose-700 space-y-3 text-sm md:text-base font-serif-elegant leading-relaxed">
+                            <li>Keluarga Besar Bpk. (Nama Kakek)</li>
+                            <li>Keluarga Besar Ibu (Nama Nenek)</li>
+                            <li>(Nama Paman / Bibi)</li>
+                            <li>(Nama Kakak / Adik)</li>
+                        </ul>
+                    </div>
+
+                    <div class="space-y-6" data-aos="fade-left" data-aos-delay="400">
+                        <div class="flex items-center gap-4 border-b border-rose-200 pb-3">
+                            <span class="text-[10px] font-bold uppercase tracking-widest text-rose-800">Keluarga Wanita</span>
+                            <div class="h-[1px] flex-grow bg-rose-200/50"></div>
+                        </div>
+                        <ul class="text-rose-700 space-y-3 text-sm md:text-base font-serif-elegant leading-relaxed">
+                            <li>Keluarga Besar Bpk. (Nama Kakek)</li>
+                            <li>Keluarga Besar Ibu (Nama Nenek)</li>
+                            <li>(Nama Paman / Bibi)</li>
+                            <li>(Nama Kakak / Adik)</li>
+                        </ul>
+                    </div>
+
+                    <div class="md:col-span-2 pt-8 text-center border-t border-rose-100" data-aos="zoom-in">
+                        <p class="font-serif-elegant italic text-rose-400 text-xs md:text-sm leading-relaxed max-w-lg mx-auto">
+                            "Serta seluruh keluarga besar, kerabat, dan rekan sejawat yang tidak dapat kami sebutkan satu per satu tanpa mengurangi rasa hormat kami."
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-24 bg-rose-950 text-rose-50 relative overflow-hidden">
+        <div class="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-rose-900 to-transparent opacity-50"></div>
+        
+        <div class="max-w-5xl mx-auto px-6 relative z-10">
+            <div class="text-center mb-20" data-aos="fade-down">
+                <h2 class="font-aesthetic text-7xl text-rose-100 drop-shadow-md">The Ceremony</h2>
+                <p class="font-serif-elegant tracking-widest text-xs uppercase mt-4 text-rose-300">Waktu & Tempat Pelaksanaan</p>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="bg-rose-900/40 backdrop-blur-md p-12 rounded-[3rem] text-center space-y-6 flex flex-col items-center border border-rose-800/50 shadow-xl" data-aos="fade-up">
+                    <div class="w-12 h-12 border border-rose-400/50 rounded-full flex items-center justify-center mx-auto text-rose-300 italic">01</div>
+                    <h3 class="font-aesthetic text-5xl text-rose-100">Akad Nikah</h3>
+                    <div class="space-y-2">
+                        <p class="font-bold text-white tracking-widest text-xs">SENIN, 17 AGUSTUS 2026</p>
+                        <p class="text-rose-200">08.00 - 10.00 WIB</p>
+                    </div>
+                    <p class="text-sm leading-relaxed text-rose-300">Masjid Raya Pekanbaru <br> Jl. Senapelan No. 128, Riau</p>
+                    
+                    <div class="flex flex-col space-y-4 pt-4">
+                        <a href="#" target="_blank" class="inline-block border-b border-rose-400/50 text-[10px] tracking-widest hover:text-white transition uppercase text-rose-200">Google Maps</a>
+                        
+                        <a href="#" target="_blank" class="flex items-center justify-center px-6 py-2 bg-rose-800/50 border border-rose-700 rounded-full text-[10px] tracking-[0.2em] uppercase hover:bg-rose-700 hover:text-white transition duration-500">
+                            <svg class="w-3 h-3 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                            Simpan Jadwal
+                        </a>
+                    </div>
+                </div>
+
+                <div class="bg-rose-900/40 backdrop-blur-md p-12 rounded-[3rem] text-center space-y-6 flex flex-col items-center border border-rose-800/50 shadow-xl" data-aos="fade-up" data-aos-delay="200">
+                    <div class="w-12 h-12 border border-rose-400/50 rounded-full flex items-center justify-center mx-auto text-rose-300 italic">02</div>
+                    <h3 class="font-aesthetic text-5xl text-rose-100">Resepsi</h3>
+                    <div class="space-y-2">
+                        <p class="font-bold text-white tracking-widest text-xs">SENIN, 17 AGUSTUS 2026</p>
+                        <p class="text-rose-200">11.00 - 16.00 WIB</p>
+                    </div>
+                    <p class="text-sm leading-relaxed text-rose-300">Grand Ballroom Hotel <br> Pekanbaru, Riau</p>
+                    
+                    <div class="flex flex-col space-y-4 pt-4">
+                        <a href="#" target="_blank" class="inline-block border-b border-rose-400/50 text-[10px] tracking-widest hover:text-white transition uppercase text-rose-200">Google Maps</a>
+                        
+                        <a href="#" target="_blank" class="flex items-center justify-center px-6 py-2 bg-rose-800/50 border border-rose-700 rounded-full text-[10px] tracking-[0.2em] uppercase hover:bg-rose-700 hover:text-white transition duration-500">
+                            <svg class="w-3 h-3 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                            Simpan Jadwal
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-24 px-6 bg-rose-50 overflow-hidden">
+        <div class="max-w-7xl mx-auto space-y-16">
+            <div class="text-center" data-aos="fade-up">
+                <h2 class="font-aesthetic text-6xl text-rose-800 mb-4">Our Moments</h2>
+                <p class="text-rose-400 font-serif-elegant italic">Cerita indah dalam bingkai</p>
+            </div>
+
+            <div class="columns-2 md:columns-4 gap-4 space-y-4">
+                <img src="https://images.unsplash.com/photo-1511795409834-ef04bbd61622?auto=format&fit=crop&q=80" 
+                    onclick="openModal(0)" class="w-full rounded-2xl shadow-md cursor-pointer hover:brightness-110 transition duration-500 border-2 border-white" data-aos="zoom-in">
+                
+                <img src="https://images.unsplash.com/photo-1583939003579-730e3918a45a?auto=format&fit=crop&q=80" 
+                    onclick="openModal(1)" class="w-full rounded-2xl shadow-md cursor-pointer hover:brightness-110 transition duration-500 border-2 border-white" data-aos="zoom-in">
+                
+                <img src="https://images.unsplash.com/photo-1519225421980-715cb0215aed?auto=format&fit=crop&q=80" 
+                    onclick="openModal(2)" class="w-full rounded-2xl shadow-md cursor-pointer hover:brightness-110 transition duration-500 border-2 border-white" data-aos="zoom-in">
+                
+                <img src="https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&q=80" 
+                    onclick="openModal(3)" class="w-full rounded-2xl shadow-md cursor-pointer hover:brightness-110 transition duration-500 border-2 border-white" data-aos="zoom-in">
+            </div>
+        </div>
+    </section>
+
+    <section id="story-section" class="relative py-24 md:py-32 px-4 md:px-6 bg-cover bg-fixed bg-center overflow-hidden" 
+             style="background-image: url('https://images.unsplash.com/photo-1519225421980-715cb0215aed?auto=format&fit=crop&q=80');">
+        
+        <div class="absolute inset-0 bg-rose-950/80 backdrop-blur-[2px]"></div>
+
+        <div class="relative z-10 max-w-5xl mx-auto">
+            <div class="text-center mb-16 md:mb-24" data-aos="fade-up">
+                <h2 class="font-aesthetic text-5xl md:text-7xl text-rose-100 mb-4">Our Love Story</h2>
+                <div class="h-[1px] w-20 bg-rose-300/50 mx-auto"></div>
+                <p class="mt-4 text-rose-200 font-serif-elegant italic text-sm md:text-base">Sebuah perjalanan yang kami syukuri</p>
+            </div>
+
+            <div class="relative">
+                <div class="absolute left-4 md:left-1/2 transform md:-translate-x-1/2 h-full w-[1px] bg-gradient-to-b from-transparent via-rose-300/50 to-transparent"></div>
+
+                <div class="space-y-16 md:space-y-32">
+                    
+                    <div class="relative flex flex-col md:flex-row items-start md:items-center justify-between" data-aos="fade-up">
+                        <div class="hidden md:block w-5/12 text-right">
+                            <div class="p-6 bg-white/10 backdrop-blur-md rounded-[2rem] border border-rose-200/20 shadow-lg">
+                                <span class="text-[10px] uppercase tracking-widest text-rose-300">Januari 2021</span>
+                                <h4 class="font-aesthetic text-4xl text-white mt-1 mb-3">The First Meet</h4>
+                                <p class="text-rose-100 text-sm font-serif-elegant leading-relaxed">Takdir mempertemukan kami di sebuah ruang diskusi kreatif. Berawal dari bertukar ide, kami menyadari ada frekuensi yang sama.</p>
+                            </div>
+                        </div>
+                        <div class="z-10 w-8 h-8 md:w-10 md:h-10 bg-rose-100 rounded-full flex items-center justify-center absolute left-0 md:left-1/2 transform md:-translate-x-1/2 shadow-[0_0_15px_rgba(255,228,230,0.5)] border-2 border-rose-300">
+                            <div class="w-2 h-2 bg-rose-600 rounded-full"></div>
+                        </div>
+                        <div class="w-full md:w-5/12 pl-12 md:pl-0">
+                            <div class="md:hidden mb-4 p-5 bg-white/10 backdrop-blur-md rounded-2xl border border-rose-200/20 shadow-lg">
+                                <span class="text-[10px] uppercase tracking-widest text-rose-300">Januari 2021</span>
+                                <h4 class="font-aesthetic text-3xl text-white mt-1 mb-2">The First Meet</h4>
+                                <p class="text-rose-100 text-sm font-serif-elegant">Takdir mempertemukan kami di sebuah ruang diskusi kreatif.</p>
+                            </div>
+                            <img src="https://images.unsplash.com/photo-1516062423079-7ca13cdc7f5a?auto=format&fit=crop&q=80" class="rounded-3xl border border-rose-300/30 w-full object-cover aspect-video md:aspect-auto shadow-lg shadow-rose-900/50">
+                        </div>
+                    </div>
+
+                    <div class="relative flex flex-col md:flex-row-reverse items-start md:items-center justify-between" data-aos="fade-up">
+                        <div class="hidden md:block w-5/12 text-left">
+                            <div class="p-6 bg-white/10 backdrop-blur-md rounded-[2rem] border border-rose-200/20 shadow-lg">
+                                <span class="text-[10px] uppercase tracking-widest text-rose-300">Maret 2023</span>
+                                <h4 class="font-aesthetic text-4xl text-white mt-1 mb-3">Walking Together</h4>
+                                <p class="text-rose-100 text-sm font-serif-elegant leading-relaxed">Kami memutuskan untuk melangkah bersama. Menjadikan satu sama lain rumah untuk pulang dan pelabuhan untuk setiap lelah.</p>
+                            </div>
+                        </div>
+                        <div class="z-10 w-8 h-8 md:w-10 md:h-10 bg-rose-100 rounded-full flex items-center justify-center absolute left-0 md:left-1/2 transform md:-translate-x-1/2 shadow-[0_0_15px_rgba(255,228,230,0.5)] border-2 border-rose-300">
+                            <div class="w-2 h-2 bg-rose-600 rounded-full"></div>
+                        </div>
+                        <div class="w-full md:w-5/12 pr-0 md:pr-0 pl-12 md:pl-0">
+                            <div class="md:hidden mb-4 p-5 bg-white/10 backdrop-blur-md rounded-2xl border border-rose-200/20 shadow-lg">
+                                <span class="text-[10px] uppercase tracking-widest text-rose-300">Maret 2023</span>
+                                <h4 class="font-aesthetic text-3xl text-white mt-1 mb-2">Walking Together</h4>
+                                <p class="text-rose-100 text-sm font-serif-elegant">Kami memutuskan untuk melangkah bersama dan berkomitmen.</p>
+                            </div>
+                            <img src="https://images.unsplash.com/photo-1519225421980-715cb0215aed?auto=format&fit=crop&q=80" class="rounded-3xl border border-rose-300/30 w-full object-cover aspect-video md:aspect-auto shadow-lg shadow-rose-900/50">
+                        </div>
+                    </div>
+
+                    <div id="moreStories" class="hidden space-y-16 md:space-y-32 pt-16 md:pt-32">
+                        <div class="relative flex flex-col md:flex-row items-start md:items-center justify-between" data-aos="fade-up">
+                            <div class="z-10 w-8 h-8 md:w-10 md:h-10 bg-rose-100 rounded-full flex items-center justify-center absolute left-0 md:left-1/2 transform md:-translate-x-1/2 shadow-[0_0_15px_rgba(255,228,230,0.5)] border-2 border-rose-300">
+                                <div class="w-2 h-2 bg-rose-600 rounded-full"></div>
+                            </div>
+                            <div class="w-full md:w-5/12 pl-12 md:pl-0 md:order-1 hidden md:block text-right">
+                                <div class="p-6 bg-white/10 backdrop-blur-md rounded-[2rem] border border-rose-200/20 shadow-lg">
+                                    <span class="text-[10px] uppercase tracking-widest text-rose-300">Oktober 2025</span>
+                                    <h4 class="font-aesthetic text-4xl text-white mt-1 mb-3">The Engagement</h4>
+                                    <p class="text-rose-100 text-sm font-serif-elegant">Di hadapan keluarga, kami mengikat janji untuk melangkah ke jenjang pernikahan.</p>
+                                </div>
+                            </div>
+                            <div class="w-full md:w-5/12 pl-12 md:pl-0 md:order-2">
+                                <div class="md:hidden mb-4 p-5 bg-white/10 backdrop-blur-md rounded-2xl border border-rose-200/20 shadow-lg">
+                                    <h4 class="font-aesthetic text-3xl text-white">The Engagement</h4>
+                                    <p class="text-rose-300 text-xs mt-1">Oktober 2025</p>
+                                </div>
+                                <img src="https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?auto=format&fit=crop&q=80" class="rounded-3xl border border-rose-300/30 w-full shadow-lg shadow-rose-900/50">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="relative z-20 text-center pt-10">
+                        <button onclick="toggleStory()" class="px-8 py-4 bg-rose-100 text-rose-900 rounded-full font-bold uppercase tracking-widest text-[10px] shadow-xl hover:bg-white transition duration-300 border border-rose-200">
+                            <span id="btnText">Buka Cerita Lengkap</span>
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-20 md:py-32 px-6 bg-white overflow-hidden">
+        <div class="max-w-5xl mx-auto">
+            <div class="grid md:grid-cols-2 gap-16 md:gap-8 relative">
+                
+                <div class="space-y-10" data-aos="fade-right">
+                    <div class="text-left">
+                        <h2 class="font-aesthetic text-6xl text-rose-800 mb-2">Health Protocol</h2>
+                        <p class="font-serif-elegant text-rose-500 italic text-sm">Demi kenyamanan bersama, mohon untuk tetap mengikuti protokol kesehatan:</p>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-6">
+                        <div class="text-center p-6 bg-rose-50 rounded-3xl border border-rose-100 shadow-sm hover:shadow-md transition">
+                            <div class="w-10 h-10 mx-auto mb-4 text-rose-600">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                            </div>
+                            <p class="text-[10px] font-bold uppercase tracking-widest text-rose-900">Gunakan Masker</p>
+                        </div>
+                        <div class="text-center p-6 bg-rose-50 rounded-3xl border border-rose-100 shadow-sm hover:shadow-md transition">
+                            <div class="w-10 h-10 mx-auto mb-4 text-rose-600">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            </div>
+                            <p class="text-[10px] font-bold uppercase tracking-widest text-rose-900">Physical Distancing</p>
+                        </div>
+                        <div class="text-center p-6 bg-rose-50 rounded-3xl border border-rose-100 shadow-sm hover:shadow-md transition">
+                            <div class="w-10 h-10 mx-auto mb-4 text-rose-600">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.628.283a2 2 0 01-1.186.127l-1.314-.328a2 2 0 00-1.186.127l-.628.283a6 6 0 00-3.86.517l-2.387.477a2 2 0 00-1.022.547V18a2 2 0 002 2h11a2 2 0 002-2v-2.572z"></path></svg>
+                            </div>
+                            <p class="text-[10px] font-bold uppercase tracking-widest text-rose-900">Cuci Tangan</p>
+                        </div>
+                        <div class="text-center p-6 bg-rose-50 rounded-3xl border border-rose-100 shadow-sm hover:shadow-md transition">
+                            <div class="w-10 h-10 mx-auto mb-4 text-rose-600">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            </div>
+                            <p class="text-[10px] font-bold uppercase tracking-widest text-rose-900">Hindari Kontak</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="space-y-10" data-aos="fade-left">
+                    <div class="text-left">
+                        <h2 class="font-aesthetic text-6xl text-rose-800 mb-2">Guest Info</h2>
+                        <p class="font-serif-elegant text-rose-500 italic text-sm">Informasi penting terkait kehadiran tamu:</p>
+                    </div>
+
+                    <div class="space-y-6">
+                        <div class="flex items-start gap-6 p-6 bg-rose-50/50 rounded-[2rem] border border-rose-100 shadow-sm">
+                            <div class="p-3 bg-white rounded-2xl text-rose-600 shadow-sm border border-rose-100">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
+                            </div>
+                            <div>
+                                <h4 class="text-xs font-bold uppercase tracking-widest text-rose-900 mb-1">Dresscode</h4>
+                                <p class="text-rose-700 text-sm leading-relaxed font-serif-elegant italic">
+                                    Formal / Batik Modern <br> <span class="text-rose-400">Preferably Pastel / Blush Tone</span>
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start gap-6 p-6 bg-rose-50/50 rounded-[2rem] border border-rose-100 shadow-sm">
+                            <div class="p-3 bg-white rounded-2xl text-rose-600 shadow-sm border border-rose-100">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            </div>
+                            <div>
+                                <h4 class="text-xs font-bold uppercase tracking-widest text-rose-900 mb-1">Wedding Gift</h4>
+                                <p class="text-rose-700 text-sm leading-relaxed font-serif-elegant italic">
+                                    Kehadiran Anda adalah kado terindah. Namun jika ingin mengirimkan tanda kasih, dapat melalui fitur Amplop Digital di bawah.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <section class="relative py-32 px-6 bg-cover bg-fixed" style="background-image: url('https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&q=80&w=2070');">
+        <div class="absolute inset-0 bg-rose-950/70 backdrop-blur-[2px]"></div>
+        <div class="relative z-10 max-w-xl mx-auto bg-white/10 backdrop-blur-xl p-10 md:p-12 rounded-[3rem] shadow-2xl border border-rose-200/30" data-aos="zoom-in">
+            <div class="text-center mb-10">
+                <h2 class="font-aesthetic text-6xl text-white drop-shadow-md">Kehadiran</h2>
+                <p class="text-rose-100 mt-2 text-sm italic font-serif-elegant">Kami sangat menantikan kehadiran Anda</p>
+            </div>
+
+            <form id="rsvpForm" action="#" class="space-y-6">
+                <div class="space-y-1">
+                    <label class="text-[10px] uppercase tracking-widest text-rose-200 font-bold ml-2">Nama Lengkap</label>
+                    <input type="text" class="w-full p-4 rounded-2xl bg-white/20 border border-white/30 text-white placeholder-rose-200/70 focus:bg-white/30 focus:ring-2 focus:ring-rose-300 outline-none transition" placeholder="Masukkan nama Anda">
+                </div>
+                
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="space-y-1">
+                        <label class="text-[10px] uppercase tracking-widest text-rose-200 font-bold ml-2">Jumlah</label>
+                        <select class="w-full p-4 rounded-2xl bg-white/20 border border-white/30 text-rose-900 focus:bg-white outline-none cursor-pointer appearance-none">
+                            <option>1 Orang</option>
+                            <option>2 Orang</option>
+                            <option>Keluarga (3+ Orang)</option>
+                        </select>
+                    </div>
+                    <div class="space-y-1">
+                        <label class="text-[10px] uppercase tracking-widest text-rose-200 font-bold ml-2">Konfirmasi</label>
+                        <select class="w-full p-4 rounded-2xl bg-white/20 border border-white/30 text-rose-900 focus:bg-white outline-none cursor-pointer appearance-none">
+                            <option>Hadir</option>
+                            <option>Mungkin</option>
+                            <option>Berhalangan</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="space-y-1">
+                    <label class="text-[10px] uppercase tracking-widest text-rose-200 font-bold ml-2">Pesan & Doa Restu</label>
+                    <textarea rows="4" class="w-full p-4 rounded-2xl bg-white/20 border border-white/30 text-white placeholder-rose-200/70 focus:bg-white/30 focus:ring-2 focus:ring-rose-300 outline-none transition resize-none" placeholder="Tuliskan ucapan atau doa Anda di sini..."></textarea>
+                </div>
+
+                <button type="submit" class="w-full bg-rose-100 text-rose-900 py-4 rounded-2xl font-bold tracking-widest hover:bg-white transition shadow-xl shadow-rose-900/50 uppercase text-xs border border-rose-200">
+                    Kirim Konfirmasi
+                </button>
+            </form>
+        </div>
+    </section>
+
+    <section class="py-24 px-6 bg-white" data-aos="fade-up">
+        <div class="max-w-4xl mx-auto text-center">
+            <div class="mb-16">
+                <h2 class="font-aesthetic text-6xl text-rose-800 mb-4">Wedding Gift</h2>
+                <div class="h-[1px] w-20 bg-rose-200 mx-auto mb-6"></div>
+                <p class="max-w-md mx-auto text-rose-500 font-serif-elegant italic text-sm md:text-base leading-relaxed">
+                    Doa restu Anda merupakan karunia yang sangat berarti bagi kami. Namun jika Anda ingin memberikan tanda kasih, Anda dapat menyalurkannya melalui:
+                </p>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-8">
+                
+                <div class="p-10 bg-rose-50/50 rounded-[3rem] border border-rose-100 shadow-sm hover:shadow-[0_10px_40px_rgba(244,63,94,0.1)] transition-all duration-500">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/5/5c/Bank_Central_Asia.svg" alt="BCA" class="h-8 mx-auto mb-8 opacity-70">
+                    <div class="space-y-2">
+                        <p class="text-xs uppercase tracking-[0.2em] text-rose-400">Nomor Rekening</p>
+                        <p id="norek1" class="text-xl font-bold tracking-widest text-rose-800">1234 5678 90</p>
+                        <p class="text-rose-600 font-serif-elegant">a.n. Nama Mempelai</p>
+                        
+                        <button onclick="copyToClipboard('norek1')" class="mt-6 px-6 py-2 bg-rose-700 text-white text-[10px] uppercase tracking-widest rounded-full hover:bg-rose-800 shadow-lg shadow-rose-700/20 transition duration-300">
+                            Salin Nomor
+                        </button>
+                    </div>
+                </div>
+
+                <div class="p-10 bg-rose-50/50 rounded-[3rem] border border-rose-100 shadow-sm hover:shadow-[0_10px_40px_rgba(244,63,94,0.1)] transition-all duration-500">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/ad/Bank_Mandiri_logo_2016.svg/1280px-Bank_Mandiri_logo_2016.svg.png" alt="Mandiri" class="h-8 mx-auto mb-8 opacity-70 grayscale hover:grayscale-0 transition duration-500">
+                    <div class="space-y-2">
+                        <p class="text-xs uppercase tracking-[0.2em] text-rose-400">Nomor Rekening</p>
+                        <p id="norek2" class="text-xl font-bold tracking-widest text-rose-800">0987 6543 21</p>
+                        <p class="text-rose-600 font-serif-elegant">a.n. Nama Mempelai</p>
+                        
+                        <button onclick="copyToClipboard('norek2')" class="mt-6 px-6 py-2 bg-rose-700 text-white text-[10px] uppercase tracking-widest rounded-full hover:bg-rose-800 shadow-lg shadow-rose-700/20 transition duration-300">
+                            Salin Nomor
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="mt-16 text-rose-300 text-[10px] uppercase tracking-[0.3em] font-semibold">
+                Terima Kasih Atas Kebaikan Anda
+            </div>
+        </div>
+    </section>
+
+    <footer class="py-24 px-6 bg-rose-50 text-center relative overflow-hidden">
+        <div class="absolute top-0 right-0 w-64 h-64 bg-pink-200/30 rounded-full blur-[100px] pointer-events-none"></div>
+        <div class="absolute bottom-0 left-0 w-64 h-64 bg-rose-200/30 rounded-full blur-[100px] pointer-events-none"></div>
+
+        <div class="max-w-3xl mx-auto relative z-10" data-aos="fade-up">
+            <div class="mb-12">
+                <svg class="w-10 h-10 text-rose-300 mx-auto mb-6" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                </svg>
+                <p class="font-serif-elegant italic text-rose-700 leading-relaxed text-lg">
+                    "Dan di antara tanda-tanda kekuasaan-Nya ialah Dia menciptakan untukmu isteri-isteri dari jenismu sendiri, supaya kamu cenderung dan merasa tenteram kepadanya, dan dijadikan-Nya diantaramu rasa kasih dan sayang."
+                </p>
+                <span class="block mt-4 text-xs tracking-widest text-rose-400 uppercase font-bold">— QS. Ar-Rum: 21 —</span>
+            </div>
+
+            <p class="text-rose-500 text-sm mb-12">Merupakan suatu kehormatan dan kebahagiaan bagi kami <br> apabila Bapak/Ibu/Saudara/i berkenan hadir untuk memberikan doa restu.</p>
+            
+            <h2 class="font-aesthetic text-6xl text-rose-800 drop-shadow-sm">Rama & Shinta</h2>
+            
+            <div class="mt-20 pt-10 border-t border-rose-200/50">
+                <a href="https://www.instagram.com/ruangrestu.undangan/"><p class="text-[10px] tracking-[0.3em] text-rose-400 uppercase font-semibold">2026 • RUANGRESTU</p></a>
+            </div>
+        </div>
+    </footer>
+
+
+    <div id="imageModal" class="fixed inset-0 z-[100] hidden bg-rose-950/95 flex items-center justify-center p-4 backdrop-blur-md">
+        <button onclick="closeModal()" class="absolute top-10 right-10 text-white text-4xl font-light z-[110] hover:text-rose-300 transition">×</button>
+        
+        <button onclick="changeImage(-1)" class="absolute left-4 md:left-10 text-white/50 hover:text-white text-5xl transition z-[110]">‹</button>
+        <button onclick="changeImage(1)" class="absolute right-4 md:right-10 text-white/50 hover:text-white text-5xl transition z-[110]">›</button>
+
+        <div class="relative max-w-5xl max-h-[85vh] flex items-center justify-center" onclick="event.stopPropagation()">
+            <img id="modalImg" class="max-w-full max-h-[85vh] rounded-2xl shadow-[0_20px_50px_rgba(225,29,72,0.3)] border-2 border-rose-200/20 scale-95 opacity-0 transition-all duration-300">
+        </div>
+    </div>
+
+    <div id="rsvpModal" class="fixed inset-0 z-[150] hidden flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-rose-950/60 backdrop-blur-sm"></div>
+        
+        <div class="relative bg-white p-10 md:p-12 rounded-[3rem] max-w-sm w-full text-center shadow-2xl border border-rose-100" data-aos="zoom-in">
+            <div class="w-20 h-20 bg-rose-50 rounded-full flex items-center justify-center mx-auto mb-6 border border-rose-100">
+                <svg class="w-10 h-10 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                </svg>
+            </div>
+            <h3 class="font-aesthetic text-4xl text-rose-800 mb-2">Terima Kasih</h3>
+            <p class="text-rose-500 font-serif-elegant italic text-sm mb-8 leading-relaxed">
+                Konfirmasi kehadiran dan pesan Anda telah kami terima dengan penuh sukacita.
+            </p>
+            <button onclick="closeRsvpModal()" class="w-full bg-rose-700 text-white py-4 rounded-2xl font-bold tracking-widest hover:bg-rose-800 transition shadow-lg shadow-rose-700/30 uppercase text-[10px]">
+                Tutup
+            </button>
+        </div>
+    </div>
+
+    <audio id="weddingMusic" loop>
+        <source src="https://cdn.pixabay.com/audio/2021/07/18/audio_c993f91966.mp3" type="audio/mpeg">
+    </audio>
+
+    <button id="musicControl" onclick="toggleMusic()" class="fixed bottom-6 left-6 z-[100] w-12 h-12 bg-white/90 backdrop-blur-md border border-rose-100 rounded-full flex items-center justify-center shadow-[0_8px_30px_rgb(225,29,72,0.15)] hover:bg-white transition-all duration-300">
+        <svg id="icon-on" class="w-5 h-5 text-rose-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"></path>
+        </svg>
+        <svg id="icon-off" class="hidden w-5 h-5 text-rose-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15zM17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2"></path>
+        </svg>
+    </button>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="script.js"></script>
+    
+    <script>
+        function bukaUndangan() {
+            const flap = document.getElementById('envelope-flap');
+            const letter = document.getElementById('envelope-letter');
+            const wrapper = document.getElementById('envelope-wrapper');
+            const body = document.getElementById('body-main');
+
+            // 1. Membuka lipatan amplop ke atas
+            flap.classList.add('rotate-x-180');
+            
+            // 2. Mengangkat surat sedikit
+            letter.classList.remove('translate-y-16');
+            letter.classList.add('-translate-y-4');
+
+            // 3. Putar musik secara otomatis
+            const audio = document.getElementById('weddingMusic');
+            if(audio) {
+                audio.play().catch(e => console.log("Audio play failed:", e));
+                document.getElementById('icon-off').classList.add('hidden');
+                document.getElementById('icon-on').classList.remove('hidden');
+            }
+
+            // 4. Hilangkan seluruh amplop setelah animasi selesai
+            setTimeout(() => {
+                wrapper.classList.add('-translate-y-full', 'opacity-0');
+                
+                // Kembalikan fungsionalitas scroll
+                setTimeout(() => {
+                    body.classList.remove('overflow-hidden', 'h-screen');
+                    wrapper.classList.add('hidden');
+                    
+                    if(typeof AOS !== 'undefined') {
+                        AOS.init();
+                    }
+                }, 1000); 
+            }, 900); 
+        }
+
+        if(typeof AOS !== 'undefined') {
+            AOS.init({ duration: 1000, once: true });
+        }
+    </script>
+</body>
+</html>

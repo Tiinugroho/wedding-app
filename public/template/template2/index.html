@@ -9,211 +9,233 @@
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,600;1,400&family=Montserrat:wght@100;300;400;600&family=Great+Vibes&display=swap" rel="stylesheet">
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     
-    <style>
-        :root {
-            --gold: #c5a059;
-            --dark: #1a1a1a;
-            --cream: #f9f7f2;
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'primary': '#c5a059',
+                        'secondary': '#2d3436',
+                        'cream': '#FDFCF8',
+                        'sage': '#7b8a7b',
+                    },
+                    fontFamily: {
+                        'serif-luxury': ['Cormorant Garamond', 'serif'],
+                        'sans-modern': ['Montserrat', 'sans-serif'],
+                        'accent': ['Great Vibes', 'cursive'],
+                    }
+                }
+            }
         }
-        .font-serif-luxury { font-family: 'Cormorant Garamond', serif; }
-        .font-sans-modern { font-family: 'Montserrat', sans-serif; }
-        .font-accent { font-family: 'Great Vibes', cursive; }
+    </script>
 
-        .bg-cream { background-color: var(--cream); }
-        .text-gold { color: var(--gold); }
+    <style>
+        .parallax-bg {
+            background-attachment: fixed;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+        }
         
+        .glass-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(197, 160, 89, 0.2);
+        }
+
         .img-frame {
             position: relative;
-            padding: 15px;
+            padding: 12px;
+            transition: all 0.5s ease;
         }
         .img-frame::before {
             content: '';
             position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            border: 1px solid var(--gold);
-            transform: scale(0.95);
-            transition: transform 0.5s ease;
+            inset: 0;
+            border: 1px solid #c5a059;
+            transform: scale(0.9);
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        .img-frame:hover::before { transform: scale(1); }
-
-        /* Custom Timeline Line */
-        .timeline-line::before {
-            content: '';
-            position: absolute;
-            left: 50%;
-            width: 1px;
-            height: 100%;
-            background: #e5e7eb;
-            transform: translateX(-50%);
+        .img-frame:hover::before {
+            transform: scale(1.02);
         }
 
-        ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-track { background: var(--cream); }
-        ::-webkit-scrollbar-thumb { background: var(--gold); }
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #c5a059; }
     </style>
 </head>
 <body class="bg-cream font-sans-modern text-stone-800 antialiased overflow-x-hidden">
 
-    <section class="relative h-screen flex flex-col md:flex-row overflow-hidden">
-        <div class="w-full md:w-1/2 h-1/2 md:h-full relative overflow-hidden">
+    <section class="relative h-screen flex items-center justify-center overflow-hidden">
+        <div class="absolute inset-0 z-0">
             <img src="https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&q=80" 
-                 class="w-full h-full object-cover scale-110 hover:scale-100 transition duration-1000" alt="Cover">
-            <div class="absolute inset-0 bg-black/20"></div>
+                 class="w-full h-full object-cover scale-105 animate-[pulse_8s_ease-in-out_infinite]" alt="Cover">
+            <div class="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60"></div>
         </div>
         
-        <div class="w-full md:w-1/2 h-1/2 md:h-full flex flex-col justify-center items-center px-10 text-center space-y-6 relative">
-            <div class="space-y-2" data-aos="fade-up">
-                <span class="text-xs uppercase tracking-[0.5em] text-stone-400">The Wedding Celebration of</span>
-                <h1 class="font-serif-luxury text-6xl md:text-8xl text-stone-900 leading-tight">Rama <span class="font-accent text-gold text-4xl md:text-6xl">&</span> Shinta</h1>
-            </div>
+        <div class="relative z-10 text-center text-white px-6" data-aos="zoom-out">
+            <span class="text-xs uppercase tracking-[0.6em] mb-6 block font-light">The Wedding Celebration of</span>
+            <h1 class="font-serif-luxury text-7xl md:text-9xl mb-4 leading-tight">Rama <span class="font-accent text-primary text-5xl md:text-7xl block md:inline">&</span> Shinta</h1>
+            <div class="w-24 h-[1px] bg-primary mx-auto my-8"></div>
+            <p class="font-serif-luxury italic text-2xl md:text-3xl mb-12">Sabtu, 17 Agustus 2026</p>
             
-            <div class="flex items-center gap-4 w-full max-w-xs mx-auto" data-aos="fade-up" data-aos-delay="200">
-                <div class="h-[1px] flex-1 bg-stone-300"></div>
-                <p id="guest-name" class="font-serif-luxury italic text-xl">Tamu Undangan</p>
-                <div class="h-[1px] flex-1 bg-stone-300"></div>
-            </div>
-
-            <p class="text-[10px] uppercase tracking-[0.4em] font-bold" data-aos="fade-up" data-aos-delay="400">Sabtu, 17 Agustus 2026</p>
-            
-            <a href="#intro" class="mt-8 px-10 py-4 bg-stone-900 text-white text-[10px] tracking-widest uppercase hover:bg-gold transition-colors duration-500">
-                Open Invitation
+            <a href="#intro" class="inline-block group relative px-12 py-4 overflow-hidden border border-white/50 transition-all hover:border-primary">
+                <span class="relative z-10 text-[10px] tracking-[0.4em] uppercase">Open Invitation</span>
+                <div class="absolute inset-0 bg-primary translate-y-full group-hover:translate-y-0 transition-transform duration-500"></div>
             </a>
         </div>
     </section>
 
-    <section id="intro" class="py-24 bg-white">
-        <div class="max-w-6xl mx-auto px-6 grid md:grid-cols-2 gap-16">
-            <div class="flex flex-col items-center text-center" data-aos="fade-right">
-                <div class="img-frame mb-8">
-                    <img src="https://images.soco.id/230-58.jpg.jpeg" class="w-64 h-80 object-cover grayscale" alt="Rama">
+    <section id="intro" class="py-32 relative">
+        <div class="max-w-6xl mx-auto px-6 grid md:grid-cols-2 gap-20 items-center">
+            <div class="group text-center" data-aos="fade-up">
+                <div class="img-frame inline-block mb-10 overflow-hidden">
+                    <img src="https://images.soco.id/230-58.jpg.jpeg" 
+                         class="w-72 h-[450px] object-cover filter sepia-[0.3] group-hover:sepia-0 transition duration-1000" alt="Rama">
                 </div>
-                <h3 class="font-accent text-5xl text-gold mb-2">Rama</h3>
-                <p class="font-serif-luxury text-2xl font-semibold uppercase tracking-widest">Rama Raditya Putra, S.Kom</p>
-                <p class="text-stone-400 text-xs uppercase tracking-widest mt-4">Putra Pertama Dari</p>
-                <p class="text-stone-600 font-serif-luxury italic text-lg">Bpk. Ahmad Subarjo & Ibu Siti Aminah</p>
+                <h3 class="font-accent text-6xl text-primary mb-4">Rama</h3>
+                <h4 class="font-serif-luxury text-2xl font-semibold tracking-widest uppercase">Rama Raditya Putra, S.Kom</h4>
+                <div class="mt-6 space-y-1">
+                    <p class="text-stone-400 text-[10px] uppercase tracking-widest">Putra Pertama Dari</p>
+                    <p class="text-stone-600 font-serif-luxury italic text-lg">Bpk. Ahmad Subarjo & Ibu Siti Aminah</p>
+                </div>
             </div>
-            <div class="flex flex-col items-center text-center" data-aos="fade-left">
-                <div class="img-frame mb-8">
-                    <img src="https://images.pexels.com/photos/157757/wedding-dresses-fashion-character-bride-157757.jpeg?auto=compress" class="w-64 h-80 object-cover grayscale" alt="Shinta">
+
+            <div class="group text-center" data-aos="fade-up" data-aos-delay="200">
+                <div class="img-frame inline-block mb-10 overflow-hidden">
+                    <img src="https://images.pexels.com/photos/157757/wedding-dresses-fashion-character-bride-157757.jpeg?auto=compress" 
+                         class="w-72 h-[450px] object-cover filter sepia-[0.3] group-hover:sepia-0 transition duration-1000" alt="Shinta">
                 </div>
-                <h3 class="font-accent text-5xl text-gold mb-2">Shinta</h3>
-                <p class="font-serif-luxury text-2xl font-semibold uppercase tracking-widest">Shinta Amelia Putri, M.Ds</p>
-                <p class="text-stone-400 text-xs uppercase tracking-widest mt-4">Putri Kedua Dari</p>
-                <p class="text-stone-600 font-serif-luxury italic text-lg">Bpk. Hendra Wijaya & Ibu Ratna Sari</p>
+                <h3 class="font-accent text-6xl text-primary mb-4">Shinta</h3>
+                <h4 class="font-serif-luxury text-2xl font-semibold tracking-widest uppercase">Shinta Amelia Putri, M.Ds</h4>
+                <div class="mt-6 space-y-1">
+                    <p class="text-stone-400 text-[10px] uppercase tracking-widest">Putri Kedua Dari</p>
+                    <p class="text-stone-600 font-serif-luxury italic text-lg">Bpk. Hendra Wijaya & Ibu Ratna Sari</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-24 bg-stone-50 border-y border-stone-100">
+        <div class="max-w-4xl mx-auto px-6">
+            <div class="text-center mb-20" data-aos="fade-up">
+                <h2 class="font-serif-luxury text-5xl italic">Our Beautiful Journey</h2>
+                <div class="flex justify-center items-center gap-4 mt-4">
+                    <div class="w-8 h-[1px] bg-primary"></div>
+                    <span class="font-accent text-2xl text-primary">Love Story</span>
+                    <div class="w-8 h-[1px] bg-primary"></div>
+                </div>
+            </div>
+
+            <div class="relative before:absolute before:inset-0 before:left-1/2 before:-ml-px before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-stone-300 before:to-transparent">
+                <div class="relative mb-20 md:flex md:justify-between items-center" data-aos="fade-right">
+                    <div class="md:w-[45%] text-right hidden md:block">
+                        <span class="text-primary font-bold text-lg">Januari 2022</span>
+                    </div>
+                    <div class="absolute left-1/2 -translate-x-1/2 w-4 h-4 bg-primary rounded-full ring-8 ring-white z-10"></div>
+                    <div class="md:w-[45%] glass-card p-8 rounded-2xl shadow-sm">
+                        <span class="md:hidden text-primary font-bold block mb-2">Januari 2022</span>
+                        <h4 class="font-serif-luxury text-2xl font-bold text-stone-900 mb-2">Pertemuan Pertama</h4>
+                        <p class="text-stone-500 text-sm leading-relaxed italic">"Di sebuah sudut kafe yang tenang, takdir menyapa lewat secangkir kopi dan percakapan yang tak ingin kami akhiri."</p>
+                    </div>
+                </div>
+
+                <div class="relative mb-20 md:flex md:justify-between items-center flex-row-reverse" data-aos="fade-left">
+                    <div class="md:w-[45%] text-left hidden md:block">
+                        <span class="text-primary font-bold text-lg">Maret 2024</span>
+                    </div>
+                    <div class="absolute left-1/2 -translate-x-1/2 w-4 h-4 bg-primary rounded-full ring-8 ring-white z-10"></div>
+                    <div class="md:w-[45%] glass-card p-8 rounded-2xl shadow-sm text-right">
+                        <span class="md:hidden text-primary font-bold block mb-2">Maret 2024</span>
+                        <h4 class="font-serif-luxury text-2xl font-bold text-stone-900 mb-2">Langkah Serius</h4>
+                        <p class="text-stone-500 text-sm leading-relaxed italic">"Kami memutuskan untuk melabuhkan hati, berjanji untuk saling menjaga dalam ikatan khitbah yang suci."</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-24 bg-white overflow-hidden">
+        <div class="max-w-6xl mx-auto px-6">
+            <div class="columns-1 md:columns-3 gap-4 space-y-4">
+                <img src="https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&q=80" class="w-full rounded-xl hover:scale-[1.02] transition duration-500" data-aos="zoom-in" alt="Gallery">
+                <img src="https://images.unsplash.com/photo-1519225421980-715cb0215aed?auto=format&fit=crop&q=80" class="w-full rounded-xl hover:scale-[1.02] transition duration-500" data-aos="zoom-in" alt="Gallery">
+                <img src="https://images.unsplash.com/photo-1583939003579-730e3918a45a?auto=format&fit=crop&q=80" class="w-full rounded-xl hover:scale-[1.02] transition duration-500" data-aos="zoom-in" alt="Gallery">
+                <img src="https://images.unsplash.com/photo-1465495910484-c4b24d73237a?auto=format&fit=crop&q=80" class="w-full rounded-xl hover:scale-[1.02] transition duration-500" data-aos="zoom-in" alt="Gallery">
+                <img src="https://images.unsplash.com/photo-1522673607200-164883eeba48?auto=format&fit=crop&q=80" class="w-full rounded-xl hover:scale-[1.02] transition duration-500" data-aos="zoom-in" alt="Gallery">
+                <img src="https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?auto=format&fit=crop&q=80" class="w-full rounded-xl hover:scale-[1.02] transition duration-500" data-aos="zoom-in" alt="Gallery">
+            </div>
+        </div>
+    </section>
+
+    <section class="py-32 bg-secondary text-white relative overflow-hidden">
+        <div class="absolute top-0 right-0 w-64 h-64 bg-primary/10 rounded-full blur-3xl -mr-32 -mt-32"></div>
+        <div class="max-w-4xl mx-auto px-6 relative z-10 text-center">
+            <h2 class="font-serif-luxury text-5xl italic mb-6" data-aos="fade-up">Wedding Gift</h2>
+            <p class="text-stone-400 text-sm tracking-widest mb-16 uppercase max-w-lg mx-auto leading-loose" data-aos="fade-up">Doa restu Anda adalah kado terindah bagi kami, namun jika Anda ingin memberikan tanda kasih, silakan melalui:</p>
+            
+            <div class="grid md:grid-cols-2 gap-8" data-aos="fade-up">
+                <div class="p-10 border border-white/10 bg-white/5 rounded-3xl hover:border-primary/50 transition-all duration-500 group">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/5/5c/Bank_Central_Asia.svg" class="h-8 mx-auto mb-8 invert opacity-40 group-hover:opacity-100 transition" alt="BCA">
+                    <p class="font-serif-luxury text-3xl mb-2 tracking-widest">1234 567 890</p>
+                    <p class="text-xs text-stone-500 uppercase tracking-[0.3em]">a.n Rama Raditya</p>
+                    <button class="mt-8 px-6 py-2 border border-white/20 text-[10px] uppercase tracking-widest hover:bg-white hover:text-black transition-all">Salin Rekening</button>
+                </div>
+                
+                <div class="p-10 border border-white/10 bg-white/5 rounded-3xl hover:border-primary/50 transition-all duration-500 group">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/a/ad/Bank_Mandiri_logo_2016.svg" class="h-8 mx-auto mb-8 invert opacity-40 group-hover:opacity-100 transition" alt="Mandiri">
+                    <p class="font-serif-luxury text-3xl mb-2 tracking-widest">0987 654 321</p>
+                    <p class="text-xs text-stone-500 uppercase tracking-[0.3em]">a.n Shinta Amelia</p>
+                    <button class="mt-8 px-6 py-2 border border-white/20 text-[10px] uppercase tracking-widest hover:bg-white hover:text-black transition-all">Salin Rekening</button>
+                </div>
             </div>
         </div>
     </section>
 
     <section class="py-24 bg-cream">
-        <div class="max-w-4xl mx-auto px-6">
-            <div class="text-center mb-20" data-aos="fade-up">
-                <h2 class="font-serif-luxury text-5xl italic">Our Love Story</h2>
-                <div class="w-12 h-[1px] bg-gold mx-auto mt-4"></div>
-            </div>
-
-            <div class="relative timeline-line">
-                <div class="mb-12 flex justify-between items-center w-full" data-aos="fade-right">
-                    <div class="w-5/12 hidden md:block"></div>
-                    <div class="z-20 flex items-center bg-gold shadow-xl w-8 h-8 rounded-full border-4 border-white"></div>
-                    <div class="bg-white p-6 rounded-lg shadow-sm w-full md:w-5/12 border-l-4 border-gold">
-                        <span class="text-gold font-bold text-sm">2022</span>
-                        <h4 class="font-serif-luxury text-xl font-bold mt-1">Pertemuan Pertama</h4>
-                        <p class="text-stone-500 text-xs leading-relaxed mt-2 italic">Di sebuah kafe kecil di Pekanbaru, takdir mempertemukan pandangan kami untuk pertama kalinya.</p>
-                    </div>
-                </div>
-                <div class="mb-12 flex justify-between items-center w-full flex-row-reverse" data-aos="fade-left">
-                    <div class="w-5/12 hidden md:block"></div>
-                    <div class="z-20 flex items-center bg-gold shadow-xl w-8 h-8 rounded-full border-4 border-white"></div>
-                    <div class="bg-white p-6 rounded-lg shadow-sm w-full md:w-5/12 border-r-4 border-gold text-right">
-                        <span class="text-gold font-bold text-sm">2024</span>
-                        <h4 class="font-serif-luxury text-xl font-bold mt-1">Mengikat Janji</h4>
-                        <p class="text-stone-500 text-xs leading-relaxed mt-2 italic">Setelah perjalanan panjang, kami memutuskan untuk melangkah ke jenjang yang lebih serius (Khitbah).</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section class="py-24 bg-white">
-        <div class="max-w-6xl mx-auto px-6">
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div class="space-y-4">
-                    <img src="https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&q=80" class="w-full h-64 object-cover grayscale hover:grayscale-0 transition duration-700" data-aos="zoom-in">
-                    <img src="https://images.unsplash.com/photo-1519225421980-715cb0215aed?auto=format&fit=crop&q=80" class="w-full h-80 object-cover grayscale hover:grayscale-0 transition duration-700" data-aos="zoom-in">
-                </div>
-                <div class="space-y-4 pt-8">
-                    <img src="https://images.unsplash.com/photo-1583939003579-730e3918a45a?auto=format&fit=crop&q=80" class="w-full h-80 object-cover grayscale hover:grayscale-0 transition duration-700" data-aos="zoom-in">
-                    <img src="https://images.unsplash.com/photo-1465495910484-c4b24d73237a?auto=format&fit=crop&q=80" class="w-full h-64 object-cover grayscale hover:grayscale-0 transition duration-700" data-aos="zoom-in">
-                </div>
-                <div class="space-y-4">
-                    <img src="https://images.unsplash.com/photo-1522673607200-164883eeba48?auto=format&fit=crop&q=80" class="w-full h-64 object-cover grayscale hover:grayscale-0 transition duration-700" data-aos="zoom-in">
-                    <img src="https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?auto=format&fit=crop&q=80" class="w-full h-80 object-cover grayscale hover:grayscale-0 transition duration-700" data-aos="zoom-in">
-                </div>
-                <div class="space-y-4 pt-8">
-                    <img src="https://images.unsplash.com/photo-1520854221256-17451cc331bf?auto=format&fit=crop&q=80" class="w-full h-80 object-cover grayscale hover:grayscale-0 transition duration-700" data-aos="zoom-in">
-                    <img src="https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&q=80" class="w-full h-64 object-cover grayscale hover:grayscale-0 transition duration-700" data-aos="zoom-in">
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section class="py-24 bg-stone-900 text-white text-center">
-        <div class="max-w-2xl mx-auto px-6" data-aos="fade-up">
-            <h2 class="font-serif-luxury text-4xl italic mb-4">Wedding Gift</h2>
-            <p class="text-stone-400 text-xs tracking-widest mb-12 uppercase leading-relaxed">Doa restu Anda adalah kado terindah, namun jika ingin memberikan tanda kasih, silakan melalui:</p>
-            
-            <div class="grid md:grid-cols-2 gap-6">
-                <div class="p-8 border border-stone-800 bg-stone-900 rounded-lg hover:border-gold transition group">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/5/5c/Bank_Central_Asia.svg" class="h-6 mx-auto mb-6 invert opacity-50 group-hover:opacity-100 transition" alt="BCA">
-                    <p class="text-sm tracking-widest uppercase mb-1">Bank BCA</p>
-                    <p class="font-serif-luxury text-2xl mb-4">1234 567 890</p>
-                    <p class="text-[10px] text-stone-500 uppercase tracking-widest">a.n Rama Raditya</p>
-                </div>
-                <div class="p-8 border border-stone-800 bg-stone-900 rounded-lg hover:border-gold transition group">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/a/ad/Bank_Mandiri_logo_2016.svg" class="h-6 mx-auto mb-6 invert opacity-50 group-hover:opacity-100 transition" alt="Mandiri">
-                    <p class="text-sm tracking-widest uppercase mb-1">Bank Mandiri</p>
-                    <p class="font-serif-luxury text-2xl mb-4">0987 654 321</p>
-                    <p class="text-[10px] text-stone-500 uppercase tracking-widest">a.n Shinta Amelia</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section class="py-24 bg-white">
         <div class="max-w-3xl mx-auto px-6">
-            <div class="text-center mb-12" data-aos="fade-up">
-                <h2 class="font-serif-luxury text-4xl italic">Wishes for the Couple</h2>
-            </div>
-            
-            <div class="space-y-6 h-96 overflow-y-auto pr-4 mb-12 border-b border-stone-100" id="wish-container">
-                <div class="p-6 bg-cream rounded-sm" data-aos="fade-up">
-                    <h5 class="font-bold text-sm text-stone-900">Andini Putri</h5>
-                    <p class="text-xs text-stone-400 mb-2 italic">10 Menit yang lalu</p>
-                    <p class="text-stone-600 text-sm italic">"Selamat ya Rama & Shinta! Semoga menjadi keluarga yang sakinah, mawaddah, warahmah. Amin!"</p>
+            <div class="glass-card p-10 md:p-16 rounded-[40px] shadow-xl shadow-stone-200/50">
+                <div class="text-center mb-12">
+                    <h2 class="font-serif-luxury text-4xl italic mb-2">Guest Book</h2>
+                    <p class="text-xs text-stone-400 uppercase tracking-widest">Tinggalkan Doa & Ucapan</p>
                 </div>
-            </div>
+                
+                <div class="space-y-6 max-h-[400px] overflow-y-auto mb-10 pr-4 custom-scrollbar" id="wish-container">
+                    <div class="p-6 bg-white/50 rounded-2xl border border-stone-100 shadow-sm" data-aos="fade-up">
+                        <div class="flex justify-between items-start mb-3">
+                            <h5 class="font-bold text-sm text-stone-900">Andini Putri</h5>
+                            <span class="text-[10px] text-stone-400 italic">10 Menit yang lalu</span>
+                        </div>
+                        <p class="text-stone-600 text-sm italic leading-relaxed">"Selamat ya Rama & Shinta! Semoga menjadi keluarga yang sakinah, mawaddah, warahmah. Bahagia selamanya!"</p>
+                    </div>
+                </div>
 
-            <div class="bg-cream p-8">
                 <form class="space-y-4">
-                    <input type="text" placeholder="Nama Anda" class="w-full bg-white px-4 py-3 text-xs outline-none border border-transparent focus:border-gold transition">
-                    <textarea placeholder="Tuliskan ucapan & doa..." rows="4" class="w-full bg-white px-4 py-3 text-xs outline-none border border-transparent focus:border-gold transition resize-none"></textarea>
-                    <button class="w-full bg-stone-900 text-white py-4 text-[10px] uppercase tracking-widest font-bold hover:bg-gold transition">Kirim Ucapan</button>
+                    <input type="text" placeholder="Nama Lengkap" class="w-full bg-white px-6 py-4 rounded-xl text-sm outline-none border border-stone-100 focus:border-primary transition shadow-inner">
+                    <textarea placeholder="Tuliskan ucapan & doa..." rows="4" class="w-full bg-white px-6 py-4 rounded-xl text-sm outline-none border border-stone-100 focus:border-primary transition shadow-inner resize-none"></textarea>
+                    <button class="w-full bg-secondary text-white py-5 rounded-xl text-xs uppercase tracking-[0.3em] font-bold hover:bg-primary transition-all duration-500 transform hover:-translate-y-1 shadow-lg">Kirim Ucapan Terbaik</button>
                 </form>
             </div>
         </div>
     </section>
 
-    <footer class="py-20 text-center border-t border-stone-100 bg-white">
-        <h2 class="font-accent text-5xl text-gold mb-4">Rama & Shinta</h2>
-        <p class="text-[10px] tracking-[0.5em] text-stone-400 uppercase">17.08.2026 • Pekanbaru</p>
-        <div class="mt-10">
-             <p class="text-[9px] text-stone-300 tracking-widest">DANGDANG STUDIO • 2026</p>
+    <footer class="py-32 text-center bg-white relative">
+        <div class="relative z-10">
+            <h2 class="font-accent text-7xl text-primary mb-6">Rama & Shinta</h2>
+            <p class="text-xs tracking-[0.8em] text-stone-400 uppercase mb-2">17.08.2026 • Pekanbaru</p>
+            <div class="w-16 h-[1px] bg-stone-200 mx-auto mt-12 mb-8"></div>
+            <p class="text-[9px] text-stone-300 tracking-[0.4em] uppercase">Created with Love by DANGDANG STUDIO</p>
         </div>
     </footer>
 
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script>
-        AOS.init({ duration: 1000, once: true });
+        AOS.init({ 
+            duration: 1200, 
+            once: true,
+            offset: 100
+        });
     </script>
 </body>
 </html>
