@@ -1,0 +1,6 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    
+    # Menghalakan semua permintaan secara senyap ke dalam folder public
+    RewriteRule ^(.*)$ public/$1 [L]
+</IfModule>
