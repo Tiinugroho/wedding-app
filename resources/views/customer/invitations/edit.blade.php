@@ -66,11 +66,12 @@
         <div class="grid grid-cols-1 xl:grid-cols-12 gap-8">
             <div class="xl:col-span-8 space-y-8">
 
-                {{-- DATA COVER & QUOTES --}}
+                {{-- PENGATURAN COVER & QUOTES --}}
                 <div class="bg-white p-6 md:p-8 rounded-[2.5rem] border border-slate-100 shadow-sm">
                     <h4
                         class="text-xl font-bold text-slate-800 mb-6 flex items-center gap-3 pb-4 border-b border-slate-100">
-                        <div class="w-10 h-10 rounded-xl bg-slate-100 text-slate-600 flex items-center justify-center">
+                        <div
+                            class="w-10 h-10 rounded-xl bg-slate-100 text-slate-600 flex items-center justify-center shrink-0">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6">
@@ -82,8 +83,7 @@
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div class="mb-2">
-                            <label class="block text-sm font-bold text-slate-700 mb-2">Siapa yang tampil duluan di
-                                cover?</label>
+                            <label class="block text-sm font-bold text-slate-700 mb-2">Siapa yang tampil duluan?</label>
                             <div class="flex gap-4 mt-3">
                                 <label class="flex items-center gap-2 cursor-pointer">
                                     <input type="radio" name="couple_order" value="groom_first"
@@ -101,7 +101,7 @@
                         </div>
 
                         <div>
-                            <label class="block text-sm font-bold text-slate-700 mb-2">Salam Pembuka Kepada Penerima</label>
+                            <label class="block text-sm font-bold text-slate-700 mb-2">Salam Pembuka Penerima</label>
                             <input type="text" name="cover_greeting"
                                 value="{{ old('cover_greeting', $content['cover_greeting'] ?? 'Kepada Yth.') }}"
                                 class="w-full py-3 px-4 bg-slate-50 border border-slate-200 rounded-xl focus:ring-rOrange"
@@ -122,7 +122,8 @@
                 <div class="bg-white p-6 md:p-8 rounded-[2.5rem] border border-slate-100 shadow-sm">
                     <h4
                         class="text-xl font-bold text-slate-800 mb-6 flex items-center gap-3 pb-4 border-b border-slate-100">
-                        <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-500 flex items-center justify-center">
+                        <div
+                            class="w-10 h-10 rounded-xl bg-blue-50 text-blue-500 flex items-center justify-center shrink-0">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
@@ -187,7 +188,8 @@
                 <div class="bg-white p-6 md:p-8 rounded-[2.5rem] border border-slate-100 shadow-sm">
                     <h4
                         class="text-xl font-bold text-slate-800 mb-6 flex items-center gap-3 pb-4 border-b border-slate-100">
-                        <div class="w-10 h-10 rounded-xl bg-pink-50 text-pink-500 flex items-center justify-center">
+                        <div
+                            class="w-10 h-10 rounded-xl bg-pink-50 text-pink-500 flex items-center justify-center shrink-0">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
@@ -248,55 +250,69 @@
                     </div>
                 </div>
 
-                {{-- TURUT MENGUNDANG --}}
-                <div
-                    class="bg-white p-6 md:p-8 rounded-[2.5rem] border border-slate-100 shadow-sm relative overflow-hidden">
-                    <div class="flex items-center gap-3 pb-4 border-b border-slate-100 mb-6">
-                        <div class="w-10 h-10 rounded-xl bg-teal-50 text-teal-500 flex items-center justify-center">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z">
-                                </path>
-                            </svg>
-                        </div>
-                        <h4 class="text-xl font-bold text-slate-800">Turut Mengundang</h4>
-                    </div>
-                    @php
-                        $tmGroomStr = is_array($content['turut_mengundang_groom'] ?? null)
-                            ? implode("\n", $content['turut_mengundang_groom'])
-                            : $content['turut_mengundang_groom'] ?? '';
-                        $tmBrideStr = is_array($content['turut_mengundang_bride'] ?? null)
-                            ? implode("\n", $content['turut_mengundang_bride'])
-                            : $content['turut_mengundang_bride'] ?? '';
-                    @endphp
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                            <label class="block text-sm font-bold text-slate-700 mb-2">Keluarga Pihak Pria
-                                (Opsional)</label>
-                            <textarea name="turut_mengundang_groom" rows="4"
-                                class="w-full py-3 px-4 bg-slate-50 border border-slate-200 rounded-xl focus:ring-rOrange"
-                                placeholder="Contoh: Keluarga Bapak A, Keluarga Bapak B">{{ old('turut_mengundang_groom', $tmGroomStr) }}</textarea>
-                            <p class="text-[10px] text-slate-400 mt-1">Gunakan 'Enter' atau Koma ( , ) untuk baris baru.
-                            </p>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-bold text-slate-700 mb-2">Keluarga Pihak Wanita
-                                (Opsional)</label>
-                            <textarea name="turut_mengundang_bride" rows="4"
-                                class="w-full py-3 px-4 bg-slate-50 border border-slate-200 rounded-xl focus:ring-rOrange"
-                                placeholder="Contoh: Keluarga Bapak X, Keluarga Ibu Y">{{ old('turut_mengundang_bride', $tmBrideStr) }}</textarea>
-                        </div>
-                    </div>
-                </div>
-
-                {{-- WAKTU & LOKASI ACARA (DINAMIS) + TOGGLE --}}
+                {{-- TURUT MENGUNDANG + TOGGLE --}}
                 <div
                     class="bg-white p-6 md:p-8 rounded-[2.5rem] border border-slate-100 shadow-sm relative overflow-hidden">
                     <div
                         class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-100 mb-6">
                         <h4 class="text-xl font-bold text-slate-800 flex items-center gap-3">
                             <div
-                                class="w-10 h-10 rounded-xl bg-orange-50 text-orange-500 flex items-center justify-center">
+                                class="w-10 h-10 rounded-xl bg-teal-50 text-teal-500 flex items-center justify-center shrink-0">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z">
+                                    </path>
+                                </svg>
+                            </div>
+                            Turut Mengundang
+                        </h4>
+                        <label class="relative inline-flex items-center cursor-pointer shrink-0">
+                            <span class="mr-3 text-sm font-bold text-slate-500">Tampilkan</span>
+                            <input type="checkbox" name="is_turut_mengundang_active" value="1" class="sr-only peer"
+                                {{ $content['is_turut_mengundang_active'] ?? false ? 'checked' : '' }}>
+                            <div
+                                class="w-11 h-6 bg-slate-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[75px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-rOrange">
+                            </div>
+                        </label>
+                    </div>
+
+                    <div
+                        class="transition-opacity duration-300 {{ empty($content['is_turut_mengundang_active']) ? 'opacity-40 pointer-events-none' : '' }}">
+                        @php
+                            $tmGroomStr = is_array($content['turut_mengundang_groom'] ?? null)
+                                ? implode("\n", $content['turut_mengundang_groom'])
+                                : $content['turut_mengundang_groom'] ?? '';
+                            $tmBrideStr = is_array($content['turut_mengundang_bride'] ?? null)
+                                ? implode("\n", $content['turut_mengundang_bride'])
+                                : $content['turut_mengundang_bride'] ?? '';
+                        @endphp
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-sm font-bold text-slate-700 mb-2">Keluarga Pihak Pria</label>
+                                <textarea name="turut_mengundang_groom" rows="4"
+                                    class="w-full py-3 px-4 bg-slate-50 border border-slate-200 rounded-xl focus:ring-rOrange"
+                                    placeholder="Contoh: Keluarga Bapak A, Keluarga Bapak B">{{ old('turut_mengundang_groom', $tmGroomStr) }}</textarea>
+                                <p class="text-[10px] text-slate-400 mt-1">Gunakan 'Enter' atau Koma ( , ) untuk baris
+                                    baru.</p>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-bold text-slate-700 mb-2">Keluarga Pihak Wanita</label>
+                                <textarea name="turut_mengundang_bride" rows="4"
+                                    class="w-full py-3 px-4 bg-slate-50 border border-slate-200 rounded-xl focus:ring-rOrange"
+                                    placeholder="Contoh: Keluarga Bapak X, Keluarga Ibu Y">{{ old('turut_mengundang_bride', $tmBrideStr) }}</textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- WAKTU & LOKASI ACARA + TOGGLE --}}
+                <div
+                    class="bg-white p-6 md:p-8 rounded-[2.5rem] border border-slate-100 shadow-sm relative overflow-hidden">
+                    <div
+                        class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-100 mb-6">
+                        <h4 class="text-xl font-bold text-slate-800 flex items-center gap-3">
+                            <div
+                                class="w-10 h-10 rounded-xl bg-orange-50 text-orange-500 flex items-center justify-center shrink-0">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z">
@@ -305,44 +321,66 @@
                             </div>
                             Waktu & Lokasi Acara
                         </h4>
+
                         <div class="flex items-center gap-4">
                             <button type="button" onclick="addEventRow()"
                                 class="px-4 py-2 bg-slate-900 text-white text-xs font-bold rounded-xl hover:bg-slate-800 transition">+
-                                Tambah Acara</button>
-                            <label class="relative inline-flex items-center cursor-pointer">
-                                <span class="mr-3 text-sm font-bold text-slate-500 hidden sm:block">Aktif</span>
+                                Tambah Resepsi</button>
+                            <label class="relative inline-flex items-center cursor-pointer shrink-0">
+                                <span class="mr-3 text-sm font-bold text-slate-500 hidden sm:block">Tampilkan</span>
                                 <input type="checkbox" name="is_event_active" value="1" class="sr-only peer"
                                     {{ $content['is_event_active'] ?? true ? 'checked' : '' }}>
                                 <div
-                                    class="w-11 h-6 bg-slate-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-rOrange">
+                                    class="w-11 h-6 bg-slate-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] sm:after:left-[auto] sm:after:right-[24px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-rOrange">
                                 </div>
                             </label>
                         </div>
                     </div>
 
-                    <div id="event-wrapper"
-                        class="space-y-6 {{ empty($content['is_event_active']) && isset($content['is_event_active']) ? 'opacity-40' : '' }}">
-                        @php
-                            // Cek apakah data sudah menggunakan format dinamis ('events' array)
-                            $hasDynamicEvents = !empty($content['events']) && is_array($content['events']);
+                    <div
+                        class="space-y-6 transition-opacity duration-300 {{ empty($content['is_event_active']) && isset($content['is_event_active']) ? 'opacity-40 pointer-events-none' : '' }}">
 
-                            // Konversi data lama (akad/resepsi statis) ke format array dinamis sementara jika perlu
-                            $eventsData = [];
-                            if ($hasDynamicEvents) {
-                                $eventsData = $content['events'];
-                            } else {
-                                // Migrasi data statis ke dinamis untuk tampilan awal
-                                if (!empty($content['akad_location'])) {
-                                    $eventsData[] = [
-                                        'title' => 'Akad Nikah / Pemberkatan',
-                                        'date' => $content['akad_date'] ?? '',
-                                        'time' => $content['akad_time'] ?? '',
-                                        'location' => $content['akad_location'] ?? '',
-                                        'address' => $content['akad_address'] ?? '',
-                                        'map' => $content['akad_map'] ?? '',
-                                    ];
-                                }
-                                if (!empty($content['resepsi_location'])) {
+                        {{-- 1. AKAD NIKAH (STATIS - TIDAK BISA DIHAPUS) --}}
+                        <div class="p-5 bg-orange-50/50 rounded-2xl border border-orange-100 relative">
+                            <h5 class="font-bold text-orange-600 mb-4">Akad Nikah / Pemberkatan</h5>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div><label class="block text-xs font-bold text-slate-600 mb-1">Tanggal</label><input
+                                        type="date" name="akad_date"
+                                        value="{{ old('akad_date', $content['akad_date'] ?? '') }}"
+                                        class="w-full py-2.5 px-4 bg-white border border-slate-200 rounded-xl"></div>
+                                <div><label class="block text-xs font-bold text-slate-600 mb-1">Waktu / Jam</label><input
+                                        type="text" name="akad_time"
+                                        value="{{ old('akad_time', $content['akad_time'] ?? '') }}"
+                                        class="w-full py-2.5 px-4 bg-white border border-slate-200 rounded-xl"
+                                        placeholder="Contoh: 08:00 - 10:00 WIB"></div>
+                                <div class="md:col-span-2"><label class="block text-xs font-bold text-slate-600 mb-1">Nama
+                                        Tempat/Gedung</label><input type="text" name="akad_location"
+                                        value="{{ old('akad_location', $content['akad_location'] ?? '') }}"
+                                        class="w-full py-2.5 px-4 bg-white border border-slate-200 rounded-xl"
+                                        placeholder="Contoh: Masjid Raya Pekanbaru"></div>
+                                <div class="md:col-span-2"><label
+                                        class="block text-xs font-bold text-slate-600 mb-1">Alamat Lengkap</label>
+                                    <textarea name="akad_address" rows="2" class="w-full py-2.5 px-4 bg-white border border-slate-200 rounded-xl"
+                                        placeholder="Contoh: Jl. Senapelan No. 128, Riau">{{ old('akad_address', $content['akad_address'] ?? '') }}</textarea>
+                                </div>
+                                <div class="md:col-span-2"><label class="block text-xs font-bold text-slate-600 mb-1">Link
+                                        Google Maps</label><input type="url" name="akad_map"
+                                        value="{{ old('akad_map', $content['akad_map'] ?? '') }}"
+                                        class="w-full py-2.5 px-4 bg-white border border-slate-200 rounded-xl"
+                                        placeholder="https://maps.google.com/..."></div>
+                            </div>
+                        </div>
+
+                        {{-- 2. RESEPSI DAN LAINNYA (DINAMIS - BISA DITAMBAH/HAPUS) --}}
+                        <div id="event-wrapper" class="space-y-6">
+                            @php
+                                $eventsData =
+                                    !empty($content['events']) && is_array($content['events'])
+                                        ? $content['events']
+                                        : [];
+
+                                // Jika data lama masih format statis, kita migrasi khusus untuk Resepsi
+                                if (empty($eventsData) && !empty($content['resepsi_location'])) {
                                     $eventsData[] = [
                                         'title' => 'Resepsi Pernikahan',
                                         'date' => $content['resepsi_date'] ?? '',
@@ -352,10 +390,11 @@
                                         'map' => $content['resepsi_map'] ?? '',
                                     ];
                                 }
-                                // Jika benar-benar kosong, buat 1 array kosong
+
+                                // Berikan minimal 1 kotak resepsi kosong jika belum ada sama sekali
                                 if (empty($eventsData)) {
                                     $eventsData[] = [
-                                        'title' => 'Akad Nikah',
+                                        'title' => 'Resepsi Pernikahan',
                                         'date' => '',
                                         'time' => '',
                                         'location' => '',
@@ -363,71 +402,87 @@
                                         'map' => '',
                                     ];
                                 }
-                            }
-                        @endphp
+                            @endphp
 
-                        @foreach ($eventsData as $key => $event)
-                            <div class="p-5 bg-orange-50/50 rounded-2xl border border-orange-100 relative event-item">
-                                @if ($key > 0)
-                                    <button type="button" onclick="this.closest('.event-item').remove()"
-                                        class="absolute top-4 right-4 text-red-500 hover:text-red-700 font-bold text-xs bg-white px-3 py-1.5 rounded-lg shadow-sm">Hapus</button>
-                                @endif
+                            @foreach ($eventsData as $key => $event)
+                                <div class="p-5 bg-blue-50/50 rounded-2xl border border-blue-100 relative event-item">
+                                    {{-- Hapus tombol untuk index ke-0 agar selalu ada minimal 1 resepsi --}}
+                                    @if ($key > 0)
+                                        <button type="button" onclick="this.closest('.event-item').remove()"
+                                            class="absolute top-4 right-4 text-red-500 hover:text-red-700 font-bold text-xs bg-white px-3 py-1.5 rounded-lg shadow-sm">Hapus</button>
+                                    @endif
 
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
-                                    <div class="md:col-span-2">
-                                        <label class="block text-xs font-bold text-slate-600 mb-1">Nama Acara</label>
-                                        <input type="text" name="events[{{ $key }}][title]"
-                                            value="{{ $event['title'] ?? '' }}"
-                                            class="w-full py-2.5 px-4 bg-white border border-slate-200 rounded-xl"
-                                            placeholder="Contoh: Akad Nikah / Resepsi / Unduh Mantu">
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
+                                        <div class="md:col-span-2">
+                                            <label class="block text-xs font-bold text-slate-600 mb-1">Nama Acara</label>
+                                            <input type="text" name="events[{{ $key }}][title]"
+                                                value="{{ $event['title'] ?? '' }}"
+                                                class="w-full py-2.5 px-4 bg-white border border-slate-200 rounded-xl"
+                                                placeholder="Contoh: Resepsi Pernikahan / Unduh Mantu">
+                                        </div>
+                                        <div><label
+                                                class="block text-xs font-bold text-slate-600 mb-1">Tanggal</label><input
+                                                type="date" name="events[{{ $key }}][date]"
+                                                value="{{ $event['date'] ?? '' }}"
+                                                class="w-full py-2.5 px-4 bg-white border border-slate-200 rounded-xl">
+                                        </div>
+                                        <div><label class="block text-xs font-bold text-slate-600 mb-1">Waktu /
+                                                Jam</label><input type="text" name="events[{{ $key }}][time]"
+                                                value="{{ $event['time'] ?? '' }}"
+                                                class="w-full py-2.5 px-4 bg-white border border-slate-200 rounded-xl"
+                                                placeholder="Contoh: 11:00 - 16:00 WIB"></div>
+                                        <div class="md:col-span-2"><label
+                                                class="block text-xs font-bold text-slate-600 mb-1">Nama
+                                                Tempat/Gedung</label><input type="text"
+                                                name="events[{{ $key }}][location]"
+                                                value="{{ $event['location'] ?? '' }}"
+                                                class="w-full py-2.5 px-4 bg-white border border-slate-200 rounded-xl"
+                                                placeholder="Contoh: Grand Ballroom Hotel"></div>
+                                        <div class="md:col-span-2"><label
+                                                class="block text-xs font-bold text-slate-600 mb-1">Alamat Lengkap</label>
+                                            <textarea name="events[{{ $key }}][address]" rows="2"
+                                                class="w-full py-2.5 px-4 bg-white border border-slate-200 rounded-xl" placeholder="Contoh: Pekanbaru, Riau">{{ $event['address'] ?? '' }}</textarea>
+                                        </div>
+                                        <div class="md:col-span-2"><label
+                                                class="block text-xs font-bold text-slate-600 mb-1">Link Google
+                                                Maps</label><input type="url" name="events[{{ $key }}][map]"
+                                                value="{{ $event['map'] ?? '' }}"
+                                                class="w-full py-2.5 px-4 bg-white border border-slate-200 rounded-xl"
+                                                placeholder="https://maps.google.com/..."></div>
                                     </div>
-                                    <div><label class="block text-xs font-bold text-slate-600 mb-1">Tanggal</label><input
-                                            type="date" name="events[{{ $key }}][date]"
-                                            value="{{ $event['date'] ?? '' }}"
-                                            class="w-full py-2.5 px-4 bg-white border border-slate-200 rounded-xl"></div>
-                                    <div><label class="block text-xs font-bold text-slate-600 mb-1">Waktu /
-                                            Jam</label><input type="text" name="events[{{ $key }}][time]"
-                                            value="{{ $event['time'] ?? '' }}"
-                                            class="w-full py-2.5 px-4 bg-white border border-slate-200 rounded-xl"
-                                            placeholder="Contoh: 08:00 - 10:00 WIB"></div>
-                                    <div class="md:col-span-2"><label
-                                            class="block text-xs font-bold text-slate-600 mb-1">Nama
-                                            Tempat/Gedung</label><input type="text"
-                                            name="events[{{ $key }}][location]"
-                                            value="{{ $event['location'] ?? '' }}"
-                                            class="w-full py-2.5 px-4 bg-white border border-slate-200 rounded-xl"
-                                            placeholder="Contoh: Masjid Raya / Gedung Serbaguna"></div>
-                                    <div class="md:col-span-2"><label
-                                            class="block text-xs font-bold text-slate-600 mb-1">Alamat Lengkap</label>
-                                        <textarea name="events[{{ $key }}][address]" rows="2"
-                                            class="w-full py-2.5 px-4 bg-white border border-slate-200 rounded-xl"
-                                            placeholder="Contoh: Jl. Senapelan No. 128">{{ $event['address'] ?? '' }}</textarea>
-                                    </div>
-                                    <div class="md:col-span-2"><label
-                                            class="block text-xs font-bold text-slate-600 mb-1">Link Google Maps
-                                            (Opsional)</label><input type="url"
-                                            name="events[{{ $key }}][map]" value="{{ $event['map'] ?? '' }}"
-                                            class="w-full py-2.5 px-4 bg-white border border-slate-200 rounded-xl"
-                                            placeholder="https://maps.google.com/..."></div>
                                 </div>
-                            </div>
-                        @endforeach
+                            @endforeach
+                        </div>
                     </div>
                 </div>
 
-                {{-- INFO TAMBAHAN (DRESSCODE & PROKES) --}}
-                <div class="bg-white p-6 md:p-8 rounded-[2.5rem] border border-slate-100 shadow-sm">
-                    <h4
-                        class="text-xl font-bold text-slate-800 mb-6 flex items-center gap-3 pb-4 border-b border-slate-100">
-                        <div class="w-10 h-10 rounded-xl bg-yellow-50 text-yellow-500 flex items-center justify-center">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                            </svg>
-                        </div>
-                        Guest Info & Prokes
-                    </h4>
-                    <div class="space-y-6">
+                {{-- INFO TAMBAHAN (DRESSCODE & PROKES) + TOGGLE --}}
+                <div
+                    class="bg-white p-6 md:p-8 rounded-[2.5rem] border border-slate-100 shadow-sm relative overflow-hidden">
+                    <div
+                        class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-100 mb-6">
+                        <h4 class="text-xl font-bold text-slate-800 flex items-center gap-3">
+                            <div
+                                class="w-10 h-10 rounded-xl bg-yellow-50 text-yellow-500 flex items-center justify-center shrink-0">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                            </div>
+                            Guest Info & Prokes
+                        </h4>
+                        <label class="relative inline-flex items-center cursor-pointer shrink-0">
+                            <span class="mr-3 text-sm font-bold text-slate-500 hidden sm:block">Tampilkan</span>
+                            <input type="checkbox" name="is_guest_info_active" value="1" class="sr-only peer"
+                                {{ $content['is_guest_info_active'] ?? true ? 'checked' : '' }}>
+                            <div
+                                class="w-11 h-6 bg-slate-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] sm:after:left-[auto] sm:after:right-[24px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-rOrange">
+                            </div>
+                        </label>
+                    </div>
+
+                    <div
+                        class="space-y-6 transition-opacity duration-300 {{ empty($content['is_guest_info_active']) && isset($content['is_guest_info_active']) ? 'opacity-40 pointer-events-none' : '' }}">
                         <div class="p-5 border border-slate-100 rounded-2xl bg-slate-50">
                             <label class="flex items-center gap-3 cursor-pointer mb-3">
                                 <input type="checkbox" name="enable_dresscode" value="1"
@@ -459,7 +514,8 @@
                     <div
                         class="flex flex-col sm:flex-row items-start sm:items-center justify-between pb-4 border-b border-slate-100 mb-6 gap-4">
                         <h4 class="text-xl font-bold text-slate-800 flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-xl bg-rose-50 text-rose-500 flex items-center justify-center">
+                            <div
+                                class="w-10 h-10 rounded-xl bg-rose-50 text-rose-500 flex items-center justify-center shrink-0">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z">
@@ -468,16 +524,17 @@
                             </div>
                             Cerita Cinta
                         </h4>
+
                         <div class="flex items-center gap-4">
                             <button type="button" onclick="addLoveStoryRow()"
                                 class="px-4 py-2 bg-slate-900 text-white text-xs font-bold rounded-xl hover:bg-slate-800 transition shadow-sm">+
                                 Tambah</button>
-                            <label class="relative inline-flex items-center cursor-pointer">
-                                <span class="mr-3 text-sm font-bold text-slate-500 hidden sm:block">Aktif</span>
+                            <label class="relative inline-flex items-center cursor-pointer shrink-0">
+                                <span class="mr-3 text-sm font-bold text-slate-500 hidden sm:block">Tampilkan</span>
                                 <input type="checkbox" name="is_story_active" value="1" class="sr-only peer"
                                     {{ $content['is_story_active'] ?? true ? 'checked' : '' }}>
                                 <div
-                                    class="w-11 h-6 bg-slate-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-rOrange">
+                                    class="w-11 h-6 bg-slate-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] sm:after:left-[auto] sm:after:right-[24px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-rOrange">
                                 </div>
                             </label>
                         </div>
@@ -495,7 +552,7 @@
                     @endif
 
                     <div id="love-story-wrapper"
-                        class="space-y-6 {{ empty($packageLogic['has_love_story']) || !$packageLogic['has_love_story'] || (empty($content['is_story_active']) && isset($content['is_story_active'])) ? 'opacity-30' : '' }}">
+                        class="space-y-6 transition-opacity duration-300 {{ empty($packageLogic['has_love_story']) || !$packageLogic['has_love_story'] || (empty($content['is_story_active']) && isset($content['is_story_active'])) ? 'opacity-30 pointer-events-none' : '' }}">
                         @if (!empty($content['love_stories']) && is_array($content['love_stories']))
                             @foreach ($content['love_stories'] as $key => $story)
                                 <div
@@ -553,6 +610,8 @@
                             @endforeach
                         @else
                             <div class="relative p-6 border-2 border-slate-100 rounded-[2rem] bg-slate-50 love-story-item">
+                                <button type="button" onclick="this.closest('.love-story-item').remove()"
+                                    class="absolute top-5 right-5 text-red-500 hover:text-white bg-red-50 hover:bg-red-500 font-bold text-xs px-3 py-1.5 rounded-lg transition-colors">Hapus</button>
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mt-2">
                                     <div><label
                                             class="block text-xs font-bold text-slate-600 mb-1">Tahun/Waktu</label><input
@@ -589,7 +648,7 @@
                         class="flex flex-col sm:flex-row items-start sm:items-center justify-between pb-4 border-b border-slate-100 mb-6 gap-4">
                         <h4 class="text-xl font-bold text-slate-800 flex items-center gap-3">
                             <div
-                                class="w-10 h-10 rounded-xl bg-purple-50 text-purple-500 flex items-center justify-center">
+                                class="w-10 h-10 rounded-xl bg-purple-50 text-purple-500 flex items-center justify-center shrink-0">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z">
@@ -598,8 +657,8 @@
                             </div>
                             Galeri Foto & Video
                         </h4>
-                        <label class="relative inline-flex items-center cursor-pointer">
-                            <span class="mr-3 text-sm font-bold text-slate-500 hidden sm:block">Aktif</span>
+                        <label class="relative inline-flex items-center cursor-pointer shrink-0">
+                            <span class="mr-3 text-sm font-bold text-slate-500 hidden sm:block">Tampilkan</span>
                             <input type="checkbox" name="is_gallery_active" value="1" class="sr-only peer"
                                 {{ $content['is_gallery_active'] ?? true ? 'checked' : '' }}>
                             <div
@@ -609,7 +668,7 @@
                     </div>
 
                     <div
-                        class="{{ empty($content['is_gallery_active']) && isset($content['is_gallery_active']) ? 'opacity-40' : '' }}">
+                        class="transition-opacity duration-300 {{ empty($content['is_gallery_active']) && isset($content['is_gallery_active']) ? 'opacity-40 pointer-events-none' : '' }}">
                         <p class="font-bold text-slate-700 text-sm mb-3">Foto Album
                             ({{ $invitation->galleries->where('type', 'photo')->count() }} /
                             {{ $packageLogic['gallery_limit'] ?? 5 }})</p>
@@ -695,7 +754,7 @@
                         class="flex flex-col sm:flex-row items-start sm:items-center justify-between pb-4 border-b border-slate-100 mb-6 gap-4">
                         <h4 class="text-xl font-bold text-slate-800 flex items-center gap-3">
                             <div
-                                class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-500 flex items-center justify-center">
+                                class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-500 flex items-center justify-center shrink-0">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002-2h10a2 2 0 002-2v-7">
@@ -706,10 +765,10 @@
                         </h4>
                         <div class="flex items-center gap-4">
                             <button type="button" onclick="addBankRow()"
-                                class="px-4 py-2 bg-slate-900 text-white text-xs font-bold rounded-xl hover:bg-slate-800 transition">+
+                                class="px-4 py-2 bg-slate-900 text-white text-xs font-bold rounded-xl hover:bg-slate-800 transition shadow-sm">+
                                 Rekening</button>
-                            <label class="relative inline-flex items-center cursor-pointer">
-                                <span class="mr-3 text-sm font-bold text-slate-500 hidden sm:block">Aktif</span>
+                            <label class="relative inline-flex items-center cursor-pointer shrink-0">
+                                <span class="mr-3 text-sm font-bold text-slate-500 hidden sm:block">Tampilkan</span>
                                 <input type="checkbox" name="is_gift_active" value="1" class="sr-only peer"
                                     {{ $content['is_gift_active'] ?? true ? 'checked' : '' }}>
                                 <div
@@ -730,7 +789,7 @@
                     @endif
 
                     <div id="bank-wrapper"
-                        class="space-y-4 {{ empty($packageLogic['has_digital_gift']) || !$packageLogic['has_digital_gift'] || (empty($content['is_gift_active']) && isset($content['is_gift_active'])) ? 'opacity-30' : '' }}">
+                        class="space-y-4 transition-opacity duration-300 {{ empty($packageLogic['has_digital_gift']) || !$packageLogic['has_digital_gift'] || (empty($content['is_gift_active']) && isset($content['is_gift_active'])) ? 'opacity-30 pointer-events-none' : '' }}">
                         @if (!empty($content['banks']) && is_array($content['banks']))
                             @foreach ($content['banks'] as $key => $bank)
                                 <div class="relative p-5 border border-slate-200 rounded-2xl bg-slate-50 bank-item">
@@ -795,11 +854,12 @@
                     </div>
                 </div>
 
-                {{-- RSVP & UCAPAN (BARU) --}}
+                {{-- RSVP & UCAPAN --}}
                 <div class="bg-white p-6 md:p-8 rounded-[2.5rem] border border-slate-100 shadow-sm">
                     <h4
                         class="text-xl font-bold text-slate-800 mb-6 flex items-center gap-3 pb-4 border-b border-slate-100">
-                        <div class="w-10 h-10 rounded-xl bg-cyan-50 text-cyan-500 flex items-center justify-center">
+                        <div
+                            class="w-10 h-10 rounded-xl bg-cyan-50 text-cyan-500 flex items-center justify-center shrink-0">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z">
@@ -821,11 +881,12 @@
                     </div>
                 </div>
 
-                {{-- GANTI TEMA / TEMPLATE (DENGAN IFRAME SEPERTI CREATE) --}}
+                {{-- GANTI TEMA / TEMPLATE --}}
                 <div class="bg-white p-6 md:p-8 rounded-[2.5rem] border border-slate-100 shadow-sm">
                     <h4
                         class="text-xl font-bold text-slate-800 mb-6 flex items-center gap-3 pb-4 border-b border-slate-100">
-                        <div class="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-500 flex items-center justify-center">
+                        <div
+                            class="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-500 flex items-center justify-center shrink-0">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01">
@@ -1006,13 +1067,13 @@
         function addEventRow() {
             const id = Date.now();
             const html = `
-                <div class="p-5 bg-orange-50/50 rounded-2xl border border-orange-100 relative event-item mt-4 animate-fade-in">
+                <div class="p-5 bg-blue-50/50 rounded-2xl border border-blue-100 relative event-item mt-4 animate-fade-in">
                     <button type="button" onclick="this.closest('.event-item').remove()" class="absolute top-4 right-4 text-red-500 hover:text-red-700 font-bold text-xs bg-white px-3 py-1.5 rounded-lg shadow-sm">Hapus</button>
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
                         <div class="md:col-span-2">
                             <label class="block text-xs font-bold text-slate-600 mb-1">Nama Acara</label>
-                            <input type="text" name="events[${id}][title]" class="w-full py-2.5 px-4 bg-white border border-slate-200 rounded-xl focus:ring-rOrange" placeholder="Contoh: Unduh Mantu / After Party">
+                            <input type="text" name="events[${id}][title]" class="w-full py-2.5 px-4 bg-white border border-slate-200 rounded-xl focus:ring-rOrange" placeholder="Contoh: Resepsi Tambahan / After Party">
                         </div>
                         <div><label class="block text-xs font-bold text-slate-600 mb-1">Tanggal</label><input type="date" name="events[${id}][date]" class="w-full py-2.5 px-4 bg-white border border-slate-200 rounded-xl focus:ring-rOrange"></div>
                         <div><label class="block text-xs font-bold text-slate-600 mb-1">Waktu / Jam</label><input type="text" name="events[${id}][time]" class="w-full py-2.5 px-4 bg-white border border-slate-200 rounded-xl focus:ring-rOrange" placeholder="Contoh: 18:00 - Selesai"></div>
@@ -1124,22 +1185,18 @@
         }
 
         document.addEventListener('DOMContentLoaded', function() {
-            // Interaksi Toggle Switch: Membuat area redup jika dimatikan
+            // Interaksi Toggle Switch
             const toggles = document.querySelectorAll('input[type="checkbox"][name^="is_"]');
             toggles.forEach(toggle => {
                 toggle.addEventListener('change', function() {
-                    // Cari elemen wrapper (div) tepat di bawah header card
-                    const wrapper = this.closest('.bg-white').querySelector('.space-y-6') || this
-                        .closest('.bg-white').querySelector('.grid') || this.closest('.bg-white')
-                        .nextElementSibling;
+                    // Cari wrapper terdekat yang memiliki efek transisi
+                    const wrapper = this.closest('.bg-white').querySelector('.transition-opacity');
 
-                    if (wrapper && wrapper.id !== 'theme-grid') {
+                    if (wrapper) {
                         if (this.checked) {
-                            wrapper.classList.remove('opacity-40');
-                            wrapper.style.pointerEvents = 'auto';
+                            wrapper.classList.remove('opacity-40', 'pointer-events-none');
                         } else {
-                            wrapper.classList.add('opacity-40');
-                            wrapper.style.pointerEvents = 'none'; // Cegah input diklik
+                            wrapper.classList.add('opacity-40', 'pointer-events-none');
                         }
                     }
                 });

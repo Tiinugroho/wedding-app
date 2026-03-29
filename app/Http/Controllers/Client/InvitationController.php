@@ -130,7 +130,6 @@ class InvitationController extends Controller
         $invitation = Invitation::where('user_id', Auth::id())->findOrFail($id);
         $oldContent = json_decode($invitation->details->content ?? '{}', true);
 
-        // 1. Validasi
         $request->validate([
             'template_id' => 'required|exists:templates,id',
             'couple_order' => 'required|in:groom_first,bride_first',
@@ -155,10 +154,15 @@ class InvitationController extends Controller
             'turut_mengundang_groom' => 'nullable|string',
             'turut_mengundang_bride' => 'nullable|string',
             
-            // Validasi Events Dinamis
-            'events' => 'required|array|min:1',
-            'events.*.title' => 'required|string|max:255',
-            'events.*.date' => 'required|date',
+            // Validasi Akad Statis
+            'akad_date' => 'nullable|date',
+            'akad_time' => 'nullable|string',
+            'akad_location' => 'nullable|string',
+            'akad_address' => 'nullable|string',
+            'akad_map' => 'nullable|url',
+            
+            // Validasi Resepsi Dinamis
+            'events' => 'nullable|array',
             
             'enable_dresscode' => 'nullable|boolean',
             'dresscode' => 'nullable|string',
@@ -240,12 +244,14 @@ class InvitationController extends Controller
             'cover_greeting' => $request->cover_greeting ?? 'Kepada Yth.',
             'quotes' => $request->quotes,
             
-            // Toggles dipindah langsung dari card masing-masing
+            // Toggles
+            'is_turut_mengundang_active' => $request->has('is_turut_mengundang_active'),
             'is_event_active' => $request->has('is_event_active'),
             'is_story_active' => $request->has('is_story_active'),
             'is_gallery_active' => $request->has('is_gallery_active'),
             'is_gift_active' => $request->has('is_gift_active'),
-            'is_wishes_active' => $request->has('is_wishes_active'),
+            'is_wishes_active' => $request->has('is_wishes_active'), // ini untuk hasil ucapannya
+            'is_guest_info_active' => $request->has('is_guest_info_active'),
             
             'groom_photo' => $groomPhotoPath,
             'bride_photo' => $bridePhotoPath,
@@ -264,7 +270,14 @@ class InvitationController extends Controller
             'turut_mengundang_groom' => $processTurutMengundang($request->turut_mengundang_groom),
             'turut_mengundang_bride' => $processTurutMengundang($request->turut_mengundang_bride),
             
-            // Simpan Events secara dinamis array
+            // Akad Statis
+            'akad_date' => $request->akad_date,
+            'akad_time' => $request->akad_time,
+            'akad_location' => $request->akad_location,
+            'akad_address' => $request->akad_address,
+            'akad_map' => $request->akad_map,
+            
+            // Resepsi Dinamis Array
             'events' => collect($request->events)->values()->toArray(),
 
             'enable_dresscode' => $request->has('enable_dresscode'),
