@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Controller;
+use App\Models\Bank;
 use App\Models\Gallery;
 use App\Models\Invitation;
 use App\Models\InvitationDetail;
@@ -97,12 +98,14 @@ class InvitationController extends Controller
 
         $musics = Music::orderBy('category')->orderBy('title')->get();
         $content = json_decode($invitation->details->content ?? '{}', true);
+        
+        // TAMBAHKAN BARIS INI: Ambil semua data bank yang aktif
+        $masterBanks = Bank::where('is_active', true)->orderBy('name', 'asc')->get();
 
-        // Ambil data order / paket saat ini
         $currentOrder = $invitation->orders->last();
         $packageLogic = [];
         $currentPackageName = 'Custom';
-        $currentPackagePrice = 0; // Default harga 0
+        $currentPackagePrice = 0; 
 
         if ($currentOrder && $currentOrder->package) {
             $features = is_string($currentOrder->package->features) ? json_decode($currentOrder->package->features, true) : $currentOrder->package->features;
@@ -111,10 +114,10 @@ class InvitationController extends Controller
             $currentPackagePrice = $currentOrder->package->price;
         }
 
-        // AMBIL DAFTAR PAKET UNTUK UPGRADE (Hanya yang harganya lebih mahal dari paket saat ini)
         $upgradePackages = Package::where('is_active', true)->where('price', '>', $currentPackagePrice)->orderBy('price', 'asc')->get();
 
-        return view('customer.invitations.edit', compact('invitation', 'musics', 'content', 'packageLogic', 'currentPackageName', 'currentPackagePrice', 'upgradePackages'));
+        // PASTIKAN $masterBanks dimasukkan ke dalam compact()
+        return view('customer.invitations.edit', compact('invitation', 'musics', 'content', 'packageLogic', 'currentPackageName', 'currentPackagePrice', 'upgradePackages', 'masterBanks'));
     }
 
     /**
@@ -123,40 +126,45 @@ class InvitationController extends Controller
     public function update(Request $request, $id)
     {
         $invitation = Invitation::where('user_id', Auth::id())->findOrFail($id);
+        $oldContent = json_decode($invitation->details->content ?? '{}', true);
 
-        // 1. Validasi Data Teks & File Sekaligus
+        // 1. Validasi
         $request->validate([
-            'groom_name' => 'required|string|max:255',
-            'bride_name' => 'required|string|max:255',
-            'gallery_files.*' => 'nullable|image|mimes:jpg,jpeg,png|max:2048', // Validasi foto baru
+            'groom_name' => 'nullable|string|max:255',
+            'bride_name' => 'nullable|string|max:255',
+            'groom_ig' => 'nullable|url|max:255',
+            'bride_ig' => 'nullable|url|max:255',
+            'groom_photo' => 'nullable|image|mimes:jpg,jpeg,png|max:5048',
+            'bride_photo' => 'nullable|image|mimes:jpg,jpeg,png|max:5048',
+            
+            'turut_mengundang_groom' => 'nullable|string',
+            'turut_mengundang_bride' => 'nullable|string',
+            'enable_dresscode' => 'nullable|boolean',
+            'dresscode' => 'nullable|string',
+            'enable_health_protocol' => 'nullable|boolean',
+            
+            'love_stories' => 'nullable|array',
+            'love_stories.*.image' => 'nullable|image|mimes:jpg,jpeg,png|max:3048', // Validasi foto love story
+            'banks' => 'nullable|array',
+            
+            'gallery_files.*' => 'nullable|image|mimes:jpg,jpeg,png|max:5048',
         ]);
 
-        // 2. Logika Simpan Foto Baru (Jika Ada)
-        if ($request->hasFile('gallery_files')) {
-            // Ambil limit paket
-            $currentOrder = $invitation->orders->last();
-            $features = is_string($currentOrder->package->features) ? json_decode($currentOrder->package->features, true) : $currentOrder->package->features;
-            $maxPhotos = $features['logic']['gallery_limit'] ?? 5;
-
-            // Hitung jumlah foto yang sudah ada di database
-            $currentPhotoCount = Gallery::where('invitation_id', $invitation->id)->where('type', 'photo')->count();
-            $newFiles = $request->file('gallery_files');
-
-            // Cek kuota paket
-            if ($currentPhotoCount + count($newFiles) > $maxPhotos) {
-                return back()->with('error', "Gagal simpan foto! Kuota paket Anda hanya $maxPhotos foto. Sisa kuota: " . ($maxPhotos - $currentPhotoCount));
+        // 2. Proses Foto Mempelai
+        $groomPhotoPath = $oldContent['groom_photo'] ?? null;
+        if ($request->hasFile('groom_photo')) {
+            if ($groomPhotoPath && \Storage::disk('public')->exists($groomPhotoPath)) {
+                \Storage::disk('public')->delete($groomPhotoPath);
             }
+            $groomPhotoPath = $request->file('groom_photo')->store('profiles/' . $invitation->id, 'public');
+        }
 
-            // Proses simpan ke Storage
-            foreach ($newFiles as $file) {
-                $path = $file->store('galleries/' . $invitation->id, 'public');
-
-                Gallery::create([
-                    'invitation_id' => $invitation->id,
-                    'file_path' => $path,
-                    'type' => 'photo',
-                ]);
+        $bridePhotoPath = $oldContent['bride_photo'] ?? null;
+        if ($request->hasFile('bride_photo')) {
+            if ($bridePhotoPath && \Storage::disk('public')->exists($bridePhotoPath)) {
+                \Storage::disk('public')->delete($bridePhotoPath);
             }
+            $bridePhotoPath = $request->file('bride_photo')->store('profiles/' . $invitation->id, 'public');
         }
 
         // 3. Update Backsound Musik
@@ -164,32 +172,93 @@ class InvitationController extends Controller
             $invitation->update(['music_id' => $request->music_id]);
         }
 
-        // 4. Kumpulkan Data Teks
+        // 4. PROSES LOVE STORY (Teks & Foto Dinamis)
+        $loveStoriesData = [];
+        $inputLoveStories = $request->love_stories ?? [];
+        $oldLoveStories = $oldContent['love_stories'] ?? [];
+
+        foreach ($inputLoveStories as $index => $story) {
+            // Abaikan jika judul dan deskripsi kosong
+            if (empty($story['title']) && empty($story['description'])) continue;
+
+            // Ambil path gambar lama (jika ada)
+            $imagePath = $oldLoveStories[$index]['image'] ?? null;
+
+            // Jika ada upload gambar baru di baris ini
+            if ($request->hasFile("love_stories.{$index}.image")) {
+                // Hapus gambar lama
+                if ($imagePath && \Storage::disk('public')->exists($imagePath)) {
+                    \Storage::disk('public')->delete($imagePath);
+                }
+                // Simpan gambar baru
+                $imagePath = $request->file("love_stories.{$index}.image")->store('lovestories/' . $invitation->id, 'public');
+            }
+
+            $loveStoriesData[] = [
+                'year' => $story['year'] ?? '',
+                'title' => $story['title'] ?? '',
+                'description' => $story['description'] ?? '',
+                'image' => $imagePath, // Simpan path gambar
+            ];
+        }
+
+        // Pembersihan (Garbage Collection): Hapus gambar dari storage jika klien menghapus baris cerita
+        foreach ($oldLoveStories as $oldIndex => $oldStory) {
+            if (!isset($inputLoveStories[$oldIndex]) && !empty($oldStory['image'])) {
+                if (\Storage::disk('public')->exists($oldStory['image'])) {
+                    \Storage::disk('public')->delete($oldStory['image']);
+                }
+            }
+        }
+
+        // 5. Kumpulkan Semua Data ke dalam JSON
         $contentData = [
+            'groom_photo' => $groomPhotoPath,
+            'bride_photo' => $bridePhotoPath,
             'groom_name' => $request->groom_name,
             'groom_nickname' => $request->groom_nickname,
             'groom_parents' => $request->groom_parents,
             'groom_ig' => $request->groom_ig,
+            
             'bride_name' => $request->bride_name,
             'bride_nickname' => $request->bride_nickname,
             'bride_parents' => $request->bride_parents,
             'bride_ig' => $request->bride_ig,
+            
+            'turut_mengundang_groom' => $request->turut_mengundang_groom,
+            'turut_mengundang_bride' => $request->turut_mengundang_bride,
+            
             'akad_date' => $request->akad_date,
             'akad_time' => $request->akad_time,
             'akad_location' => $request->akad_location,
             'akad_address' => $request->akad_address,
             'akad_map' => $request->akad_map,
+            
             'resepsi_date' => $request->resepsi_date,
             'resepsi_time' => $request->resepsi_time,
             'resepsi_location' => $request->resepsi_location,
             'resepsi_address' => $request->resepsi_address,
             'resepsi_map' => $request->resepsi_map,
+
+            'enable_dresscode' => $request->has('enable_dresscode') ? true : false,
+            'dresscode' => $request->dresscode,
+            'enable_health_protocol' => $request->has('enable_health_protocol') ? true : false,
+
+            // Masukkan data Love Story yang sudah diproses beserta fotonya
+            'love_stories' => $loveStoriesData,
+            
+            'banks' => collect($request->banks)->filter(function($bank) {
+                return !empty($bank['name']) && !empty($bank['account_number']);
+            })->values()->toArray(),
         ];
 
-        // 5. Simpan/Update Detail JSON
-        InvitationDetail::updateOrCreate(['invitation_id' => $invitation->id], ['content' => json_encode($contentData)]);
+        // 6. Simpan ke database
+        InvitationDetail::updateOrCreate(
+            ['invitation_id' => $invitation->id], 
+            ['content' => json_encode($contentData)]
+        );
 
-        return redirect()->back()->with('success', 'Semua perubahan data dan foto berhasil disimpan!');
+        return redirect()->back()->with('success', 'Semua perubahan data berhasil disimpan!');
     }
 
     public function uploadGallery(Request $request, $id)
@@ -271,5 +340,4 @@ class InvitationController extends Controller
         return back()->with('success', 'Foto berhasil dihapus.');
     }
 
-    // Method create, store, edit, update akan kita buat setelah ini...
 }

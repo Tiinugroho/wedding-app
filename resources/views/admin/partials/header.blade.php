@@ -56,7 +56,7 @@
                             <div class="profile-notification-scroll position-relative" style="max-height: calc(100vh - 225px)">
                                 <ul class="list-group list-group-flush w-100">
                                     <li class="list-group-item">
-                                        <a href="{{ route('profile.edit') }}" class="dropdown-item">
+                                        <a href="{{ route('admin.profile.edit') }}" class="dropdown-item">
                                             <span class="d-flex align-items-center">
                                                 <i class="ph ph-user-circle"></i>
                                                 <span>Edit profile</span>

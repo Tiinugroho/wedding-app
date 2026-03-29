@@ -9,11 +9,10 @@ class InvitationDetail extends Model
 {
     use HasFactory;
 
-    protected $guarded = ['id'];
-
-    // Kunci Dinamis: Data JSON teks pengantin, jadwal, dan maps akan menjadi Array
-    protected $casts = [
-        'content' => 'array',
+    // WAJIB ADA AGAR DATA BISA DISIMPAN
+    protected $fillable = [
+        'invitation_id',
+        'content',
     ];
 
     public function invitation()
