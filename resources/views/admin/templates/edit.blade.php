@@ -49,13 +49,13 @@
                                         <input type="text" name="view_path" class="form-control" value="{{ old('view_path', $template->view_path) }}" required>
                                     </div>
 
-                                    <div class="mb-4">
+                                    {{-- <div class="mb-4">
                                         <label class="form-label">Ganti Thumbnail (Opsional)</label>
                                         <input type="file" name="thumbnail" class="form-control" accept="image/*">
                                         <div class="mt-2">
                                             <img src="{{ asset('storage/'.$template->thumbnail) }}" alt="Preview" class="img-thumbnail" width="150">
                                         </div>
-                                    </div>
+                                    </div> --}}
                                 </div>
 
                                 <div class="col-md-6">

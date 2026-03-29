@@ -13,7 +13,7 @@ return new class extends Migration
             $table->foreignId('order_id')->constrained()->cascadeOnDelete();
             $table->string('transaction_id')->unique();
             $table->string('payment_type');
-            $table->json('payload')->nullable(); // Log respons Midtrans
+            $table->json('payload')->nullable(); // Log respons dari Duitku (untuk keamanan & jejak digital)
             $table->timestamps();
         });
     }

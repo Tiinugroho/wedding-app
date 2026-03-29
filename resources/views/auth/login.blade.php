@@ -85,10 +85,10 @@
                         <div class="space-y-1.5">
                             <div class="flex justify-between items-center">
                                 <label class="text-xs font-bold text-slate-500 ml-1">Password</label>
-                                @if (Route::has('password.request'))
+                                {{-- @if (Route::has('password.request'))
                                     <a href="{{ route('password.request') }}"
                                         class="text-xs font-bold text-rOrange hover:text-rRed transition">Lupa?</a>
-                                @endif
+                                @endif --}}
                             </div>
                             <input type="password" name="password" placeholder="••••••••" required
                                 class="input-style w-full px-5 py-3 rounded-xl border @error('password') border-rRed @else border-slate-200 @enderror bg-slate-50/50 outline-none focus:border-rOrange text-sm transition-colors">

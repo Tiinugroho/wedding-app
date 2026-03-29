@@ -22,7 +22,7 @@ Route::get('/', [HomeController::class, 'index'])->name('welcome');
 // ==========================================
 Route::get('/auth/google/redirect', [GoogleController::class, 'redirect'])->name('google.login');
 Route::get('/auth/google/callback', [GoogleController::class, 'callback']);
-
+Route::get('/check-slug', [InvitationController::class, 'checkSlug'])->name('check.slug');
 // Grup besar: Harus Login & Email Verified
 Route::middleware(['auth', 'verified'])->group(function () {
 

@@ -14,7 +14,11 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->foreignId('invitation_id')->constrained()->cascadeOnDelete();
             $table->bigInteger('amount');
-            $table->string('snap_token')->nullable();
+            
+            // KOLOM KHUSUS DUITKU
+            $table->string('reference')->nullable(); // Menyimpan ID Transaksi dari Duitku
+            $table->string('payment_url')->nullable(); // Menyimpan Link Checkout Duitku
+            
             $table->enum('status', ['pending', 'success', 'failed', 'expired'])->default('pending');
             $table->foreignId('package_id')
                   ->nullable()

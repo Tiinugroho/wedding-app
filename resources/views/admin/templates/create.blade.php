@@ -51,10 +51,10 @@
                                         <small class="text-muted">Ini adalah nama file blade yang akan dirender (resources/views/themes/wed-1/index.blade.php)</small>
                                     </div>
 
-                                    <div class="mb-4">
+                                    {{-- <div class="mb-4">
                                         <label class="form-label">Upload Thumbnail <span class="text-danger">*</span></label>
                                         <input type="file" name="thumbnail" class="form-control" accept="image/*" required>
-                                    </div>
+                                    </div> --}}
                                 </div>
 
                                 <div class="col-md-6">

@@ -38,11 +38,11 @@
                             <table id="table-template" class="table table-hover table-bordered align-middle">
                                 <thead>
                                     <tr>
-                                        <th>No</th>
-                                        <th>Preview</th>
+                                        <th style="width: 5%">No</th>
+                                        <th style="width: 15%" class="text-center">Preview</th>
                                         <th>Nama Tema</th>
                                         <th>Kategori</th>
-                                        <th>View Path (Blade)</th>
+                                        <th>View Path</th>
                                         <th>Status</th>
                                         <th class="text-center">Aksi</th>
                                     </tr>
@@ -51,18 +51,32 @@
                                     @foreach($templates as $template)
                                     <tr>
                                         <td>{{ $loop->iteration }}</td>
-                                        <td>
-                                            <img src="{{ asset('storage/'.$template->thumbnail) }}" alt="img" class="img-radius" width="60" height="60" style="object-fit: cover;">
+                                        
+                                        {{-- KOLOM LIVE PREVIEW IFRAME --}}
+                                        <td class="text-center">
+                                            <div class="position-relative overflow-hidden rounded border border-light mx-auto" style="width: 100px; height: 100px; background-color: #f8f9fa;">
+                                                {{-- Iframe pembungkus agar tidak bisa di-scroll manual --}}
+                                                <div class="position-absolute top-0 start-0 w-100 h-100" style="pointer-events: none;">
+                                                    <iframe src="{{ asset('preview/' . $template->view_path . '/index.html') }}" 
+                                                            style="position: absolute; top: 0; left: 0; width: 400%; height: 400%; transform-origin: top left; transform: scale(0.25); border: none;" 
+                                                            scrolling="no" 
+                                                            tabindex="-1">
+                                                    </iframe>
+                                                </div>
+                                                {{-- Tombol klik untuk membuka preview besar di tab baru --}}
+                                                <a href="{{ asset('preview/' . $template->view_path . '/index.html') }}" target="_blank" class="position-absolute top-0 start-0 w-100 h-100" style="z-index: 10;" title="Lihat Full Preview"></a>
+                                            </div>
                                         </td>
+                                        
                                         <td class="fw-bold">{{ $template->name }}</td>
                                         <td><span class="badge bg-light-primary">{{ $template->category->name ?? 'Tanpa Kategori' }}</span></td>
-                                        <td><code class="text-dark bg-light px-2 py-1 rounded">{{ $template->view_path }}</code></td>
+                                        <td><code class="text-dark bg-light px-2 py-1 rounded">public/preview/{{ $template->view_path }}/index.hmtl</code></td>
                                         <td>{!! $template->is_active ? '<span class="badge bg-success">Aktif</span>' : '<span class="badge bg-danger">Nonaktif</span>' !!}</td>
                                         <td class="text-center">
-                                            <a href="{{ route('admin.templates.edit', $template->id) }}" class="btn btn-icon btn-warning btn-sm me-1"><i class="feather icon-edit text-white"></i></a>
-                                            <form action="{{ route('admin.templates.destroy', $template->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Hapus template ini?');">
+                                            <a href="{{ route('admin.templates.edit', $template->id) }}" class="btn btn-icon btn-warning btn-sm me-1" title="Edit Template"><i class="feather icon-edit text-white"></i></a>
+                                            <form action="{{ route('admin.templates.destroy', $template->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Hapus template ini secara permanen?');">
                                                 @csrf @method('DELETE')
-                                                <button type="submit" class="btn btn-icon btn-danger btn-sm"><i class="feather icon-trash-2"></i></button>
+                                                <button type="submit" class="btn btn-icon btn-danger btn-sm" title="Hapus Template"><i class="feather icon-trash-2"></i></button>
                                             </form>
                                         </td>
                                     </tr>

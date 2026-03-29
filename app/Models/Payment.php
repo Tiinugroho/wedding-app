@@ -11,7 +11,7 @@ class Payment extends Model
 
     protected $guarded = ['id'];
 
-    // Casting response dari Midtrans agar mudah dibaca atau diaudit
+    // Casting response JSON dari Duitku agar otomatis menjadi Array di PHP
     protected $casts = [
         'payload' => 'array',
     ];
