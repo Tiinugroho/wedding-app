@@ -1,0 +1,23 @@
+PS C:\laragon\www\wedding-app> composer run dev
+> Composer\Config::disableProcessTimeout
+> npx concurrently -c "#93c5fd,#c4b5fd,#fdba74" "php artisan serve" "php artisan queue:listen --tries=1" "npm run dev" --names='server,queue,vite'
+[server] Error occurred when executing command: php artisan serve
+[server] Error: spawn cmd.exe ENOENT
+[server]     at ChildProcess._handle.onexit (node:internal/child_process:286:19)
+[server]     at onErrorNT (node:internal/child_process:507:16)
+[server]     at process.processTicksAndRejections (node:internal/process/task_queues:90:21)
+[queue] Error occurred when executing command: php artisan queue:listen --tries=1
+[queue] Error: spawn cmd.exe ENOENT
+[queue]     at ChildProcess._handle.onexit (node:internal/child_process:286:19)
+[queue]     at onErrorNT (node:internal/child_process:507:16)
+[queue]     at process.processTicksAndRejections (node:internal/process/task_queues:90:21)
+[vite] Error occurred when executing command: npm run dev
+[vite] Error: spawn cmd.exe ENOENT
+[vite]     at ChildProcess._handle.onexit (node:internal/child_process:286:19)
+[vite]     at onErrorNT (node:internal/child_process:507:16)
+[vite]     at process.processTicksAndRejections (node:internal/process/task_queues:90:21)
+[vite] npm run dev exited with code -4058
+[queue] php artisan queue:listen --tries=1 exited with code -4058
+[server] php artisan serve exited with code -4058
+Script npx concurrently -c "#93c5fd,#c4b5fd,#fdba74" "php artisan serve" "php artisan queue:listen --tries=1" "npm run dev" --names='server,queue,vite' handling the dev event returned with error code 1                                                                               
+PS C:\laragon\www\wedding-app> 
