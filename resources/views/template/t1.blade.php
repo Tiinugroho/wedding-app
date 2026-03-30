@@ -1,719 +1,958 @@
 <!DOCTYPE html>
-<html lang="id">
-
+<html lang="id" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Wedding of {{ $content['groom_nickname'] ?? 'Rama' }} & {{ $content['bride_nickname'] ?? 'Shinta' }}
-    </title>
-
+    <title>Undangan Pernikahan - {{ $content['groom_nickname'] ?? 'Romeo' }} & {{ $content['bride_nickname'] ?? 'Juliet' }}</title>
+    
     <script src="https://cdn.tailwindcss.com"></script>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Montserrat:wght@300;400;600&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap"
-        rel="stylesheet">
-    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
-    <link rel="stylesheet" href="{{ asset('preview/template1.css') }}">
-</head>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-<body class="font-main bg-pattern text-stone-900 antialiased overflow-x-hidden">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            white: '#FFFFFF',
+                            elegant: '#FDFDFD',
+                            gold: '#C5A065',
+                            charcoal: '#333333',
+                            lightGold: '#E4D5B7',
+                            softWhite: 'rgba(255, 255, 255, 0.9)',
+                        }
+                    },
+                    fontFamily: {
+                        serif: ['"Playfair Display"', 'serif'],
+                        sans: ['"Inter"', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        ::-webkit-scrollbar { width: 0px; background: transparent; }
+        body { overflow-y: hidden; }
+        
+        .floating-nav {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(197, 160, 101, 0.2);
+        }
+        .text-protected { text-shadow: 0 1px 3px rgba(0, 0, 0, 0.08); }
+        #guest-name {
+            background: linear-gradient(to bottom, #333333, #555555);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            color: #333333; 
+        }
+        .py-4\.5 { padding-top: 1.125rem; padding-bottom: 1.125rem; }
+        @keyframes fade-in {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in { animation: fade-in 0.4s ease-out forwards; }
+        #mempelai { background: linear-gradient(to bottom, #FFFFFF 0%, #FDFDFD 100%); }
+        #mempelai .group:hover .border-brand-lightGold\/40 {
+            border-color: rgba(197, 160, 101, 0.7);
+            transform: translate(3px, 3px);
+        }
+        .scroll-custom::-webkit-scrollbar { width: 4px; }
+        .scroll-custom::-webkit-scrollbar-track { background: transparent; }
+        .scroll-custom::-webkit-scrollbar-thumb { background: #C5A065; border-radius: 10px; }
+    </style>
 
     @php
-        // Format Tanggal Hero Section dari tanggal Akad
-        $heroDate = !empty($content['akad_date'])
-            ? \Carbon\Carbon::parse($content['akad_date'])->locale('id')->translatedFormat('l, d F Y')
-            : 'Sabtu, 17 Agustus 2026';
+        // Ekstraksi Youtube ID agar iFrame berfungsi
+        function getYoutubeId($url) {
+            preg_match('%(?:youtube(?:-nocookie)?\.com/(?:[^/]+/.+/|(?:v|e(?:mbed)?)/|.*[?&]v=)|youtu\.be/)([^"&?/\s]{11})%i', $url, $match);
+            return $match[1] ?? null;
+        }
+
+        // Format Tanggal untuk Cover (18 . 07 . 2026)
+        $coverDate = !empty($content['akad_date']) ? \Carbon\Carbon::parse($content['akad_date'])->format('d . m . Y') : 'TBA';
+        
+        // Siapkan variabel urutan
+        $isGroomFirst = ($content['couple_order'] ?? 'groom_first') == 'groom_first';
+        $pria = $content['groom_nickname'] ?? 'Romeo';
+        $wanita = $content['bride_nickname'] ?? 'Juliet';
+        $coupleNameCover = $isGroomFirst ? "$pria & $wanita" : "$wanita & $pria";
     @endphp
+</head>
+<body class="bg-brand-elegant text-brand-charcoal font-sans antialiased relative selection:bg-brand-gold selection:text-white">
 
-    <section
-        class="relative h-screen flex items-center justify-center text-center p-6 bg-cover bg-center overflow-hidden"
-        style="background-image: url('https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&q=80&w=2070');">
-        <div class="absolute inset-0 bg-black/40 z-0"></div>
-        <div class="absolute top-10 left-10 w-32 h-32 bg-white/10 rounded-full blur-3xl animate-float"></div>
-        <div class="absolute bottom-20 right-10 w-48 h-48 bg-stone-500/10 rounded-full blur-3xl animate-float delay-1">
-        </div>
+    {{-- MUSIK --}}
+    <audio id="bg-music" loop>
+        <source src="{{ !empty($invitation->music_id) ? asset('storage/' . $invitation->music->file_path) : 'https://cdn.pixabay.com/audio/2021/07/18/audio_c993f91966.mp3' }}" type="audio/mpeg">
+    </audio>
 
-        <div class="relative z-10 text-white space-y-8" data-aos="zoom-out" data-aos-duration="2000">
-            <div class="space-y-2">
-                <p class="uppercase tracking-[0.4em] text-[10px] sm:text-xs text-stone-200">The Wedding of</p>
-                <h1 class="font-aesthetic text-7xl sm:text-9xl text-stone-100 drop-shadow-lg">
-                    {{ $content['groom_nickname'] ?? 'Rama' }} & {{ $content['bride_nickname'] ?? 'Shinta' }}
-                </h1>
+    {{-- COVER PAGE --}}
+    <div id="cover-page" class="fixed inset-0 z-50 flex flex-col items-center justify-center bg-brand-white transition-transform duration-1000 ease-in-out overflow-hidden">
+        <div class="absolute inset-0 opacity-[0.22] bg-[url('{{ !empty($content['groom_photo']) ? asset('storage/'.$content['groom_photo']) : 'https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=1000&auto=format&fit=crop' }}')] bg-cover bg-center scale-105 animate-[pulse_10s_infinite]"></div>
+        <div class="absolute inset-0 opacity-[0.025] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/paper-fibers.png')]"></div>
+        <div class="absolute inset-0 bg-gradient-to-b from-brand-white/10 via-brand-white/70 to-brand-white/95"></div>
+            
+        <div class="relative z-10 text-center px-6 max-w-lg w-full">
+            <p class="text-xs tracking-[0.4em] uppercase text-brand-gold mb-5 font-semibold drop-shadow-sm">The Wedding Of</p>
+            
+            <h1 class="text-6xl md:text-7xl font-serif italic text-brand-gold mb-3 tracking-tight leading-none text-protected">{{ $coupleNameCover }}</h1>
+            
+            <div class="flex items-center justify-center gap-5 mb-12">
+                <div class="h-[1px] w-12 bg-brand-gold/25"></div>
+                <p class="text-sm font-sans tracking-[0.25em] text-brand-charcoal uppercase font-light">{{ $coverDate }}</p>
+                <div class="h-[1px] w-12 bg-brand-gold/25"></div>
             </div>
-            <div class="space-y-4">
-                <div class="h-[1px] w-24 bg-white/40 mx-auto"></div>
-                <h3 id="guest-name" class="font-serif-elegant text-2xl md:text-3xl italic font-light tracking-wide">
-                    {{ $guestData->name ?? 'Tamu Undangan' }}
-                </h3>
-                <div class="h-[1px] w-24 bg-white/40 mx-auto"></div>
-            </div>
-            <p class="text-sm sm:text-base tracking-[0.2em] uppercase text-stone-300">{{ $heroDate }}</p>
-            <div class="mt-12">
-                <a href="#mempelai"
-                    class="inline-block px-8 py-3 border border-white/50 rounded-full text-xs tracking-widest uppercase text-white hover:bg-white hover:text-stone-900 transition-all duration-500 backdrop-blur-sm">
-                    Buka Undangan
-                </a>
-            </div>
-        </div>
-    </section>
-
-    <div id="mempelai"></div>
-    <section class="py-20 md:py-32 px-6 overflow-hidden">
-        <div class="max-w-6xl mx-auto space-y-24">
-            <div class="text-center" data-aos="fade-up">
-                <h2 class="font-aesthetic text-6xl text-stone-900 mb-6">Assalamu’alaikum Wr. Wb.</h2>
-                <p class="max-w-xl mx-auto text-stone-500 leading-relaxed font-serif-elegant">
-                    Dengan memohon rahmat Allah SWT, kami mengundang Anda untuk merayakan ikatan suci pernikahan kami.
-                </p>
-            </div>
-
-            <div class="grid md:grid-cols-2 gap-20 items-center">
-                <div class="text-center group" data-aos="fade-right">
-                    <div class="relative w-64 h-80 mx-auto mb-8">
-                        <div
-                            class="absolute inset-0 border border-stone-200 translate-x-4 translate-y-4 rounded-t-full transition-transform group-hover:translate-x-2 group-hover:translate-y-2">
-                        </div>
-                        <img src="{{ !empty($content['groom_photo']) ? asset('storage/' . $content['groom_photo']) : 'https://images.soco.id/230-58.jpg.jpeg' }}"
-                            class="w-full h-full object-cover rounded-t-full shadow-xl relative z-10" alt="Groom">
+            
+            <div class="my-9 p-8 md:p-10 bg-white/35 backdrop-blur-sm rounded-[2rem] border border-white/60 shadow-[0_6px_25px_rgba(197,160,101,0.1)] relative overflow-hidden group">
+                <p class="text-xs text-gray-500 mb-3.5 italic font-light tracking-wide">{{ $content['cover_greeting'] ?? 'Kepada Yth.' }}</p>
+                <h2 id="guest-name" class="text-3xl md:text-4xl font-serif font-semibold text-brand-charcoal leading-snug">Tamu Undangan</h2>
+                
+                @if(!empty($content['akad_location']))
+                    <div class="mt-5 flex items-center justify-center gap-2.5 text-xs text-brand-gold uppercase tracking-[0.1em] font-medium">
+                        <i class="fa-solid fa-location-dot"></i>
+                        <span>{{ $content['akad_location'] }}</span>
                     </div>
-                    <h3 class="font-aesthetic text-6xl text-stone-900 mb-2">{{ $content['groom_nickname'] ?? 'Rama' }}
-                    </h3>
-                    <p class="font-serif-elegant text-xl font-bold tracking-widest text-stone-800">
-                        {{ $content['groom_name'] ?? 'Rama Raditya Putra' }}</p>
-                    <p class="text-stone-500 text-sm mt-4 italic">
-                        {{ $content['groom_parents'] ?? 'Putra Pertama dari Bpk. Nama Ayah & Ibu Nama Ibu' }}</p>
-                    @if (!empty($content['groom_ig']))
-                        <div class="mt-6 flex justify-center gap-4">
-                            <a href="{{ $content['groom_ig'] }}" target="_blank"
-                                class="text-stone-400 hover:text-stone-900 transition-colors text-xs uppercase tracking-widest">Instagram</a>
-                        </div>
-                    @endif
-                </div>
-
-                <div class="text-center group" data-aos="fade-left">
-                    <div class="relative w-64 h-80 mx-auto mb-8">
-                        <div
-                            class="absolute inset-0 border border-stone-200 -translate-x-4 translate-y-4 rounded-t-full transition-transform group-hover:-translate-x-2 group-hover:translate-y-2">
-                        </div>
-                        <img src="{{ !empty($content['bride_photo']) ? asset('storage/' . $content['bride_photo']) : 'https://images.pexels.com/photos/157757/wedding-dresses-fashion-character-bride-157757.jpeg' }}"
-                            class="w-full h-full object-cover rounded-t-full shadow-xl relative z-10" alt="Bride">
-                    </div>
-                    <h3 class="font-aesthetic text-6xl text-stone-900 mb-2">
-                        {{ $content['bride_nickname'] ?? 'Shinta' }}</h3>
-                    <p class="font-serif-elegant text-xl font-bold tracking-widest text-stone-800">
-                        {{ $content['bride_name'] ?? 'Shinta Amelia Putri' }}</p>
-                    <p class="text-stone-500 text-sm mt-4 italic">
-                        {{ $content['bride_parents'] ?? 'Putri Kedua dari Bpk. Nama Ayah & Ibu Nama Ibu' }}</p>
-                    @if (!empty($content['bride_ig']))
-                        <div class="mt-6 flex justify-center gap-4">
-                            <a href="{{ $content['bride_ig'] }}" target="_blank"
-                                class="text-stone-400 hover:text-stone-900 transition-colors text-xs uppercase tracking-widest">Instagram</a>
-                        </div>
-                    @endif
-                </div>
-            </div>
-        </div>
-    </section>
-
-    @if (!empty($content['turut_mengundang_groom']) || !empty($content['turut_mengundang_bride']))
-        <section class="py-20 md:py-32 px-6 bg-stone-50 overflow-hidden" data-aos="fade-up">
-            <div class="max-w-4xl mx-auto">
-                <div class="text-center mb-16">
-                    <p class="uppercase tracking-[0.3em] text-[10px] text-stone-500 mb-4">Hormat Kami</p>
-                    <h2 class="font-aesthetic text-6xl text-stone-900 mb-4">Turut Mengundang</h2>
-                    <div class="h-[1px] w-20 bg-stone-300 mx-auto"></div>
-                    <p class="mt-6 text-stone-600 font-serif-elegant italic text-sm md:text-base">Keluarga Besar &
-                        Kerabat</p>
-                </div>
-
-                <div
-                    class="glass-card p-10 md:p-16 rounded-[3rem] border border-white shadow-sm relative overflow-hidden">
-                    <div class="absolute -top-10 -right-10 w-32 h-32 bg-stone-200/50 rounded-full blur-3xl"></div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-16 gap-y-12 relative z-10">
-                        @if (!empty($content['turut_mengundang_groom']))
-                            <div class="space-y-6" data-aos="fade-right" data-aos-delay="200">
-                                <div class="flex items-center gap-4 border-b border-stone-200 pb-3">
-                                    <span
-                                        class="text-[10px] font-bold uppercase tracking-widest text-stone-900">Keluarga
-                                        Pria</span>
-                                    <div class="h-[1px] flex-grow bg-stone-100"></div>
-                                </div>
-                                <div class="text-stone-600 text-sm md:text-base font-serif-elegant leading-relaxed">
-                                    {!! nl2br(e($content['turut_mengundang_groom'])) !!}
-                                </div>
-                            </div>
-                        @endif
-
-                        @if (!empty($content['turut_mengundang_bride']))
-                            <div class="space-y-6" data-aos="fade-left" data-aos-delay="400">
-                                <div class="flex items-center gap-4 border-b border-stone-200 pb-3">
-                                    <span
-                                        class="text-[10px] font-bold uppercase tracking-widest text-stone-900">Keluarga
-                                        Wanita</span>
-                                    <div class="h-[1px] flex-grow bg-stone-100"></div>
-                                </div>
-                                <div class="text-stone-600 text-sm md:text-base font-serif-elegant leading-relaxed">
-                                    {!! nl2br(e($content['turut_mengundang_bride'])) !!}
-                                </div>
-                            </div>
-                        @endif
-
-                        <div class="md:col-span-2 pt-8 text-center border-t border-stone-100" data-aos="zoom-in">
-                            <p
-                                class="font-serif-elegant italic text-stone-400 text-xs md:text-sm leading-relaxed max-w-lg mx-auto">
-                                "Serta seluruh keluarga besar, kerabat, dan rekan sejawat yang tidak dapat kami sebutkan
-                                satu per satu tanpa mengurangi rasa hormat kami."
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-    @endif
-
-
-    <section class="py-24 bg-stone-900 text-white relative overflow-hidden">
-        <div class="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-stone-50 to-transparent opacity-10"></div>
-        <div class="max-w-5xl mx-auto px-6 relative z-10">
-            <div class="text-center mb-20" data-aos="fade-down">
-                <h2 class="font-aesthetic text-7xl text-stone-200">The Ceremony</h2>
-                <p class="font-serif-elegant tracking-widest text-xs uppercase mt-4 text-stone-400">Waktu & Tempat
-                    Pelaksanaan</p>
+                @endif
             </div>
 
-            <div class="grid md:grid-cols-2 gap-8">
-                <div class="glass-card p-12 rounded-[3rem] text-center space-y-6 flex flex-col items-center"
-                    data-aos="fade-up">
-                    <div
-                        class="w-12 h-12 border border-stone-400 rounded-full flex items-center justify-center mx-auto text-stone-400 italic">
-                        01</div>
-                    <h3 class="font-aesthetic text-5xl">Akad Nikah</h3>
-                    <div class="space-y-2">
-                        <p class="font-bold text-stone-200 tracking-widest text-xs uppercase">
-                            {{ !empty($content['akad_date']) ? \Carbon\Carbon::parse($content['akad_date'])->locale('id')->translatedFormat('l, d F Y') : 'SENIN, 17 AGUSTUS 2026' }}
-                        </p>
-                        <p class="text-stone-400">{{ $content['akad_time'] ?? '08.00 - 10.00 WIB' }}</p>
-                    </div>
-                    <p class="text-sm leading-relaxed text-stone-300">
-                        {{ $content['akad_location'] ?? 'Masjid Raya Pekanbaru' }} <br>
-                        {{ $content['akad_address'] ?? 'Jl. Senapelan No. 128, Riau' }}</p>
-
-                    <div class="flex flex-col space-y-4 pt-4">
-                        @if (!empty($content['akad_map']))
-                            <a href="{{ $content['akad_map'] }}" target="_blank"
-                                class="inline-block border-b border-stone-400 text-[10px] tracking-widest hover:text-stone-100 transition uppercase">Google
-                                Maps</a>
-                        @endif
-
-                        <a href="#"
-                            class="flex items-center justify-center px-6 py-2 border border-stone-500 rounded-full text-[10px] tracking-[0.2em] uppercase hover:bg-stone-200 hover:text-stone-900 transition duration-500">
-                            <svg class="w-3 h-3 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z">
-                                </path>
-                            </svg>
-                            Simpan Jadwal
-                        </a>
-                    </div>
-                </div>
-
-                <div class="glass-card p-12 rounded-[3rem] text-center space-y-6 flex flex-col items-center"
-                    data-aos="fade-up" data-aos-delay="200">
-                    <div
-                        class="w-12 h-12 border border-stone-400 rounded-full flex items-center justify-center mx-auto text-stone-400 italic">
-                        02</div>
-                    <h3 class="font-aesthetic text-5xl">Resepsi</h3>
-                    <div class="space-y-2">
-                        <p class="font-bold text-stone-200 tracking-widest text-xs uppercase">
-                            {{ !empty($content['resepsi_date']) ? \Carbon\Carbon::parse($content['resepsi_date'])->locale('id')->translatedFormat('l, d F Y') : 'SENIN, 17 AGUSTUS 2026' }}
-                        </p>
-                        <p class="text-stone-400">{{ $content['resepsi_time'] ?? '11.00 - 16.00 WIB' }}</p>
-                    </div>
-                    <p class="text-sm leading-relaxed text-stone-300">
-                        {{ $content['resepsi_location'] ?? 'Grand Ballroom Hotel' }} <br>
-                        {{ $content['resepsi_address'] ?? 'Pekanbaru, Riau' }}</p>
-
-                    <div class="flex flex-col space-y-4 pt-4">
-                        @if (!empty($content['resepsi_map']))
-                            <a href="{{ $content['resepsi_map'] }}" target="_blank"
-                                class="inline-block border-b border-stone-400 text-[10px] tracking-widest hover:text-stone-100 transition uppercase">Google
-                                Maps</a>
-                        @endif
-
-                        <a href="#"
-                            class="flex items-center justify-center px-6 py-2 border border-stone-500 rounded-full text-[10px] tracking-[0.2em] uppercase hover:bg-stone-200 hover:text-stone-900 transition duration-500">
-                            <svg class="w-3 h-3 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z">
-                                </path>
-                            </svg>
-                            Simpan Jadwal
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section class="py-24 px-6 bg-white overflow-hidden">
-        <div class="max-w-7xl mx-auto space-y-16">
-            <div class="text-center" data-aos="fade-up">
-                <h2 class="font-aesthetic text-6xl text-stone-900 mb-4">Our Moments</h2>
-                <p class="text-stone-400 font-serif-elegant italic">Cerita indah dalam bingkai</p>
-            </div>
-
-            <div class="columns-2 md:columns-4 gap-4 space-y-4">
-                @forelse($invitation->galleries->where('type', 'photo') as $key => $gallery)
-                    <img src="{{ asset('storage/' . $gallery->file_path) }}"
-                        onclick="openModal({{ $key }})"
-                        class="gallery-item w-full rounded-3xl shadow-md cursor-pointer hover:brightness-90 transition duration-500"
-                        data-aos="zoom-in">
-                @empty
-                    <img src="https://images.unsplash.com/photo-1511795409834-ef04bbd61622?auto=format&fit=crop&q=80"
-                        class="w-full rounded-3xl shadow-md">
-                    <img src="https://images.unsplash.com/photo-1583939003579-730e3918a45a?auto=format&fit=crop&q=80"
-                        class="w-full rounded-3xl shadow-md">
-                @endforelse
-            </div>
-        </div>
-    </section>
-
-    @if (!empty($content['love_stories']) && count($content['love_stories']) > 0)
-        <section id="story-section"
-            class="relative py-24 md:py-32 px-4 md:px-6 bg-cover bg-fixed bg-center overflow-hidden"
-            style="background-image: url('https://images.unsplash.com/photo-1519225421980-715cb0215aed?auto=format&fit=crop&q=80');">
-            <div class="absolute inset-0 bg-stone-900/80 backdrop-blur-[2px]"></div>
-
-            <div class="relative z-10 max-w-5xl mx-auto">
-                <div class="text-center mb-16 md:mb-24" data-aos="fade-up">
-                    <h2 class="font-aesthetic text-5xl md:text-7xl text-white mb-4">Our Love Story</h2>
-                    <div class="h-[1px] w-20 bg-white/30 mx-auto"></div>
-                    <p class="mt-4 text-stone-300 font-serif-elegant italic text-sm md:text-base">Sebuah perjalanan
-                        yang kami syukuri</p>
-                </div>
-
-                <div class="relative">
-                    <div
-                        class="absolute left-4 md:left-1/2 transform md:-translate-x-1/2 h-full w-[1px] bg-gradient-to-b from-transparent via-white/30 to-transparent">
-                    </div>
-
-                    <div class="space-y-16 md:space-y-32">
-                        @foreach ($content['love_stories'] as $index => $story)
-                            <div class="relative flex flex-col md:flex-row {{ $index % 2 == 1 ? 'md:flex-row-reverse' : '' }} items-start md:items-center justify-between"
-                                data-aos="fade-up">
-                                <div
-                                    class="hidden md:block w-5/12 {{ $index % 2 == 1 ? 'text-left' : 'text-right' }}">
-                                    <div
-                                        class="p-6 bg-white/10 backdrop-blur-md rounded-[2rem] border border-white/10">
-                                        <span
-                                            class="text-[10px] uppercase tracking-widest text-stone-400">{{ $story['year'] }}</span>
-                                        <h4 class="font-aesthetic text-3xl text-white mt-1 mb-3">{{ $story['title'] }}
-                                        </h4>
-                                        <p class="text-stone-300 text-sm font-serif-elegant leading-relaxed">
-                                            {{ $story['description'] }}</p>
-                                    </div>
-                                </div>
-                                <div
-                                    class="z-10 w-8 h-8 md:w-10 md:h-10 bg-white rounded-full flex items-center justify-center absolute left-0 md:left-1/2 transform md:-translate-x-1/2 shadow-lg">
-                                    <div class="w-2 h-2 bg-stone-900 rounded-full"></div>
-                                </div>
-                                <div
-                                    class="w-full md:w-5/12 {{ $index % 2 == 1 ? 'pr-0 md:pr-0 pl-12 md:pl-0' : 'pl-12 md:pl-0' }}">
-                                    <div
-                                        class="md:hidden mb-4 p-5 bg-white/10 backdrop-blur-md rounded-2xl border border-white/10">
-                                        <span
-                                            class="text-[10px] uppercase tracking-widest text-stone-400">{{ $story['year'] }}</span>
-                                        <h4 class="font-aesthetic text-2xl text-white mt-1 mb-2">{{ $story['title'] }}
-                                        </h4>
-                                        <p class="text-stone-300 text-sm font-serif-elegant">
-                                            {{ $story['description'] }}</p>
-                                    </div>
-
-                                    @if (!empty($story['image']))
-                                        <img src="{{ asset('storage/' . $story['image']) }}"
-                                            class="rounded-3xl border-2 border-white/10 w-full object-cover aspect-video md:aspect-auto">
-                                    @else
-                                        <div
-                                            class="h-40 rounded-3xl border-2 border-white/10 bg-white/5 backdrop-blur flex items-center justify-center">
-                                            <svg class="w-10 h-10 text-white/20" fill="none" stroke="currentColor"
-                                                viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round"
-                                                    stroke-width="1.5"
-                                                    d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z">
-                                                </path>
-                                            </svg>
-                                        </div>
-                                    @endif
-
-                                </div>
-                            </div>
-                        @endforeach
-                    </div>
-                </div>
-            </div>
-        </section>
-    @endif
-
-    @if (!empty($content['enable_health_protocol']) || !empty($content['enable_dresscode']))
-        <section class="py-20 md:py-32 px-6 bg-stone-50 overflow-hidden">
-            <div class="max-w-5xl mx-auto">
-                <div class="grid md:grid-cols-2 gap-16 md:gap-8 relative">
-                    @if (!empty($content['enable_health_protocol']))
-                        <div class="space-y-10" data-aos="fade-right">
-                            <div class="text-left">
-                                <h2 class="font-aesthetic text-5xl text-stone-900 mb-2">Health Protocol</h2>
-                                <p class="font-serif-elegant text-stone-500 italic text-sm">Demi kenyamanan bersama,
-                                    mohon untuk tetap mengikuti protokol kesehatan:</p>
-                            </div>
-                            <div class="grid grid-cols-2 gap-6">
-                                <div class="text-center p-6 glass-card rounded-3xl border border-white shadow-sm">
-                                    <div class="w-10 h-10 mx-auto mb-4 text-stone-800"><svg fill="none"
-                                            stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1"
-                                                d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z">
-                                            </path>
-                                        </svg></div>
-                                    <p class="text-[10px] font-bold uppercase tracking-widest text-stone-900">Gunakan
-                                        Masker</p>
-                                </div>
-                                <div class="text-center p-6 glass-card rounded-3xl border border-white shadow-sm">
-                                    <div class="w-10 h-10 mx-auto mb-4 text-stone-800"><svg fill="none"
-                                            stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1"
-                                                d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z">
-                                            </path>
-                                        </svg></div>
-                                    <p class="text-[10px] font-bold uppercase tracking-widest text-stone-900">Physical
-                                        Distancing</p>
-                                </div>
-                                <div class="text-center p-6 glass-card rounded-3xl border border-white shadow-sm">
-                                    <div class="w-10 h-10 mx-auto mb-4 text-stone-800"><svg fill="none"
-                                            stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1"
-                                                d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.628.283a2 2 0 01-1.186.127l-1.314-.328a2 2 0 00-1.186.127l-.628.283a6 6 0 00-3.86.517l-2.387.477a2 2 0 00-1.022.547V18a2 2 0 002 2h11a2 2 0 002-2v-2.572z">
-                                            </path>
-                                        </svg></div>
-                                    <p class="text-[10px] font-bold uppercase tracking-widest text-stone-900">Cuci
-                                        Tangan</p>
-                                </div>
-                                <div class="text-center p-6 glass-card rounded-3xl border border-white shadow-sm">
-                                    <div class="w-10 h-10 mx-auto mb-4 text-stone-800"><svg fill="none"
-                                            stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1"
-                                                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                        </svg></div>
-                                    <p class="text-[10px] font-bold uppercase tracking-widest text-stone-900">Hindari
-                                        Kontak</p>
-                                </div>
-                            </div>
-                        </div>
-                    @endif
-
-                    @if (!empty($content['enable_dresscode']))
-                        <div class="space-y-10" data-aos="fade-left">
-                            <div class="text-left">
-                                <h2 class="font-aesthetic text-5xl text-stone-900 mb-2">Guest Info</h2>
-                                <p class="font-serif-elegant text-stone-500 italic text-sm">Informasi penting terkait
-                                    kehadiran tamu:</p>
-                            </div>
-                            <div class="space-y-6">
-                                <div
-                                    class="flex items-start gap-6 p-6 bg-white rounded-[2rem] border border-stone-100 shadow-sm">
-                                    <div class="p-3 bg-stone-50 rounded-2xl text-stone-800">
-                                        <svg class="w-6 h-6" fill="none" stroke="currentColor"
-                                            viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1"
-                                                d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4">
-                                            </path>
-                                        </svg>
-                                    </div>
-                                    <div>
-                                        <h4 class="text-xs font-bold uppercase tracking-widest text-stone-900 mb-1">
-                                            Dresscode</h4>
-                                        <p class="text-stone-600 text-sm leading-relaxed font-serif-elegant italic">
-                                            {{ $content['dresscode'] ?? 'Bebas Rapi' }}
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    @endif
-
-                </div>
-            </div>
-        </section>
-    @endif
-
-    <section class="relative py-32 px-6 bg-cover bg-fixed"
-        style="background-image: url('https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&q=80&w=2070');">
-        <div class="absolute inset-0 bg-stone-900/40"></div>
-        <div class="relative z-10 max-w-xl mx-auto glass-card p-10 md:p-12 rounded-[3rem] shadow-2xl"
-            data-aos="zoom-in">
-            <div class="text-center mb-10">
-                <h2 class="font-aesthetic text-6xl text-stone-900">Kehadiran</h2>
-                <p class="text-stone-600 mt-2 text-sm italic font-serif-elegant">Kami sangat menantikan kehadiran Anda
-                </p>
-            </div>
-
-            <form id="formRsvpAjax" action="{{ route('rsvp.store', $invitation->slug) }}" method="POST"
-                class="space-y-6">
-                @csrf
-                <input type="hidden" name="guest_id" value="{{ $guestData->id ?? '' }}">
-
-                <div class="space-y-1">
-                    <label class="text-[10px] uppercase tracking-widest text-stone-500 font-bold ml-2">Nama
-                        Lengkap</label>
-                    <input type="text" name="guest_name" required value="{{ $guestData->name ?? '' }}"
-                        {{ isset($guestData) ? 'readonly' : '' }}
-                        class="w-full p-4 rounded-2xl {{ isset($guestData) ? 'bg-stone-100/50 text-stone-600' : 'bg-white/50' }} border border-white/50 focus:bg-white focus:ring-2 focus:ring-stone-900 outline-none transition"
-                        placeholder="Masukkan nama Anda">
-                </div>
-
-                <div class="grid grid-cols-2 gap-4">
-                    <div class="space-y-1">
-                        <label
-                            class="text-[10px] uppercase tracking-widest text-stone-500 font-bold ml-2">Jumlah</label>
-                        <select name="pax"
-                            class="w-full p-4 rounded-2xl bg-white/50 border border-white/50 focus:bg-white outline-none cursor-pointer">
-                            <option value="1">1 Orang</option>
-                            <option value="2">2 Orang</option>
-                            <option value="3">3 Orang</option>
-                            <option value="4">4 Orang</option>
-                        </select>
-                    </div>
-                    <div class="space-y-1">
-                        <label
-                            class="text-[10px] uppercase tracking-widest text-stone-500 font-bold ml-2">Konfirmasi</label>
-                        <select name="status_rsvp"
-                            class="w-full p-4 rounded-2xl bg-white/50 border border-white/50 focus:bg-white outline-none cursor-pointer">
-                            <option value="hadir">Hadir</option>
-                            <option value="ragu">Mungkin (Ragu)</option>
-                            <option value="tidak_hadir">Berhalangan</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="space-y-1">
-                    <label class="text-[10px] uppercase tracking-widest text-stone-500 font-bold ml-2">Pesan & Doa
-                        Restu</label>
-                    <textarea name="message" required rows="4"
-                        class="w-full p-4 rounded-2xl bg-white/50 border border-white/50 focus:bg-white focus:ring-2 focus:ring-stone-900 outline-none transition resize-none"
-                        placeholder="Tuliskan ucapan atau doa Anda di sini..."></textarea>
-                </div>
-
-                <button type="submit" id="btnSubmitRsvp"
-                    class="w-full bg-stone-900 text-white py-4 rounded-2xl font-bold tracking-widest hover:bg-stone-800 transition shadow-xl uppercase text-xs">
-                    Kirim Konfirmasi
+            <div class="space-y-4 mt-6">
+                <button onclick="openInvitation()" class="group relative px-14 py-4.5 bg-brand-gold hover:bg-brand-charcoal text-white rounded-full transition-all duration-500 shadow-xl hover:shadow-brand-gold/15 flex items-center justify-center gap-3.5 mx-auto overflow-hidden">
+                    <div class="absolute inset-0 w-1/2 h-full bg-white/25 skew-x-[-25deg] -translate-x-full group-hover:translate-x-[250%] transition-transform duration-1000"></div>
+                    <i class="fa-solid fa-envelope-open-text group-hover:scale-110 transition-transform text-lg"></i>
+                    <span class="font-semibold tracking-wide text-sm">Buka Undangan</span>
                 </button>
-            </form>
+            </div>
         </div>
-    </section>
+    </div>
 
-    @if (!empty($content['banks']) && count($content['banks']) > 0)
-        <section class="py-24 px-6 bg-white" data-aos="fade-up">
-            <div class="max-w-4xl mx-auto text-center">
-                <div class="mb-16">
-                    <h2 class="font-aesthetic text-6xl text-stone-900 mb-4">Wedding Gift</h2>
-                    <div class="h-[1px] w-20 bg-stone-300 mx-auto mb-6"></div>
-                    <p
-                        class="max-w-md mx-auto text-stone-500 font-serif-elegant italic text-sm md:text-base leading-relaxed">
-                        Doa restu Anda merupakan karunia yang sangat berarti bagi kami. Namun jika Anda ingin memberikan
-                        tanda kasih, Anda dapat menyalurkannya melalui:
+    <main id="main-content" class="min-h-screen pb-28 opacity-0 transition-opacity duration-1000">
+        
+        {{-- QUOTES & COUNTDOWN --}}
+        <section id="home" class="min-h-screen flex flex-col items-center justify-center text-center p-4 md:p-8 bg-[url('{{ !empty($content['bride_photo']) ? asset('storage/'.$content['bride_photo']) : 'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?q=80&w=1000&auto=format&fit=crop' }}')] bg-cover bg-center bg-fixed relative overflow-hidden">
+            <div class="absolute inset-0 bg-brand-white/60 backdrop-blur-[2px]"></div>
+            
+            <div class="relative z-10 max-w-2xl w-full p-6 md:p-14 bg-brand-softWhite/80 rounded-[2.5rem] md:rounded-[3rem] border border-white shadow-[0_20px_50px_rgba(0,0,0,0.05)] backdrop-blur-md">
+                
+                <div class="mb-8 md:mb-10">
+                    <p class="font-serif italic text-xl md:text-3xl text-brand-gold mb-4 text-protected">
+                        "{{ $content['quotes'] ?? 'And they lived happily ever after.' }}"
+                    </p>
+                    <div class="h-[1px] w-12 bg-brand-gold/30 mx-auto mb-6"></div>
+                    <p class="text-[12px] md:text-sm text-brand-charcoal max-w-md mx-auto leading-relaxed font-light italic px-4">
+                        Dengan memohon rahmat dan ridho Allah SWT, kami mengundang Bapak/Ibu/Saudara/i untuk menghadiri acara pernikahan kami.
                     </p>
                 </div>
 
-                <div class="grid md:grid-cols-2 gap-8">
-                    @foreach ($content['banks'] as $index => $bank)
-                        <div
-                            class="p-10 bg-stone-50 rounded-[3rem] border border-stone-100 shadow-sm hover:shadow-md transition-shadow duration-500">
-                            <h4 class="font-bold text-stone-800 text-xl mb-4">{{ $bank['name'] }}</h4>
-                            <div class="space-y-2">
-                                <p class="text-xs uppercase tracking-[0.2em] text-stone-400">Nomor Rekening</p>
-                                <p id="norek{{ $index }}"
-                                    class="text-xl font-bold tracking-widest text-stone-800">
-                                    {{ $bank['account_number'] }}</p>
-                                <p class="text-stone-600 font-serif-elegant">a.n. {{ $bank['account_name'] }}</p>
-                                <button onclick="copyToClipboard('norek{{ $index }}')"
-                                    class="mt-6 px-6 py-2 bg-stone-900 text-white text-[10px] uppercase tracking-widest rounded-full hover:bg-stone-700 transition duration-300">
-                                    Salin Nomor
+                <div class="pt-8 border-t border-brand-lightGold/20">
+                    <p class="text-[9px] md:text-[10px] tracking-[0.4em] uppercase text-brand-gold mb-8 md:mb-10 font-semibold">The Waiting Moment</p>
+                    <div class="flex flex-wrap justify-center items-center gap-2 md:gap-8">
+                        <div class="relative group p-2">
+                            <div class="absolute inset-0 border border-dashed border-brand-gold/20 rounded-full animate-[spin_15s_linear_infinite]"></div>
+                            <div class="relative flex flex-col items-center justify-center w-16 h-16 md:w-24 md:h-24 bg-white/40 rounded-full backdrop-blur-sm">
+                                <span id="days" class="text-xl md:text-4xl font-serif font-light text-brand-charcoal leading-none">00</span>
+                                <span class="text-[7px] md:text-[10px] uppercase tracking-widest text-brand-gold font-medium mt-1">Days</span>
+                            </div>
+                        </div>
+                        <span class="text-brand-lightGold/40 font-serif italic text-lg md:text-2xl opacity-50 hidden sm:block">&</span>
+                        <div class="relative group p-2">
+                            <div class="absolute inset-0 border border-dashed border-brand-gold/20 rounded-full animate-[spin_20s_linear_infinite_reverse]"></div>
+                            <div class="relative flex flex-col items-center justify-center w-16 h-16 md:w-24 md:h-24 bg-white/40 rounded-full backdrop-blur-sm">
+                                <span id="hours" class="text-xl md:text-4xl font-serif font-light text-brand-charcoal leading-none">00</span>
+                                <span class="text-[7px] md:text-[10px] uppercase tracking-widest text-brand-gold font-medium mt-1">Hours</span>
+                            </div>
+                        </div>
+                        <span class="text-brand-lightGold/40 font-serif italic text-lg md:text-2xl opacity-50 hidden sm:block">&</span>
+                        <div class="relative group p-2">
+                            <div class="absolute inset-0 border border-dashed border-brand-gold/20 rounded-full animate-[spin_25s_linear_infinite]"></div>
+                            <div class="relative flex flex-col items-center justify-center w-16 h-16 md:w-24 md:h-24 bg-white/40 rounded-full backdrop-blur-sm">
+                                <span id="minutes" class="text-xl md:text-4xl font-serif font-light text-brand-charcoal leading-none">00</span>
+                                <span class="text-[7px] md:text-[10px] uppercase tracking-widest text-brand-gold font-medium mt-1">Mins</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        {{-- MEMPELAI (SELALU AKTIF, URUTAN DINAMIS) --}}
+        <section id="mempelai" class="py-12 px-6 bg-brand-white relative overflow-hidden">
+            <div class="absolute inset-0 opacity-[0.04] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/linen-headboard.png')]"></div>
+            <div class="max-w-6xl mx-auto relative z-10">
+                <div class="text-center mb-24">
+                    <p class="text-[10px] tracking-[0.5em] uppercase text-brand-gold mb-3 font-semibold drop-shadow-sm">Meet The Couple</p>
+                    <div class="h-[1px] w-20 bg-brand-lightGold/30 mx-auto"></div>
+                </div>
+                
+                <div class="space-y-24 md:space-y-0 md:flex md:items-center md:justify-center md:gap-20 lg:gap-32 {{ !$isGroomFirst ? 'md:flex-row-reverse' : '' }}">
+                    
+                    {{-- CARD PRIA --}}
+                    <div class="flex flex-col items-center md:items-start text-center md:text-left group flex-1">
+                        <div class="relative mb-10 w-64 h-80 md:w-72 md:h-96 group-hover:-translate-y-2 transition-transform duration-500 ease-out">
+                            <div class="absolute -bottom-4 {{ $isGroomFirst ? '-right-4' : '-left-4' }} inset-0 border border-brand-lightGold/40 rounded-t-[10rem] rounded-b-xl z-0"></div>
+                            <div class="absolute inset-0 bg-brand-lightGold overflow-hidden rounded-t-[10rem] rounded-b-xl shadow-[0_15px_45px_rgba(197,160,101,0.1)] z-10 border-4 border-white">
+                                <img src="{{ !empty($content['groom_photo']) ? asset('storage/'.$content['groom_photo']) : 'https://images.soco.id/230-58.jpg.jpeg' }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+                            </div>
+                            <div class="absolute -top-8 -left-8 w-24 h-24 opacity-60 z-20 pointer-events-none">
+                                <img src="https://www.transparentpng.com/thumb/flowers-vectors/pink-and-whire-flower-vector-hq-png-6.png" class="w-full h-full object-contain">
+                            </div>
+                        </div>
+                        
+                        <h3 class="text-3xl lg:text-4xl font-serif font-bold text-brand-charcoal mb-2 leading-tight">{{ $content['groom_name'] ?? 'Romeo Montague' }}</h3>
+                        <p class="text-xs text-brand-gold uppercase tracking-[0.3em] font-medium mb-5 border-b border-brand-lightGold/30 inline-block pb-1">- The Groom -</p>
+                        
+                        <div class="space-y-1 mb-4">
+                            <p class="text-[11px] text-gray-500 font-light tracking-wide">Putra dari</p>
+                            <p class="text-sm text-brand-charcoal font-medium">{{ $content['groom_father'] ?? 'Bapak Fulan' }}</p>
+                            <p class="text-sm text-brand-charcoal font-medium">& {{ $content['groom_mother'] ?? 'Ibu Fulanah' }}</p>
+                        </div>
+
+                        @if(!empty($content['groom_ig']))
+                            <a href="https://instagram.com/{{ $content['groom_ig'] }}" target="_blank" class="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-brand-lightGold/50 text-brand-gold hover:bg-brand-gold hover:text-white transition text-xs font-semibold">
+                                <i class="fa-brands fa-instagram"></i> {{ $content['groom_ig'] }}
+                            </a>
+                        @endif
+                    </div>
+
+                    {{-- CARD WANITA --}}
+                    <div class="flex flex-col items-center md:items-end text-center md:text-right group flex-1">
+                        <div class="relative mb-10 w-64 h-80 md:w-72 md:h-96 group-hover:-translate-y-2 transition-transform duration-500 ease-out">
+                            <div class="absolute -bottom-4 {{ $isGroomFirst ? '-left-4' : '-right-4' }} inset-0 border border-brand-lightGold/40 rounded-t-[10rem] rounded-b-xl z-0"></div>
+                            <div class="absolute inset-0 bg-brand-lightGold overflow-hidden rounded-t-[10rem] rounded-b-xl shadow-[0_15px_45px_rgba(197,160,101,0.1)] z-10 border-4 border-white">
+                                <img src="{{ !empty($content['bride_photo']) ? asset('storage/'.$content['bride_photo']) : 'https://images.pexels.com/photos/157757/wedding-dresses-fashion-character-bride-157757.jpeg' }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+                            </div>
+                            <div class="absolute -bottom-8 -right-8 w-24 h-24 opacity-60 z-20 pointer-events-none rotate-180">
+                                <img src="https://www.transparentpng.com/thumb/flowers-vectors/pink-and-whire-flower-vector-hq-png-6.png" class="w-full h-full object-contain">
+                            </div>
+                        </div>
+                        
+                        <h3 class="text-3xl lg:text-4xl font-serif font-bold text-brand-charcoal mb-2 leading-tight">{{ $content['bride_name'] ?? 'Juliet Capulet' }}</h3>
+                        <p class="text-xs text-brand-gold uppercase tracking-[0.3em] font-medium mb-5 border-b border-brand-lightGold/30 inline-block pb-1">- The Bride -</p>
+                        
+                        <div class="space-y-1 mb-4">
+                            <p class="text-[11px] text-gray-500 font-light tracking-wide">Putri dari</p>
+                            <p class="text-sm text-brand-charcoal font-medium">{{ $content['bride_father'] ?? 'Bapak Fulan' }}</p>
+                            <p class="text-sm text-brand-charcoal font-medium">& {{ $content['bride_mother'] ?? 'Ibu Fulanah' }}</p>
+                        </div>
+
+                        @if(!empty($content['bride_ig']))
+                            <a href="https://instagram.com/{{ $content['bride_ig'] }}" target="_blank" class="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-brand-lightGold/50 text-brand-gold hover:bg-brand-gold hover:text-white transition text-xs font-semibold">
+                                <i class="fa-brands fa-instagram"></i> {{ $content['bride_ig'] }}
+                            </a>
+                        @endif
+                    </div>
+
+                </div>
+                
+                {{-- TURUT MENGUNDANG (TOGGLE) --}}
+                @if(!empty($content['is_turut_mengundang_active']))
+                    <div class="mt-20 pt-12 border-t border-brand-lightGold/15 bg-brand-elegant/50 rounded-3xl p-10 md:p-16 relative">
+                        <div class="absolute -top-5 left-1/2 -translate-x-1/2 bg-brand-white px-6">
+                            <i class="fa-solid fa-users text-brand-lightGold/50 text-3xl"></i>
+                        </div>
+                        <p class="text-[11px] tracking-[0.4em] uppercase text-gray-400 mb-12 font-medium text-center">Turut Mengundang</p>
+                        
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-x-10 gap-y-6 text-xs text-brand-charcoal/80 font-light leading-relaxed max-w-4xl mx-auto text-center">
+                            @if(!empty($content['turut_mengundang_groom']))
+                                @foreach($content['turut_mengundang_groom'] as $t_groom)
+                                    <p>{{ $t_groom }}</p>
+                                @endforeach
+                            @endif
+                            
+                            @if(!empty($content['turut_mengundang_bride']))
+                                @foreach($content['turut_mengundang_bride'] as $t_bride)
+                                    <p>{{ $t_bride }}</p>
+                                @endforeach
+                            @endif
+                        </div>
+                    </div>
+                @endif
+            </div>
+        </section>
+
+        {{-- STORY MEMPELAI (TOGGLE) --}}
+        @if(!empty($content['is_story_active']) && !empty($content['love_stories']))
+        <section id="story" class="py-28 px-6 bg-brand-white relative overflow-hidden">
+            <div class="absolute inset-0 opacity-[0.03] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/paper-fibers.png')]"></div>
+            
+            <div class="max-w-3xl mx-auto relative z-10">
+                <div class="text-center mb-20">
+                    <p class="text-[10px] tracking-[0.5em] uppercase text-brand-gold mb-3 font-semibold">Our Journey</p>
+                    <h2 class="text-4xl font-serif italic text-brand-charcoal">Cerita Cinta Kami</h2>
+                    <div class="h-[1px] w-12 bg-brand-gold/30 mx-auto mt-6"></div>
+                </div>
+
+                <div class="relative space-y-16">
+                    <div class="absolute left-1/2 -translate-x-1/2 top-0 bottom-0 w-[1px] bg-gradient-to-b from-brand-gold/50 via-brand-gold/20 to-transparent"></div>
+
+                    @foreach($content['love_stories'] as $index => $story)
+                        <div class="story-item relative flex flex-col items-center group {{ $index > 2 ? 'hidden extra-story' : '' }}">
+                            <div class="z-10 w-4 h-4 rounded-full bg-brand-white border-2 border-brand-gold mb-6 group-hover:scale-125 transition-transform duration-300"></div>
+                            <div class="w-full bg-brand-elegant/50 p-6 md:p-10 rounded-[2.5rem] border border-brand-lightGold/20 shadow-sm backdrop-blur-sm transition-all duration-500 hover:shadow-md">
+                                @if(!empty($story['image']))
+                                    <div class="aspect-video w-full rounded-2xl overflow-hidden mb-6 bg-brand-lightGold">
+                                        <img src="{{ asset('storage/'.$story['image']) }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" alt="{{ $story['title'] }}">
+                                    </div>
+                                @endif
+                                <span class="text-[10px] font-bold tracking-[0.2em] text-brand-gold uppercase">{{ $story['year'] }}</span>
+                                <h4 class="text-xl font-serif font-bold text-brand-charcoal mt-2 mb-3">{{ $story['title'] }}</h4>
+                                <p class="text-sm text-gray-500 leading-relaxed font-light">{{ $story['description'] }}</p>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+
+                @if(count($content['love_stories']) > 3)
+                    <div class="mt-20 text-center">
+                        <button id="btn-read-more" onclick="toggleStories()" class="px-10 py-3.5 bg-transparent border border-brand-gold/40 text-brand-gold rounded-full text-xs font-bold uppercase tracking-widest hover:bg-brand-gold hover:text-white transition-all duration-500 shadow-sm">
+                            Baca Selengkapnya
+                        </button>
+                    </div>
+                @endif
+            </div>
+        </section>
+        @endif
+
+        {{-- LOKASI DAN WAKTU (TOGGLE) --}}
+        @if(!empty($content['is_event_active']))
+        <section id="lokasi" class="py-24 px-6 bg-brand-elegant border-y border-brand-lightGold/30 shadow-inner">
+            <div class="max-w-4xl mx-auto text-center">
+                <h2 class="text-4xl font-serif text-brand-charcoal mb-4">Waktu & Lokasi Acara</h2>
+                <div class="h-[1px] w-12 bg-brand-gold/40 mx-auto mb-4"></div>
+                <p class="text-xs text-brand-gold tracking-[0.4em] uppercase font-medium mb-12">Kehadiran Anda Adalah Kehormatan</p>
+                
+                <div class="grid grid-cols-1 {{ count($content['events'] ?? []) > 0 ? 'md:grid-cols-2' : '' }} gap-8">
+                    
+                    {{-- AKAD NIKAH STATIS --}}
+                    @if(!empty($content['akad_location']))
+                        <div class="bg-brand-white p-10 rounded-[2.5rem] shadow-lg border border-brand-lightGold/50 h-full flex flex-col justify-between hover:-translate-y-2 transition-transform duration-500">
+                            <div>
+                                <i class="fa-solid fa-ring text-4xl text-brand-gold mb-6"></i>
+                                <h3 class="text-2xl font-serif font-bold mb-2">Akad Nikah</h3>
+                                <p class="text-brand-gold font-bold text-sm mb-4">{{ \Carbon\Carbon::parse($content['akad_date'])->translatedFormat('l, d F Y') }}</p>
+                                <p class="text-sm text-gray-600 mb-2 font-medium"><i class="fa-regular fa-clock mr-2"></i>{{ $content['akad_time'] }}</p>
+                                <p class="text-sm text-brand-charcoal font-bold mt-6 mb-1">{{ $content['akad_location'] }}</p>
+                                <p class="text-xs text-gray-500 leading-relaxed mb-8">{{ $content['akad_address'] }}</p>
+                            </div>
+                            @if(!empty($content['akad_map']))
+                                <a href="{{ $content['akad_map'] }}" target="_blank" class="block w-full py-3 bg-brand-elegant border border-brand-gold text-brand-gold rounded-full hover:bg-brand-gold hover:text-white transition-colors text-xs uppercase tracking-widest font-bold">
+                                    <i class="fa-solid fa-map-location-dot mr-2"></i> Buka Peta
+                                </a>
+                            @endif
+                        </div>
+                    @endif
+
+                    {{-- RESEPSI DINAMIS --}}
+                    @if(!empty($content['events']))
+                        @foreach($content['events'] as $event)
+                            <div class="bg-brand-white p-10 rounded-[2.5rem] shadow-lg border border-brand-lightGold/50 h-full flex flex-col justify-between hover:-translate-y-2 transition-transform duration-500">
+                                <div>
+                                    <i class="fa-solid fa-champagne-glasses text-4xl text-brand-gold mb-6"></i>
+                                    <h3 class="text-2xl font-serif font-bold mb-2">{{ $event['title'] }}</h3>
+                                    <p class="text-brand-gold font-bold text-sm mb-4">{{ \Carbon\Carbon::parse($event['date'])->translatedFormat('l, d F Y') }}</p>
+                                    <p class="text-sm text-gray-600 mb-2 font-medium"><i class="fa-regular fa-clock mr-2"></i>{{ $event['time'] }}</p>
+                                    <p class="text-sm text-brand-charcoal font-bold mt-6 mb-1">{{ $event['location'] }}</p>
+                                    <p class="text-xs text-gray-500 leading-relaxed mb-8">{{ $event['address'] }}</p>
+                                </div>
+                                @if(!empty($event['map']))
+                                    <a href="{{ $event['map'] }}" target="_blank" class="block w-full py-3 bg-brand-elegant border border-brand-gold text-brand-gold rounded-full hover:bg-brand-gold hover:text-white transition-colors text-xs uppercase tracking-widest font-bold">
+                                        <i class="fa-solid fa-map-location-dot mr-2"></i> Buka Peta
+                                    </a>
+                                @endif
+                            </div>
+                        @endforeach
+                    @endif
+                </div>
+            </div>
+        </section>
+        @endif
+
+        {{-- GUEST INFO / PROKES (TOGGLE) --}}
+        @if(!empty($content['is_guest_info_active']))
+        <section class="py-16 px-6 bg-brand-white text-center">
+            <div class="max-w-2xl mx-auto border-2 border-dashed border-brand-lightGold/50 rounded-[2rem] p-8">
+                <i class="fa-solid fa-circle-info text-2xl text-brand-gold mb-4"></i>
+                <h4 class="text-xl font-serif font-bold mb-6 text-brand-charcoal">Informasi Tamu</h4>
+                
+                @if(!empty($content['enable_dresscode']) && !empty($content['dresscode']))
+                    <div class="mb-6">
+                        <p class="text-[10px] uppercase tracking-widest text-gray-400 font-bold mb-1">Dresscode</p>
+                        <p class="text-sm font-medium text-brand-charcoal">{{ $content['dresscode'] }}</p>
+                    </div>
+                @endif
+                
+                @if(!empty($content['enable_health_protocol']))
+                    <div>
+                        <p class="text-[10px] uppercase tracking-widest text-gray-400 font-bold mb-3">Protokol Kesehatan</p>
+                        <div class="flex justify-center gap-6 text-brand-gold text-2xl">
+                            <div class="flex flex-col items-center gap-2"><i class="fa-solid fa-head-side-mask"></i><span class="text-[9px] text-gray-500">Masker</span></div>
+                            <div class="flex flex-col items-center gap-2"><i class="fa-solid fa-hands-bubbles"></i><span class="text-[9px] text-gray-500">Cuci Tangan</span></div>
+                            <div class="flex flex-col items-center gap-2"><i class="fa-solid fa-people-arrows"></i><span class="text-[9px] text-gray-500">Jaga Jarak</span></div>
+                        </div>
+                    </div>
+                @endif
+            </div>
+        </section>
+        @endif
+
+        {{-- GALERI & VIDEO (TOGGLE) --}}
+        @if(!empty($content['is_gallery_active']))
+        <section id="gallery" class="py-24 px-6 max-w-6xl mx-auto text-center overflow-hidden">
+            <div class="mb-16">
+                <h2 class="text-5xl font-serif text-brand-charcoal mb-4 italic">Our Gallery</h2>
+                <div class="h-[1px] w-12 bg-brand-gold/40 mx-auto mb-4"></div>
+                <p class="text-xs text-brand-gold tracking-[0.4em] uppercase font-medium">Momen Bahagia Kami</p>
+            </div>
+
+            {{-- YOUTUBE DINAMIS --}}
+            @if(!empty($content['youtube_links']))
+                @foreach($content['youtube_links'] as $yt)
+                    @php $ytId = getYoutubeId($yt); @endphp
+                    @if($ytId)
+                        <div class="mb-12 animate-fade-in max-w-4xl mx-auto">
+                            <div class="relative w-full pb-[56.25%] rounded-[2rem] overflow-hidden shadow-2xl border-4 border-white">
+                                <iframe class="absolute top-0 left-0 w-full h-full" src="https://www.youtube.com/embed/{{ $ytId }}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                            </div>
+                        </div>
+                    @endif
+                @endforeach
+            @endif
+
+            {{-- FOTO GALERI --}}
+            @if($invitation->galleries->count() > 0)
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6" id="photo-grid">
+                    @foreach($invitation->galleries->where('type','photo') as $idx => $photo)
+                        <div class="group relative aspect-square bg-brand-lightGold rounded-3xl overflow-hidden shadow-sm border-4 border-white cursor-pointer" onclick="openLightbox({{ $idx }})">
+                            <img src="{{ asset('storage/'.$photo->file_path) }}" class="gallery-img w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" alt="Gallery">
+                            <div class="absolute inset-0 bg-brand-charcoal/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                <i class="fa-solid fa-magnifying-glass-plus text-white text-2xl"></i>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            @endif
+        </section>
+
+        <div id="lightbox" class="fixed inset-0 z-[200] bg-brand-charcoal/95 backdrop-blur-lg hidden flex-col items-center justify-center p-4">
+            <button onclick="closeLightbox()" class="absolute top-6 right-6 text-white text-3xl hover:text-brand-gold transition-colors z-[210]">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <button onclick="prevImg()" class="absolute left-4 top-1/2 -translate-y-1/2 text-white/50 hover:text-white text-4xl p-4 z-[210]">
+                <i class="fa-solid fa-chevron-left"></i>
+            </button>
+            <button onclick="nextImg()" class="absolute right-4 top-1/2 -translate-y-1/2 text-white/50 hover:text-white text-4xl p-4 z-[210]">
+                <i class="fa-solid fa-chevron-right"></i>
+            </button>
+            <div class="relative max-w-5xl max-h-[80vh] flex items-center justify-center select-none" id="lightbox-container">
+                <img id="lightbox-img" src="" class="max-w-full max-h-[80vh] rounded-xl shadow-2xl object-contain transition-all duration-500">
+            </div>
+        </div>
+        @endif
+
+        {{-- HADIAH / REKENING (TOGGLE) --}}
+        @if(!empty($content['is_gift_active']) && !empty($content['banks']))
+        <section id="hadiah" class="py-24 px-6 bg-brand-white relative overflow-hidden border-t border-brand-lightGold/20">
+            <div class="absolute inset-0 opacity-[0.03] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/paper-fibers.png')]"></div>
+
+            <div class="max-w-4xl mx-auto text-center relative z-10">
+                <div class="mb-16">
+                    <i class="fa-solid fa-gift text-brand-gold text-3xl mb-4 opacity-70"></i>
+                    <h2 class="text-4xl font-serif italic text-brand-charcoal mb-4">Kado Digital</h2>
+                    <div class="h-[1px] w-12 bg-brand-gold/30 mx-auto mb-6"></div>
+                    <p class="text-sm text-gray-500 font-light leading-relaxed max-w-lg mx-auto">
+                        Doa restu Anda merupakan karunia yang sangat berarti bagi kami. Namun jika Anda ingin memberikan tanda kasih, Anda dapat mengirimkannya melalui:
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
+                    @foreach($content['banks'] as $idx => $bank)
+                        <div class="group relative p-10 bg-brand-elegant/40 rounded-[3rem] border border-brand-lightGold/20 backdrop-blur-sm transition-all duration-500 hover:shadow-2xl hover:shadow-brand-gold/10 hover:-translate-y-2">
+                            <div class="flex flex-col items-center">
+                                <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-sm border border-brand-lightGold/30 mb-6 text-brand-gold text-2xl">
+                                    <i class="fa-solid fa-building-columns"></i>
+                                </div>
+                                <p class="text-sm uppercase tracking-widest text-brand-charcoal mb-4 font-bold">{{ $bank['name'] }}</p>
+                                <p class="text-[10px] uppercase tracking-[0.3em] text-brand-gold mb-2 font-bold">Nomor Rekening</p>
+                                <h3 id="rek-{{ $idx }}" class="text-3xl font-serif font-bold text-brand-charcoal mb-2 tracking-widest">{{ $bank['account_number'] }}</h3>
+                                <p class="text-sm text-gray-400 italic mb-8 font-light">a.n {{ $bank['account_name'] }}</p>
+                                
+                                <button onclick="copyToClipboard('rek-{{ $idx }}', this)" class="w-full py-4 bg-brand-gold text-white rounded-2xl text-[11px] font-bold uppercase tracking-[0.2em] transition-all duration-300 hover:bg-brand-charcoal shadow-lg shadow-brand-gold/20 active:scale-95">
+                                    <i class="fa-regular fa-copy mr-2"></i>
+                                    <span>Salin Nomor</span>
                                 </button>
                             </div>
                         </div>
                     @endforeach
                 </div>
 
-                <div class="mt-16 text-stone-400 text-[10px] uppercase tracking-[0.3em]">
-                    Terima Kasih Atas Kebaikan Anda
+                <div id="copy-toast" class="fixed bottom-28 left-1/2 -translate-x-1/2 z-[300] px-8 py-3.5 bg-brand-charcoal/90 backdrop-blur-md text-white text-[10px] rounded-full tracking-[0.3em] uppercase font-bold opacity-0 transition-all duration-500 pointer-events-none shadow-2xl border border-white/10">
+                    Berhasil Disalin
                 </div>
             </div>
         </section>
-    @endif
+        @endif
 
-    <footer class="py-24 px-6 bg-white text-center">
-        <div class="max-w-3xl mx-auto" data-aos="fade-up">
-            <div class="mb-12">
-                <svg class="w-10 h-10 text-stone-300 mx-auto mb-6" fill="currentColor" viewBox="0 0 24 24">
-                    <path
-                        d="M14.017 21L14.017 18C14.017 16.8954 13.1216 16 12.017 16C10.9124 16 10.017 16.8954 10.017 18L10.017 21H2V12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12V21H14.017Z" />
-                </svg>
-                <p class="font-serif-elegant italic text-stone-600 leading-relaxed text-lg">
-                    "Dan di antara tanda-tanda kekuasaan-Nya ialah Dia menciptakan untukmu isteri-isteri dari jenismu
-                    sendiri, supaya kamu cenderung dan merasa tenteram kepadanya, dan dijadikan-Nya diantaramu rasa
-                    kasih dan sayang."
+        {{-- UCAPAN & DOA (HASIL RSVP) - (TOGGLE SHOW/HIDE UCAPAN) --}}
+        @if(!empty($content['is_wishes_active']))
+        <section id="guest-stats" class="py-20 px-6 bg-brand-elegant/30 relative overflow-hidden border-t border-brand-lightGold/20">
+            <div class="max-w-4xl mx-auto relative z-10">
+                <div class="text-center mb-12">
+                    <p class="text-[10px] tracking-[0.4em] uppercase text-brand-gold mb-3 font-semibold">Guest Participation</p>
+                    <h2 class="text-3xl font-serif italic text-brand-charcoal">Kehadiran & Doa</h2>
+                    <div class="h-[1px] w-12 bg-brand-gold/20 mx-auto mt-4"></div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-10">
+                    <div class="bg-white p-8 rounded-[2.5rem] shadow-sm border border-brand-lightGold/20 flex items-center gap-6 transition-transform hover:scale-[1.02] duration-300">
+                        <div class="w-16 h-16 bg-brand-elegant rounded-full flex items-center justify-center shrink-0">
+                            <i class="fa-solid fa-users text-brand-gold text-2xl"></i>
+                        </div>
+                        <div>
+                            <h4 id="total-attendance" class="text-4xl font-serif font-bold text-brand-charcoal">0</h4>
+                            <p class="text-[10px] uppercase tracking-widest text-gray-400 font-medium">Orang Akan Hadir</p>
+                        </div>
+                    </div>
+                    <div class="bg-white p-8 rounded-[2.5rem] shadow-sm border border-brand-lightGold/20 flex items-center gap-6 transition-transform hover:scale-[1.02] duration-300">
+                        <div class="w-16 h-16 bg-brand-elegant rounded-full flex items-center justify-center shrink-0">
+                            <i class="fa-solid fa-comment-dots text-brand-gold text-2xl"></i>
+                        </div>
+                        <div>
+                            <h4 id="total-wishes" class="text-4xl font-serif font-bold text-brand-charcoal">0</h4>
+                            <p class="text-[10px] uppercase tracking-widest text-gray-400 font-medium">Ucapan Hangat</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-16 bg-white/60 backdrop-blur-md rounded-[3rem] border border-brand-lightGold/20 p-6 md:p-10 shadow-sm relative overflow-hidden">
+                    <div class="flex items-center justify-between mb-8 border-b border-brand-lightGold/10 pb-4 px-2">
+                        <span class="text-[10px] font-bold uppercase tracking-[0.3em] text-brand-gold">Ucapan Sahabat & Keluarga</span>
+                        <i class="fa-solid fa-feather-pointed text-brand-gold/40"></i>
+                    </div>
+
+                    <div id="wishes-container" class="space-y-6">
+                        {{-- Ucapan akan di-render di sini oleh JavaScript --}}
+                    </div>
+
+                    <div class="mt-12 text-center">
+                        <button id="btn-load-more" onclick="loadMoreWishes()" class="px-8 py-3 bg-transparent border border-brand-gold/40 text-brand-gold rounded-full text-[10px] font-bold uppercase tracking-widest hover:bg-brand-gold hover:text-white transition-all duration-500 shadow-sm">
+                            Lihat Ucapan Lainnya
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+        @endif
+
+        {{-- FORM RSVP SELALU AKTIF (TERSEMBUNYI DALAM MODAL) --}}
+        <section id="rsvp-modal" class="fixed inset-0 z-[100] invisible transition-all duration-500">
+            <div onclick="closeRSVP()" class="absolute inset-0 bg-brand-charcoal/40 backdrop-blur-sm opacity-0 transition-opacity duration-500" id="rsvp-overlay"></div>
+            
+            <div id="rsvp-content" class="absolute bottom-0 left-0 right-0 bg-brand-white rounded-t-[3rem] shadow-[0_-10px_40px_rgba(0,0,0,0.1)] transform translate-y-full transition-transform duration-500 ease-out px-6 pb-10 pt-4 max-w-2xl mx-auto">
+                <div class="w-12 h-1.5 bg-gray-200 rounded-full mx-auto mb-8"></div>
+
+                <div class="text-center mb-8">
+                    <h2 class="text-3xl font-serif text-brand-charcoal mb-2">RSVP & Ucapan</h2>
+                    <p class="text-xs text-brand-gold tracking-widest uppercase">Konfirmasi Kehadiran Anda</p>
+                </div>
+                
+                <form id="rsvpForm" class="space-y-4 text-left">
+                    <div>
+                        <input type="text" id="input-nama-rsvp" name="name" placeholder="Nama Lengkap" class="w-full p-4 rounded-2xl bg-brand-elegant border border-brand-lightGold/50 focus:outline-none focus:border-brand-gold text-sm placeholder-gray-500" required>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <button type="button" onclick="selectAttendance('Hadir')" id="btn-hadir" class="py-3 rounded-xl border border-brand-lightGold/50 text-sm font-medium transition-all bg-brand-elegant text-gray-600">
+                            <i class="fa-solid fa-check mr-2"></i>Hadir
+                        </button>
+                        <button type="button" onclick="selectAttendance('Tidak Hadir')" id="btn-absen" class="py-3 rounded-xl border border-brand-lightGold/50 text-sm font-medium transition-all bg-brand-elegant text-gray-600">
+                            <i class="fa-solid fa-xmark mr-2"></i>Absen
+                        </button>
+                        <input type="hidden" name="status" id="input-status" required>
+                    </div>
+
+                    <div id="guest-selection" class="hidden animate-fade-in">
+                        <label class="text-[10px] uppercase tracking-[0.2em] text-brand-gold ml-1 mb-2 block font-semibold">Membawa Tamu?</label>
+                        <div class="flex gap-2">
+                            <button type="button" onclick="selectGuestCount(1, this)" class="guest-btn flex-1 py-3 rounded-xl border border-brand-lightGold/30 bg-brand-elegant text-xs text-gray-600 hover:border-brand-gold transition-colors">1 Orang</button>
+                            <button type="button" onclick="selectGuestCount(2, this)" class="guest-btn flex-1 py-3 rounded-xl border border-brand-lightGold/30 bg-brand-elegant text-xs text-gray-600 hover:border-brand-gold transition-colors">2 Orang</button>
+                            <button type="button" onclick="selectGuestCount(3, this)" class="guest-btn flex-1 py-3 rounded-xl border border-brand-lightGold/30 bg-brand-elegant text-xs text-gray-600 hover:border-brand-gold transition-colors">+3 Orang</button>
+                            <input type="hidden" name="guest_count" id="input-guest-count" value="1">
+                        </div>
+                    </div>
+
+                    <div>
+                        <textarea name="message" rows="4" placeholder="Tuliskan doa & ucapan manis Anda..." class="w-full p-4 rounded-2xl bg-brand-elegant border border-brand-lightGold/50 focus:outline-none focus:border-brand-gold text-sm placeholder-gray-500" required></textarea>
+                    </div>
+
+                    <div class="flex gap-3 pt-2">
+                        <button type="button" onclick="closeRSVP()" class="flex-1 py-4 bg-gray-100 text-gray-500 rounded-2xl font-semibold text-sm hover:bg-gray-200 transition-colors">Batal</button>
+                        <button type="button" onclick="submitRSVPDummy()" id="btnSubmitRsvp" class="flex-[2] py-4 bg-brand-gold hover:bg-brand-charcoal text-white rounded-2xl font-semibold text-sm transition-all shadow-lg shadow-brand-gold/20">Kirim RSVP</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <footer class="py-12 px-6 bg-brand-white border-t border-brand-lightGold/20 text-center">
+            <div class="max-w-md mx-auto">
+                <div class="mb-4 opacity-30 italic font-serif text-brand-gold text-lg">
+                    {{ substr($pria,0,1) }} & {{ substr($wanita,0,1) }}
+                </div>
+                
+                <p class="text-[10px] tracking-[0.2em] uppercase text-gray-400 mb-4 font-light">Terima kasih atas doa & restu Anda</p>
+
+                <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-brand-elegant border border-brand-lightGold/30 shadow-sm">
+                    <span class="text-[10px] text-gray-500 font-sans uppercase tracking-wider">Created with love by</span>
+                    <a href="https://instagram.com/ruangrestu.undangan" target="_blank" rel="noopener noreferrer" class="text-[11px] font-semibold text-brand-gold hover:text-brand-charcoal transition-colors flex items-center gap-1">
+                        <i class="fa-brands fa-instagram text-sm"></i> @ruangrestu.undangan
+                    </a>
+                </div>
+
+                <p class="mt-8 text-[9px] text-gray-300 font-light italic">
+                    &copy; 2026 {{ $pria }} & {{ $wanita }} Wedding Invitation.
                 </p>
-                <span class="block mt-4 text-xs tracking-widest text-stone-400 uppercase font-bold">— QS. Ar-Rum: 21
-                    —</span>
             </div>
+        </footer>
 
-            <p class="text-stone-500 text-sm mb-12">Merupakan suatu kehormatan dan kebahagiaan bagi kami <br> apabila
-                Bapak/Ibu/Saudara/i berkenan hadir untuk memberikan doa restu.</p>
-            <h2 class="font-aesthetic text-5xl text-stone-900">{{ $content['groom_nickname'] ?? 'Rama' }} &
-                {{ $content['bride_nickname'] ?? 'Shinta' }}</h2>
+    </main>
 
-            <div class="mt-20 pt-10 border-t border-stone-100">
-                <a href="https://www.instagram.com/ruangrestu.undangan/">
-                    <p class="text-[10px] tracking-[0.3em] text-stone-400 uppercase">{{ Date('Y') }} • RUANGRESTU
-                    </p>
-                </a>
+    <div id="fab-container" class="fixed right-5 bottom-28 flex flex-col gap-4 z-40 opacity-0 transition-opacity duration-1000">
+        <div class="relative flex items-center group">
+            <div id="music-info" class="absolute right-full mr-3 px-3 py-1 bg-brand-white/90 backdrop-blur border border-brand-lightGold/50 rounded-lg text-brand-gold text-xs whitespace-nowrap shadow-md opacity-0 translate-x-4 pointer-events-none transition-all duration-500 group-hover:opacity-100 group-hover:translate-x-0">
+                🎵 Memutar Musik
             </div>
-        </div>
-    </footer>
-
-    <div id="imageModal"
-        class="fixed inset-0 z-[100] hidden bg-black/95 flex items-center justify-center p-4 backdrop-blur-md">
-        <button onclick="closeModal()"
-            class="absolute top-10 right-10 text-white text-4xl font-light z-[110]">×</button>
-        <button onclick="changeImage(-1)"
-            class="absolute left-4 md:left-10 text-white/50 hover:text-white text-5xl transition z-[110]">‹</button>
-        <button onclick="changeImage(1)"
-            class="absolute right-4 md:right-10 text-white/50 hover:text-white text-5xl transition z-[110]">›</button>
-        <div class="relative max-w-5xl max-h-[85vh] flex items-center justify-center"
-            onclick="event.stopPropagation()">
-            <img id="modalImg"
-                class="max-w-full max-h-[85vh] rounded-xl shadow-2xl scale-95 opacity-0 transition-all duration-300">
-        </div>
-    </div>
-
-    <div id="rsvpModal" class="fixed inset-0 z-[150] hidden flex items-center justify-center p-4">
-        <div class="absolute inset-0 bg-stone-900/60 backdrop-blur-sm"></div>
-
-        <div class="relative bg-white p-10 md:p-12 rounded-[3rem] max-w-sm w-full text-center shadow-2xl"
-            data-aos="zoom-in">
-            <div
-                class="w-20 h-20 bg-stone-50 rounded-full flex items-center justify-center mx-auto mb-6 border border-stone-100">
-                <svg class="w-10 h-10 text-stone-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 13l4 4L19 7">
-                    </path>
-                </svg>
-            </div>
-            <h3 class="font-aesthetic text-4xl text-stone-900 mb-2">Terima Kasih</h3>
-            <p class="text-stone-500 font-serif-elegant italic text-sm mb-8 leading-relaxed">
-                Konfirmasi kehadiran dan pesan Anda telah kami terima dengan penuh sukacita.
-            </p>
-            <button onclick="closeRsvpModal()"
-                class="w-full bg-stone-900 text-white py-4 rounded-2xl font-bold tracking-widest hover:bg-stone-800 transition uppercase text-[10px]">
-                Tutup
+            <button id="btn-music" onclick="toggleMusic()" class="w-11 h-11 bg-brand-white backdrop-blur border border-brand-lightGold/70 rounded-full flex items-center justify-center text-brand-gold shadow-lg hover:bg-brand-gold hover:text-white transition-all">
+                <i class="fa-solid fa-music animate-spin-slow" id="icon-music"></i>
             </button>
         </div>
+
+        <button id="btn-scroll" onclick="toggleAutoScroll()" class="w-11 h-11 bg-brand-white backdrop-blur border border-brand-lightGold/70 rounded-full flex items-center justify-center text-brand-gold shadow-lg hover:bg-brand-gold hover:text-white transition-all">
+            <i class="fa-solid fa-angles-down" id="icon-scroll"></i>
+        </button>
     </div>
 
-    @if ($invitation->music)
-        <audio id="weddingMusic" loop autoplay>
-            <source src="{{ asset('storage/' . $invitation->music->file_path) }}" type="audio/mpeg">
-        </audio>
-        <button id="musicControl" onclick="toggleMusic()"
-            class="fixed bottom-6 left-6 z-[100] w-12 h-12 bg-white/80 backdrop-blur-md border border-stone-200 rounded-full flex items-center justify-center shadow-lg hover:bg-white transition-all duration-300">
-            <svg id="icon-on" class="w-5 h-5 text-stone-800" fill="none" stroke="currentColor"
-                viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-                    d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z">
-                </path>
-            </svg>
-            <svg id="icon-off" class="hidden w-5 h-5 text-stone-400" fill="none" stroke="currentColor"
-                viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-                    d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15zM17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2">
-                </path>
-            </svg>
-        </button>
-    @endif
-
-    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-    <script src="{{ asset('preview/template1.js') }}"></script>
+    <nav id="bottom-nav" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 floating-nav rounded-full transition-transform duration-700 translate-y-32 shadow-2xl">
+        <ul class="flex justify-around items-center h-16 w-[320px] md:w-[400px] px-3">
+            <li><a href="#home" class="flex flex-col items-center text-gray-600 hover:text-brand-gold transition-colors text-xs gap-1.5"><i class="fa-solid fa-house text-xl"></i><span>Home</span></a></li>
+            @if(!empty($content['is_gallery_active']))<li><a href="#gallery" class="flex flex-col items-center text-gray-600 hover:text-brand-gold transition-colors text-xs gap-1.5"><i class="fa-solid fa-images text-xl"></i><span>Gallery</span></a></li>@endif
+            @if(!empty($content['is_event_active']))<li><a href="#lokasi" class="flex flex-col items-center text-gray-600 hover:text-brand-gold transition-colors text-xs gap-1.5"><i class="fa-solid fa-map-location text-xl"></i><span>Lokasi</span></a></li>@endif
+            <li><a href="javascript:void(0)" onclick="openRSVP()" class="flex flex-col items-center text-gray-600 hover:text-brand-gold transition-colors text-xs gap-1.5"><i class="fa-solid fa-envelope text-xl"></i><span>RSVP</span></a></li>
+        </ul>
+    </nav>
 
     <script>
-        function copyToClipboard(elementId) {
-            var copyText = document.getElementById(elementId).innerText;
-            navigator.clipboard.writeText(copyText).then(function() {
-                alert("Nomor rekening berhasil disalin: " + copyText);
+        // Setup URL Parameter untuk Nama Tamu
+        const urlParams = new URLSearchParams(window.location.search);
+        let guestName = urlParams.get('to');
+        if (guestName) { guestName = decodeURIComponent(guestName); } 
+        else { guestName = 'Tamu Undangan'; }
+        
+        const guestNameEl = document.getElementById('guest-name');
+        if(guestNameEl) guestNameEl.innerText = guestName;
+
+        const inputRSVP = document.getElementById('input-nama-rsvp');
+        if (inputRSVP) { inputRSVP.value = guestName !== 'Tamu Undangan' ? guestName : ''; }
+
+        // Variabel Global
+        const audio = document.getElementById('bg-music');
+        let isMusicPlaying = false;
+        let isAutoScrolling = false;
+        let scrollInterval;
+
+        function openInvitation() {
+            document.getElementById('cover-page').classList.add('-translate-y-full');
+            document.body.style.overflowY = 'auto';
+            document.getElementById('main-content').classList.remove('opacity-0');
+            document.getElementById('fab-container').classList.remove('opacity-0');
+            document.getElementById('bottom-nav').classList.remove('translate-y-32');
+            
+            toggleMusic(true);
+            toggleAutoScroll(true);
+        }
+
+        function toggleMusic(forcePlay = false) {
+            const icon = document.getElementById('icon-music');
+            if (isMusicPlaying && !forcePlay) {
+                audio.pause();
+                isMusicPlaying = false;
+                icon.classList.remove('fa-music', 'animate-spin');
+                icon.classList.add('fa-volume-xmark');
+            } else {
+                audio.play().then(() => {
+                    isMusicPlaying = true;
+                    icon.classList.remove('fa-volume-xmark');
+                    icon.classList.add('fa-music', 'animate-spin');
+                }).catch(() => { console.log("Autoplay dicegah browser."); });
+            }
+        }
+
+        function toggleAutoScroll(forceStart = false) {
+            const btn = document.getElementById('btn-scroll');
+            const icon = document.getElementById('icon-scroll');
+            if (isAutoScrolling && !forceStart) {
+                clearInterval(scrollInterval);
+                isAutoScrolling = false;
+                btn.classList.remove('bg-brand-gold', 'text-white');
+                btn.classList.add('bg-brand-white', 'text-brand-gold');
+                icon.classList.remove('fa-pause');
+                icon.classList.add('fa-angles-down');
+            } else {
+                isAutoScrolling = true;
+                btn.classList.remove('bg-brand-white', 'text-brand-gold');
+                btn.classList.add('bg-brand-gold', 'text-white');
+                icon.classList.remove('fa-angles-down');
+                icon.classList.add('fa-pause');
+                scrollInterval = setInterval(() => {
+                    window.scrollBy({ top: 1, behavior: 'auto' });
+                    if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) toggleAutoScroll();
+                }, 35);
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            const musicInfo = document.getElementById('music-info');
+            setTimeout(() => {
+                if(musicInfo){
+                    musicInfo.classList.remove('opacity-0', 'translate-x-4', 'pointer-events-none');
+                    musicInfo.classList.add('opacity-100', 'translate-x-0');
+                    setTimeout(() => {
+                        musicInfo.classList.remove('opacity-100', 'translate-x-0');
+                        musicInfo.classList.add('opacity-0', 'translate-x-4', 'pointer-events-none');
+                        setTimeout(() => musicInfo.classList.remove('pointer-events-none'), 500);
+                    }, 3000);
+                }
+            }, 1200);
+        });
+
+        window.addEventListener('wheel', () => { if(isAutoScrolling) toggleAutoScroll(); }, { passive: true });
+        window.addEventListener('touchmove', () => { if(isAutoScrolling) toggleAutoScroll(); }, { passive: true });
+        
+        // Countdown
+        const targetDateStr = "{{ $content['akad_date'] ?? '' }}T{{ $content['akad_time'] ?? '00:00' }}";
+        if(targetDateStr.length > 5) {
+            const weddingDate = new Date(targetDateStr).getTime();
+            if(!isNaN(weddingDate)){
+                const countdownFunction = setInterval(function() {
+                    const now = new Date().getTime();
+                    const distance = weddingDate - now;
+                    const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                    const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                    const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+
+                    document.getElementById("days").innerText = days < 10 ? "0" + days : days;
+                    document.getElementById("hours").innerText = hours < 10 ? "0" + hours : hours;
+                    document.getElementById("minutes").innerText = minutes < 10 ? "0" + minutes : minutes;
+
+                    if (distance < 0) {
+                        clearInterval(countdownFunction);
+                    }
+                }, 1000);
+            }
+        }
+
+        function toggleStories() {
+            const extraStories = document.querySelectorAll('.extra-story');
+            const btn = document.getElementById('btn-read-more');
+            let isHidden = false;
+            
+            extraStories.forEach(story => {
+                if (story.classList.contains('hidden')) {
+                    story.classList.remove('hidden');
+                    story.classList.add('animate-fade-in');
+                    isHidden = true;
+                } else {
+                    story.classList.add('hidden');
+                    story.classList.remove('animate-fade-in');
+                }
+            });
+            
+            btn.innerText = isHidden ? 'Sembunyikan Cerita' : 'Baca Selengkapnya';
+        }
+
+        // Lightbox
+        const images = Array.from(document.querySelectorAll('.gallery-img')).map(img => img.src);
+        let currentIndex = 0;
+
+        function openLightbox(index) {
+            if(images.length === 0) return;
+            currentIndex = index;
+            updateLightbox();
+            const modal = document.getElementById('lightbox');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            document.body.style.overflow = 'hidden';
+        }
+        function closeLightbox() {
+            const modal = document.getElementById('lightbox');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+            document.body.style.overflow = 'auto';
+        }
+        function updateLightbox() {
+            const imgElement = document.getElementById('lightbox-img');
+            imgElement.style.opacity = '0';
+            setTimeout(() => {
+                imgElement.src = images[currentIndex];
+                imgElement.style.opacity = '1';
+            }, 200);
+        }
+        function nextImg() { currentIndex = (currentIndex + 1) % images.length; updateLightbox(); }
+        function prevImg() { currentIndex = (currentIndex - 1 + images.length) % images.length; updateLightbox(); }
+
+        let touchStartX = 0, touchEndX = 0;
+        const lightboxEl = document.getElementById('lightbox');
+        if(lightboxEl) {
+            lightboxEl.addEventListener('touchstart', e => touchStartX = e.changedTouches[0].screenX);
+            lightboxEl.addEventListener('touchend', e => {
+                touchEndX = e.changedTouches[0].screenX;
+                if (touchEndX < touchStartX - 50) nextImg();
+                if (touchEndX > touchStartX + 50) prevImg();
+            });
+        }
+        document.addEventListener('keydown', (e) => {
+            if (lightboxEl && !lightboxEl.classList.contains('hidden')) {
+                if (e.key === "ArrowRight") nextImg();
+                if (e.key === "ArrowLeft") prevImg();
+                if (e.key === "Escape") closeLightbox();
+            }
+        });
+
+        // Copy Rekening
+        function copyToClipboard(id, btn) {
+            const textToCopy = document.getElementById(id).innerText;
+            const toast = document.getElementById('copy-toast');
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                const originalContent = btn.innerHTML;
+                btn.innerHTML = '<i class="fa-solid fa-check"></i> <span>Tersalin!</span>';
+                btn.classList.replace('bg-brand-gold', 'bg-green-600');
+                toast.classList.replace('opacity-0', 'opacity-100');
+                setTimeout(() => {
+                    btn.innerHTML = originalContent;
+                    btn.classList.replace('bg-green-600', 'bg-brand-gold');
+                    toast.classList.replace('opacity-100', 'opacity-0');
+                }, 2000);
             });
         }
 
-        // PERUBAHAN ID DI SINI JUGA
-        const rsvpFormAjax = document.getElementById("formRsvpAjax");
+        // RSVP Modal & Logic
+        let hasShownRSVPAtEnd = false;
+        function openRSVP() {
+            const modal = document.getElementById('rsvp-modal');
+            const overlay = document.getElementById('rsvp-overlay');
+            const content = document.getElementById('rsvp-content');
+            modal.classList.remove('invisible');
+            setTimeout(() => {
+                overlay.classList.replace('opacity-0', 'opacity-100');
+                content.classList.replace('translate-y-full', 'translate-y-0');
+            }, 10);
+        }
+        function closeRSVP() {
+            const overlay = document.getElementById('rsvp-overlay');
+            const content = document.getElementById('rsvp-content');
+            const modal = document.getElementById('rsvp-modal');
+            overlay.classList.replace('opacity-100', 'opacity-0');
+            content.classList.replace('translate-y-0', 'translate-y-full');
+            setTimeout(() => modal.classList.add('invisible'), 500);
+        }
 
-        if (rsvpFormAjax) {
-            rsvpFormAjax.addEventListener("submit", function(e) {
-                e.preventDefault();
+        function selectAttendance(status) {
+            const btnHadir = document.getElementById('btn-hadir');
+            const btnAbsen = document.getElementById('btn-absen');
+            const guestDiv = document.getElementById('guest-selection');
+            document.getElementById('input-status').value = status;
 
-                let form = this;
-                let btn = form.querySelector('button[type="submit"]');
-                let originalText = btn.innerHTML;
+            if (status === 'Hadir') {
+                btnHadir.classList.add('bg-brand-gold', 'text-white', 'border-brand-gold');
+                btnAbsen.classList.remove('bg-brand-gold', 'text-white', 'border-brand-gold');
+                guestDiv.classList.remove('hidden');
+            } else {
+                btnAbsen.classList.add('bg-brand-gold', 'text-white', 'border-brand-gold');
+                btnHadir.classList.remove('bg-brand-gold', 'text-white', 'border-brand-gold');
+                guestDiv.classList.add('hidden');
+            }
+        }
 
-                btn.innerHTML = 'MENGIRIM...';
-                btn.disabled = true;
-                btn.classList.add('opacity-70', 'cursor-not-allowed');
-
-                let formData = new FormData(form);
-
-                fetch(form.action, {
-                        method: 'POST',
-                        body: formData,
-                        headers: {
-                            'X-Requested-With': 'XMLHttpRequest',
-                            'Accept': 'application/json'
-                        }
-                    })
-                    .then(response => {
-                        if (!response.ok) {
-                            return response.json().then(errData => {
-                                throw errData;
-                            });
-                        }
-                        return response.json();
-                    })
-                    .then(data => {
-                        if (data.success) {
-                            const modal = document.getElementById("rsvpModal");
-                            if (modal) modal.classList.remove("hidden");
-                            form.reset();
-                        } else {
-                            alert(data.message || 'Terjadi kesalahan.');
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        if (error.errors) {
-                            let errorMessages = Object.values(error.errors).map(val => val.join(', ')).join(
-                                '\n');
-                            alert("Gagal mengirim data:\n" + errorMessages);
-                        } else {
-                            alert('Gagal mengirim pesan. Pastikan koneksi internet stabil.');
-                        }
-                    })
-                    .finally(() => {
-                        btn.innerHTML = originalText;
-                        btn.disabled = false;
-                        btn.classList.remove('opacity-70', 'cursor-not-allowed');
-                    });
+        function selectGuestCount(count, btnElement) {
+            document.getElementById('input-guest-count').value = count;
+            document.querySelectorAll('.guest-btn').forEach(btn => {
+                btn.classList.remove('border-brand-gold', 'text-brand-gold', 'font-bold');
             });
+            btnElement.classList.add('border-brand-gold', 'text-brand-gold', 'font-bold');
         }
 
-        function closeRsvpModal() {
-            const modal = document.getElementById("rsvpModal");
-            if (modal) modal.classList.add("hidden");
+        window.addEventListener('scroll', () => {
+            if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 50) {
+                if (!hasShownRSVPAtEnd) {
+                    openRSVP();
+                    hasShownRSVPAtEnd = true;
+                    if(isAutoScrolling) toggleAutoScroll();
+                }
+            }
+        }, { passive: true });
+
+        // Simulasi RSVP Tampilan Depan
+        let countAttendance = 142;
+        let countWishes = 89;
+        const totalHadirEl = document.getElementById('total-attendance');
+        const totalUcapanEl = document.getElementById('total-wishes');
+        if(totalHadirEl) totalHadirEl.innerText = countAttendance;
+        if(totalUcapanEl) totalUcapanEl.innerText = countWishes;
+
+        function submitRSVPDummy() {
+            const status = document.getElementById('input-status').value;
+            if(!status) return alert('Silakan pilih kehadiran Anda.');
+            
+            const btn = document.getElementById('btnSubmitRsvp');
+            btn.innerHTML = 'MENGIRIM...';
+            
+            setTimeout(() => {
+                countWishes++;
+                if (status === "Hadir") countAttendance++;
+                if(totalHadirEl) totalHadirEl.innerText = countAttendance;
+                if(totalUcapanEl) totalUcapanEl.innerText = countWishes;
+                
+                alert('Terima kasih, RSVP Anda telah terkirim!');
+                closeRSVP();
+                btn.innerHTML = 'Kirim RSVP';
+                
+                // Tambahkan ucapan baru ke paling atas (simulasi)
+                if(document.getElementById('wishes-container')){
+                    const newCard = document.createElement('div');
+                    newCard.className = 'wish-card bg-brand-elegant/40 p-6 rounded-[2rem] border border-white animate-fade-in transition-all hover:bg-white hover:shadow-md';
+                    newCard.innerHTML = `<div class="flex flex-col md:flex-row md:items-center justify-between mb-3 gap-1"><h5 class="text-sm font-serif font-bold text-brand-charcoal">${document.getElementById('input-nama-rsvp').value || 'Tamu'}</h5><span class="text-[9px] text-gray-400 italic uppercase tracking-wider"><i class="fa-regular fa-clock mr-1"></i> Baru saja</span></div><p class="text-xs text-gray-500 leading-relaxed font-light italic">"${document.querySelector('textarea[name="message"]').value}"</p>`;
+                    document.getElementById('wishes-container').prepend(newCard);
+                }
+            }, 1000);
         }
+
+        // Load Ucapan
+        const allWishes = [
+            { nama: "M. Fauzan", pesan: "Selamat menempuh hidup baru!", waktu: "2 Jam yang lalu" },
+            { nama: "Jati Nugroho", pesan: "Lancar-lancar sampai hari H ya!", waktu: "5 Jam yang lalu" },
+            { nama: "Budi Santoso", pesan: "Sakinah Mawaddah Warahmah.", waktu: "1 Hari yang lalu" },
+            { nama: "Lestari Putri", pesan: "Selamat ya kalian berdua!", waktu: "2 Hari yang lalu" },
+        ];
+        let displayedCount = 0;
+        function renderWishes() {
+            const container = document.getElementById('wishes-container');
+            const btnLoadMore = document.getElementById('btn-load-more');
+            if(!container) return;
+
+            let nextLimit = displayedCount + 3;
+            const wishesToDisplay = allWishes.slice(displayedCount, nextLimit);
+            
+            wishesToDisplay.forEach(wish => {
+                const card = document.createElement('div');
+                card.className = 'wish-card bg-brand-elegant/40 p-6 rounded-[2rem] border border-white animate-fade-in transition-all hover:bg-white hover:shadow-md';
+                card.innerHTML = `<div class="flex flex-col md:flex-row md:items-center justify-between mb-3 gap-1"><h5 class="text-sm font-serif font-bold text-brand-charcoal">${wish.nama}</h5><span class="text-[9px] text-gray-400 italic uppercase tracking-wider"><i class="fa-regular fa-clock mr-1"></i> ${wish.waktu}</span></div><p class="text-xs text-gray-500 leading-relaxed font-light italic">"${wish.pesan}"</p>`;
+                container.appendChild(card);
+            });
+            displayedCount = nextLimit;
+            if (displayedCount >= allWishes.length && btnLoadMore) btnLoadMore.style.display = 'none';
+        }
+        document.addEventListener('DOMContentLoaded', () => { renderWishes(); });
+        function loadMoreWishes() { renderWishes(); }
     </script>
 </body>
-
 </html>

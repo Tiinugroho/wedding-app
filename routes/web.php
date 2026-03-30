@@ -16,6 +16,7 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomeController::class, 'index'])->name('welcome');
+Route::get('/katalog-tema', [HomeController::class, 'katalog'])->name('katalog'); // RUTE BARU
 
 // ==========================================
 // GOOGLE AUTH (Taruh di atas agar tidak bentrok dengan slug)
