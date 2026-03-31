@@ -28,17 +28,21 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        // [PERBAIKAN] Cek role user dan arahkan ke dashboard yang sesuai
+        // [PERBAIKAN] Definisikan variabel $user dari request
+        $user = $request->user();
+
+        // Cek role user dan arahkan ke dashboard yang sesuai
         $url = '';
-        if ($request->user()->role === 'admin') {
+        if ($user->role === 'admin') {
             $url = route('admin.dashboard', absolute: false);
-        } elseif ($request->user()->role === 'client') { // di DB kita menggunakan 'client'
+        } elseif ($user->role === 'client') { // di DB kita menggunakan 'client'
             $url = route('customer.dashboard', absolute: false);
         } else {
             $url = '/'; // Fallback
         }
 
-        return redirect()->intended($url);
+        // [PERBAIKAN] Menggunakan variabel $user yang sudah didefinisikan di atas dan merapikan spasi
+        return redirect()->intended($url)->with('success', 'Selamat Datang, ' . $user->name);
     }
 
     /**
@@ -52,6 +56,6 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerateToken();
 
-        return redirect('/');
+        return redirect('/')->with('success', 'Anda Telah Logout, Terimakasih!');
     }
 }

@@ -12,13 +12,6 @@
             <h2 class="text-2xl md:text-3xl font-extrabold text-slate-800">Beranda</h2>
             <p class="text-slate-400 text-sm md:text-base mt-1">Halo {{ Auth::user()->name }}, selamat datang kembali!</p>
         </div>
-        <div class="w-12 h-12 md:w-14 md:h-14 bg-white rounded-2xl flex items-center justify-center border border-slate-200 shadow-sm text-slate-400 group cursor-pointer hover:border-rRed transition">
-            <svg class="w-7 h-7 md:w-8 md:h-8 group-hover:text-rRed transition" fill="none" stroke="currentColor"
-                viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-            </svg>
-        </div>
     </header>
 
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-5 md:gap-8 mb-12">

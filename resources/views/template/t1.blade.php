@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html lang="id" class="scroll-smooth">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Undangan Pernikahan - {{ $content['groom_nickname'] ?? 'Romeo' }} & {{ $content['bride_nickname'] ?? 'Juliet' }}</title>
-    
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -33,55 +34,157 @@
     </script>
 
     <style>
-        ::-webkit-scrollbar { width: 0px; background: transparent; }
-        body { overflow-y: hidden; }
-        
+        ::-webkit-scrollbar {
+            width: 0px;
+            background: transparent;
+        }
+
+        body {
+            overflow-y: hidden;
+        }
+
         .floating-nav {
             background: rgba(255, 255, 255, 0.85);
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
             border: 1px solid rgba(197, 160, 101, 0.2);
         }
-        .text-protected { text-shadow: 0 1px 3px rgba(0, 0, 0, 0.08); }
+
+        .text-protected {
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+        }
+
         #guest-name {
             background: linear-gradient(to bottom, #333333, #555555);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            color: #333333; 
+            color: #333333;
         }
-        .py-4\.5 { padding-top: 1.125rem; padding-bottom: 1.125rem; }
+
+        .py-4\.5 {
+            padding-top: 1.125rem;
+            padding-bottom: 1.125rem;
+        }
+
         @keyframes fade-in {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
-        .animate-fade-in { animation: fade-in 0.4s ease-out forwards; }
-        #mempelai { background: linear-gradient(to bottom, #FFFFFF 0%, #FDFDFD 100%); }
+
+        .animate-fade-in {
+            animation: fade-in 0.4s ease-out forwards;
+        }
+
+        #mempelai {
+            background: linear-gradient(to bottom, #FFFFFF 0%, #FDFDFD 100%);
+        }
+
         #mempelai .group:hover .border-brand-lightGold\/40 {
             border-color: rgba(197, 160, 101, 0.7);
             transform: translate(3px, 3px);
         }
-        .scroll-custom::-webkit-scrollbar { width: 4px; }
-        .scroll-custom::-webkit-scrollbar-track { background: transparent; }
-        .scroll-custom::-webkit-scrollbar-thumb { background: #C5A065; border-radius: 10px; }
+
+        .scroll-custom::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .scroll-custom::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .scroll-custom::-webkit-scrollbar-thumb {
+            background: #C5A065;
+            border-radius: 10px;
+        }
     </style>
 
     @php
-        // Ekstraksi Youtube ID agar iFrame berfungsi
-        function getYoutubeId($url) {
-            preg_match('%(?:youtube(?:-nocookie)?\.com/(?:[^/]+/.+/|(?:v|e(?:mbed)?)/|.*[?&]v=)|youtu\.be/)([^"&?/\s]{11})%i', $url, $match);
-            return $match[1] ?? null;
-        }
+    // Ekstraksi Youtube ID agar iFrame berfungsi
+    function getYoutubeId($url) {
+    preg_match('%(?:youtube(?:-nocookie)?\.com/(?:[^/]+/.+/|(?:v|e(?:mbed)?)/|.*[?&]v=)|youtu\.be/)([^"&?/\s]{11})%i', $url, $match);
+    return $match[1] ?? null;
+    }
 
-        // Format Tanggal untuk Cover (18 . 07 . 2026)
-        $coverDate = !empty($content['akad_date']) ? \Carbon\Carbon::parse($content['akad_date'])->format('d . m . Y') : 'TBA';
-        
-        // Siapkan variabel urutan
-        $isGroomFirst = ($content['couple_order'] ?? 'groom_first') == 'groom_first';
+    // LOGIKA COVER IMAGE (Custom -> Gallery 1 -> Default)
+    $firstGallery = $invitation->galleries->where('type', 'photo')->first();
+    $coverImg = !empty($content['cover_image'])
+    ? asset('storage/'.$content['cover_image'])
+    : ($firstGallery ? asset('storage/'.$firstGallery->file_path)
+    : (!empty($content['bride_photo']) ? asset('storage/'.$content['bride_photo'])
+    : 'https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=1000'));
+
+    // Siapkan variabel urutan cover
+    $isGroomFirst = ($content['couple_order'] ?? 'groom_first') == 'groom_first';
+
+        // PETAKAN DATA ORANG PERTAMA (Akan tampil di kartu kiri)
+        $firstPerson = [
+            'name'     => $isGroomFirst ? ($content['groom_name'] ?? 'Romeo Montague') : ($content['bride_name'] ?? 'Juliet Capulet'),
+            'nickname' => $isGroomFirst ? ($content['groom_nickname'] ?? 'Romeo') : ($content['bride_nickname'] ?? 'Juliet'),
+            'father'   => $isGroomFirst ? ($content['groom_father'] ?? 'Fulan') : ($content['bride_father'] ?? 'Fulan'),
+            'mother'   => $isGroomFirst ? ($content['groom_mother'] ?? 'Fulanah') : ($content['bride_mother'] ?? 'Fulanah'),
+            'ig'       => $isGroomFirst ? ($content['groom_ig'] ?? '') : ($content['bride_ig'] ?? ''),
+            'photo'    => $isGroomFirst ? ($content['groom_photo'] ?? '') : ($content['bride_photo'] ?? ''),
+            'label'    => $isGroomFirst ? '- The Groom -' : '- The Bride -',
+            'default_img' => $isGroomFirst ? 'https://images.soco.id/230-58.jpg.jpeg' : 'https://images.pexels.com/photos/157757/wedding-dresses-fashion-character-bride-157757.jpeg'
+        ];
+
+        // PETAKAN DATA ORANG KEDUA (Akan tampil di kartu kanan)
+        $secondPerson = [
+            'name'     => !$isGroomFirst ? ($content['groom_name'] ?? 'Romeo Montague') : ($content['bride_name'] ?? 'Juliet Capulet'),
+            'nickname' => !$isGroomFirst ? ($content['groom_nickname'] ?? 'Romeo') : ($content['bride_nickname'] ?? 'Juliet'),
+            'father'   => !$isGroomFirst ? ($content['groom_father'] ?? 'Fulan') : ($content['bride_father'] ?? 'Fulan'),
+            'mother'   => !$isGroomFirst ? ($content['groom_mother'] ?? 'Fulanah') : ($content['bride_mother'] ?? 'Fulanah'),
+            'ig'       => !$isGroomFirst ? ($content['groom_ig'] ?? '') : ($content['bride_ig'] ?? ''),
+            'photo'    => !$isGroomFirst ? ($content['groom_photo'] ?? '') : ($content['bride_photo'] ?? ''),
+            'label'    => !$isGroomFirst ? '- The Groom -' : '- The Bride -',
+            'default_img' => !$isGroomFirst ? 'https://images.soco.id/230-58.jpg.jpeg' : 'https://images.pexels.com/photos/157757/wedding-dresses-fashion-character-bride-157757.jpeg'
+        ];
+
+        // Nama untuk di Cover (Groom & Bride atau sebaliknya)
         $pria = $content['groom_nickname'] ?? 'Romeo';
         $wanita = $content['bride_nickname'] ?? 'Juliet';
         $coupleNameCover = $isGroomFirst ? "$pria & $wanita" : "$wanita & $pria";
+
+    // ==========================================
+    // LOGIKA COUNTDOWN & TANGGAL (FOKUS KE RESEPSI)
+    // ==========================================
+    $countdownDate = '';
+    $rawTime = '';
+
+    // 1. Coba ambil dari Event pertama (Resepsi)
+    if (!empty($content['events'][0]['date'])) {
+    $countdownDate = $content['events'][0]['date'];
+    $rawTime = $content['events'][0]['time'] ?? '';
+    }
+    // 2. Fallback: Jika kosong, pakai Akad
+    elseif (!empty($content['akad_date'])) {
+    $countdownDate = $content['akad_date'];
+    $rawTime = $content['akad_time'] ?? '';
+    }
+
+    // Bersihkan Waktu dengan Regex (Membuang "WIB", dsb)
+    $countdownTime = '00:00';
+    if (!empty($rawTime)) {
+    if (preg_match('/([0-9]{1,2}:[0-9]{2})/', $rawTime, $matches)) {
+    $countdownTime = str_pad($matches[1], 5, "0", STR_PAD_LEFT);
+    }
+    }
+
+    // Variabel untuk Teks di Cover
+    $coverDate = $countdownDate ? \Carbon\Carbon::parse($countdownDate)->format('d . m . Y') : 'TBA';
+
+    // Target Countdown untuk Javascript (ISO 8601)
+    $countdownTarget = $countdownDate ? $countdownDate . 'T' . $countdownTime . ':00' : '';
     @endphp
 </head>
+
 <body class="bg-brand-elegant text-brand-charcoal font-sans antialiased relative selection:bg-brand-gold selection:text-white">
 
     {{-- MUSIK --}}
@@ -91,30 +194,31 @@
 
     {{-- COVER PAGE --}}
     <div id="cover-page" class="fixed inset-0 z-50 flex flex-col items-center justify-center bg-brand-white transition-transform duration-1000 ease-in-out overflow-hidden">
-        <div class="absolute inset-0 opacity-[0.22] bg-[url('{{ !empty($content['groom_photo']) ? asset('storage/'.$content['groom_photo']) : 'https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=1000&auto=format&fit=crop' }}')] bg-cover bg-center scale-105 animate-[pulse_10s_infinite]"></div>
+        {{-- MENGGUNAKAN COVER IMAGE DINAMIS --}}
+        <div class="absolute inset-0 opacity-[0.22] bg-[url('{{ $coverImg }}')] bg-cover bg-center scale-105 animate-[pulse_10s_infinite]"></div>
         <div class="absolute inset-0 opacity-[0.025] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/paper-fibers.png')]"></div>
         <div class="absolute inset-0 bg-gradient-to-b from-brand-white/10 via-brand-white/70 to-brand-white/95"></div>
-            
+
         <div class="relative z-10 text-center px-6 max-w-lg w-full">
             <p class="text-xs tracking-[0.4em] uppercase text-brand-gold mb-5 font-semibold drop-shadow-sm">The Wedding Of</p>
-            
+
             <h1 class="text-6xl md:text-7xl font-serif italic text-brand-gold mb-3 tracking-tight leading-none text-protected">{{ $coupleNameCover }}</h1>
-            
+
             <div class="flex items-center justify-center gap-5 mb-12">
                 <div class="h-[1px] w-12 bg-brand-gold/25"></div>
                 <p class="text-sm font-sans tracking-[0.25em] text-brand-charcoal uppercase font-light">{{ $coverDate }}</p>
                 <div class="h-[1px] w-12 bg-brand-gold/25"></div>
             </div>
-            
+
             <div class="my-9 p-8 md:p-10 bg-white/35 backdrop-blur-sm rounded-[2rem] border border-white/60 shadow-[0_6px_25px_rgba(197,160,101,0.1)] relative overflow-hidden group">
                 <p class="text-xs text-gray-500 mb-3.5 italic font-light tracking-wide">{{ $content['cover_greeting'] ?? 'Kepada Yth.' }}</p>
                 <h2 id="guest-name" class="text-3xl md:text-4xl font-serif font-semibold text-brand-charcoal leading-snug">Tamu Undangan</h2>
-                
+
                 @if(!empty($content['akad_location']))
-                    <div class="mt-5 flex items-center justify-center gap-2.5 text-xs text-brand-gold uppercase tracking-[0.1em] font-medium">
-                        <i class="fa-solid fa-location-dot"></i>
-                        <span>{{ $content['akad_location'] }}</span>
-                    </div>
+                <div class="mt-5 flex items-center justify-center gap-2.5 text-xs text-brand-gold uppercase tracking-[0.1em] font-medium">
+                    <i class="fa-solid fa-location-dot"></i>
+                    <span>{{ $content['akad_location'] }}</span>
+                </div>
                 @endif
             </div>
 
@@ -129,13 +233,13 @@
     </div>
 
     <main id="main-content" class="min-h-screen pb-28 opacity-0 transition-opacity duration-1000">
-        
+
         {{-- QUOTES & COUNTDOWN --}}
-        <section id="home" class="min-h-screen flex flex-col items-center justify-center text-center p-4 md:p-8 bg-[url('{{ !empty($content['bride_photo']) ? asset('storage/'.$content['bride_photo']) : 'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?q=80&w=1000&auto=format&fit=crop' }}')] bg-cover bg-center bg-fixed relative overflow-hidden">
+        <section id="home" class="min-h-screen flex flex-col items-center justify-center text-center p-4 md:p-8 bg-[url('{{ $coverImg }}')] bg-cover bg-center bg-fixed relative overflow-hidden">
             <div class="absolute inset-0 bg-brand-white/60 backdrop-blur-[2px]"></div>
-            
+
             <div class="relative z-10 max-w-2xl w-full p-6 md:p-14 bg-brand-softWhite/80 rounded-[2.5rem] md:rounded-[3rem] border border-white shadow-[0_20px_50px_rgba(0,0,0,0.05)] backdrop-blur-md">
-                
+
                 <div class="mb-8 md:mb-10">
                     <p class="font-serif italic text-xl md:text-3xl text-brand-gold mb-4 text-protected">
                         "{{ $content['quotes'] ?? 'And they lived happily ever after.' }}"
@@ -179,104 +283,83 @@
 
         {{-- MEMPELAI (SELALU AKTIF, URUTAN DINAMIS) --}}
         <section id="mempelai" class="py-12 px-6 bg-brand-white relative overflow-hidden">
-            <div class="absolute inset-0 opacity-[0.04] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/linen-headboard.png')]"></div>
-            <div class="max-w-6xl mx-auto relative z-10">
-                <div class="text-center mb-24">
-                    <p class="text-[10px] tracking-[0.5em] uppercase text-brand-gold mb-3 font-semibold drop-shadow-sm">Meet The Couple</p>
-                    <div class="h-[1px] w-20 bg-brand-lightGold/30 mx-auto"></div>
+    <div class="absolute inset-0 opacity-[0.04] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/linen-headboard.png')]"></div>
+    <div class="max-w-6xl mx-auto relative z-10">
+        <div class="text-center mb-24">
+            <p class="text-[10px] tracking-[0.5em] uppercase text-brand-gold mb-3 font-semibold drop-shadow-sm">Meet The Couple</p>
+            <div class="h-[1px] w-20 bg-brand-lightGold/30 mx-auto"></div>
+        </div>
+
+        {{-- Container dibuat statis (tanpa row-reverse) --}}
+        <div class="space-y-24 md:space-y-0 md:flex md:items-center md:justify-center md:gap-20 lg:gap-32">
+
+            {{-- KARTU KIRI (Selalu Orang Pertama) --}}
+            <div class="flex flex-col items-center md:items-start text-center md:text-left group flex-1">
+                <div class="relative mb-10 w-64 h-80 md:w-72 md:h-96 group-hover:-translate-y-2 transition-transform duration-500 ease-out">
+                    {{-- Border menyesuaikan sisi --}}
+                    <div class="absolute -bottom-4 -right-4 inset-0 border border-brand-lightGold/40 rounded-t-[10rem] rounded-b-xl z-0"></div>
+                    <div class="absolute inset-0 bg-brand-lightGold overflow-hidden rounded-t-[10rem] rounded-b-xl shadow-[0_15px_45px_rgba(197,160,101,0.1)] z-10 border-4 border-white">
+                        <img src="{{ !empty($firstPerson['photo']) ? asset('storage/'.$firstPerson['photo']) : $firstPerson['default_img'] }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+                    </div>
+                    <div class="absolute -top-8 -left-8 w-24 h-24 opacity-60 z-20 pointer-events-none">
+                        <img src="https://www.transparentpng.com/thumb/flowers-vectors/pink-and-whire-flower-vector-hq-png-6.png" class="w-full h-full object-contain">
+                    </div>
                 </div>
-                
-                <div class="space-y-24 md:space-y-0 md:flex md:items-center md:justify-center md:gap-20 lg:gap-32 {{ !$isGroomFirst ? 'md:flex-row-reverse' : '' }}">
-                    
-                    {{-- CARD PRIA --}}
-                    <div class="flex flex-col items-center md:items-start text-center md:text-left group flex-1">
-                        <div class="relative mb-10 w-64 h-80 md:w-72 md:h-96 group-hover:-translate-y-2 transition-transform duration-500 ease-out">
-                            <div class="absolute -bottom-4 {{ $isGroomFirst ? '-right-4' : '-left-4' }} inset-0 border border-brand-lightGold/40 rounded-t-[10rem] rounded-b-xl z-0"></div>
-                            <div class="absolute inset-0 bg-brand-lightGold overflow-hidden rounded-t-[10rem] rounded-b-xl shadow-[0_15px_45px_rgba(197,160,101,0.1)] z-10 border-4 border-white">
-                                <img src="{{ !empty($content['groom_photo']) ? asset('storage/'.$content['groom_photo']) : 'https://images.soco.id/230-58.jpg.jpeg' }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
-                            </div>
-                            <div class="absolute -top-8 -left-8 w-24 h-24 opacity-60 z-20 pointer-events-none">
-                                <img src="https://www.transparentpng.com/thumb/flowers-vectors/pink-and-whire-flower-vector-hq-png-6.png" class="w-full h-full object-contain">
-                            </div>
-                        </div>
-                        
-                        <h3 class="text-3xl lg:text-4xl font-serif font-bold text-brand-charcoal mb-2 leading-tight">{{ $content['groom_name'] ?? 'Romeo Montague' }}</h3>
-                        <p class="text-xs text-brand-gold uppercase tracking-[0.3em] font-medium mb-5 border-b border-brand-lightGold/30 inline-block pb-1">- The Groom -</p>
-                        
-                        <div class="space-y-1 mb-4">
-                            <p class="text-[11px] text-gray-500 font-light tracking-wide">Putra dari</p>
-                            <p class="text-sm text-brand-charcoal font-medium">{{ $content['groom_father'] ?? 'Bapak Fulan' }}</p>
-                            <p class="text-sm text-brand-charcoal font-medium">& {{ $content['groom_mother'] ?? 'Ibu Fulanah' }}</p>
-                        </div>
 
-                        @if(!empty($content['groom_ig']))
-                            <a href="https://instagram.com/{{ $content['groom_ig'] }}" target="_blank" class="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-brand-lightGold/50 text-brand-gold hover:bg-brand-gold hover:text-white transition text-xs font-semibold">
-                                <i class="fa-brands fa-instagram"></i> {{ $content['groom_ig'] }}
-                            </a>
-                        @endif
-                    </div>
+                <h3 class="text-3xl lg:text-4xl font-serif font-bold text-brand-charcoal mb-2 leading-tight">{{ $firstPerson['name'] }}</h3>
+                <p class="text-xs text-brand-gold uppercase tracking-[0.3em] font-medium mb-5 border-b border-brand-lightGold/30 inline-block pb-1">{{ $firstPerson['label'] }}</p>
 
-                    {{-- CARD WANITA --}}
-                    <div class="flex flex-col items-center md:items-end text-center md:text-right group flex-1">
-                        <div class="relative mb-10 w-64 h-80 md:w-72 md:h-96 group-hover:-translate-y-2 transition-transform duration-500 ease-out">
-                            <div class="absolute -bottom-4 {{ $isGroomFirst ? '-left-4' : '-right-4' }} inset-0 border border-brand-lightGold/40 rounded-t-[10rem] rounded-b-xl z-0"></div>
-                            <div class="absolute inset-0 bg-brand-lightGold overflow-hidden rounded-t-[10rem] rounded-b-xl shadow-[0_15px_45px_rgba(197,160,101,0.1)] z-10 border-4 border-white">
-                                <img src="{{ !empty($content['bride_photo']) ? asset('storage/'.$content['bride_photo']) : 'https://images.pexels.com/photos/157757/wedding-dresses-fashion-character-bride-157757.jpeg' }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
-                            </div>
-                            <div class="absolute -bottom-8 -right-8 w-24 h-24 opacity-60 z-20 pointer-events-none rotate-180">
-                                <img src="https://www.transparentpng.com/thumb/flowers-vectors/pink-and-whire-flower-vector-hq-png-6.png" class="w-full h-full object-contain">
-                            </div>
-                        </div>
-                        
-                        <h3 class="text-3xl lg:text-4xl font-serif font-bold text-brand-charcoal mb-2 leading-tight">{{ $content['bride_name'] ?? 'Juliet Capulet' }}</h3>
-                        <p class="text-xs text-brand-gold uppercase tracking-[0.3em] font-medium mb-5 border-b border-brand-lightGold/30 inline-block pb-1">- The Bride -</p>
-                        
-                        <div class="space-y-1 mb-4">
-                            <p class="text-[11px] text-gray-500 font-light tracking-wide">Putri dari</p>
-                            <p class="text-sm text-brand-charcoal font-medium">{{ $content['bride_father'] ?? 'Bapak Fulan' }}</p>
-                            <p class="text-sm text-brand-charcoal font-medium">& {{ $content['bride_mother'] ?? 'Ibu Fulanah' }}</p>
-                        </div>
-
-                        @if(!empty($content['bride_ig']))
-                            <a href="https://instagram.com/{{ $content['bride_ig'] }}" target="_blank" class="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-brand-lightGold/50 text-brand-gold hover:bg-brand-gold hover:text-white transition text-xs font-semibold">
-                                <i class="fa-brands fa-instagram"></i> {{ $content['bride_ig'] }}
-                            </a>
-                        @endif
-                    </div>
-
+                <div class="space-y-1 mb-4">
+                    <p class="uppercase text-[10px] tracking-[0.3em] text-brand-gold font-bold">Putra/i Tercinta dari</p>
+                    <p class="text-sm text-brand-charcoal font-medium">Bapak {{ $firstPerson['father'] }}</p>
+                    <p class="text-sm text-brand-charcoal font-medium">& Ibu {{ $firstPerson['mother'] }}</p>
                 </div>
-                
-                {{-- TURUT MENGUNDANG (TOGGLE) --}}
-                @if(!empty($content['is_turut_mengundang_active']))
-                    <div class="mt-20 pt-12 border-t border-brand-lightGold/15 bg-brand-elegant/50 rounded-3xl p-10 md:p-16 relative">
-                        <div class="absolute -top-5 left-1/2 -translate-x-1/2 bg-brand-white px-6">
-                            <i class="fa-solid fa-users text-brand-lightGold/50 text-3xl"></i>
-                        </div>
-                        <p class="text-[11px] tracking-[0.4em] uppercase text-gray-400 mb-12 font-medium text-center">Turut Mengundang</p>
-                        
-                        <div class="grid grid-cols-2 md:grid-cols-4 gap-x-10 gap-y-6 text-xs text-brand-charcoal/80 font-light leading-relaxed max-w-4xl mx-auto text-center">
-                            @if(!empty($content['turut_mengundang_groom']))
-                                @foreach($content['turut_mengundang_groom'] as $t_groom)
-                                    <p>{{ $t_groom }}</p>
-                                @endforeach
-                            @endif
-                            
-                            @if(!empty($content['turut_mengundang_bride']))
-                                @foreach($content['turut_mengundang_bride'] as $t_bride)
-                                    <p>{{ $t_bride }}</p>
-                                @endforeach
-                            @endif
-                        </div>
-                    </div>
+
+                @if(!empty($firstPerson['ig']))
+                <a href="https://instagram.com/{{ $firstPerson['ig'] }}" target="_blank" class="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-brand-lightGold/50 text-brand-gold hover:bg-brand-gold hover:text-white transition text-xs font-semibold">
+                    <i class="fa-brands fa-instagram"></i> {{ $firstPerson['ig'] }}
+                </a>
                 @endif
             </div>
-        </section>
+
+            {{-- KARTU KANAN (Selalu Orang Kedua) --}}
+            <div class="flex flex-col items-center md:items-end text-center md:text-right group flex-1">
+                <div class="relative mb-10 w-64 h-80 md:w-72 md:h-96 group-hover:-translate-y-2 transition-transform duration-500 ease-out">
+                    {{-- Border menyesuaikan sisi (kiri bawah) --}}
+                    <div class="absolute -bottom-4 -left-4 inset-0 border border-brand-lightGold/40 rounded-t-[10rem] rounded-b-xl z-0"></div>
+                    <div class="absolute inset-0 bg-brand-lightGold overflow-hidden rounded-t-[10rem] rounded-b-xl shadow-[0_15px_45px_rgba(197,160,101,0.1)] z-10 border-4 border-white">
+                        <img src="{{ !empty($secondPerson['photo']) ? asset('storage/'.$secondPerson['photo']) : $secondPerson['default_img'] }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+                    </div>
+                    <div class="absolute -bottom-8 -right-8 w-24 h-24 opacity-60 z-20 pointer-events-none rotate-180">
+                        <img src="https://www.transparentpng.com/thumb/flowers-vectors/pink-and-whire-flower-vector-hq-png-6.png" class="w-full h-full object-contain">
+                    </div>
+                </div>
+
+                <h3 class="text-3xl lg:text-4xl font-serif font-bold text-brand-charcoal mb-2 leading-tight">{{ $secondPerson['name'] }}</h3>
+                <p class="text-xs text-brand-gold uppercase tracking-[0.3em] font-medium mb-5 border-b border-brand-lightGold/30 inline-block pb-1">{{ $secondPerson['label'] }}</p>
+
+                <div class="space-y-1 mb-4">
+                    <p class="uppercase text-[10px] tracking-[0.3em] text-brand-gold font-bold">Putra/i Tercinta dari</p>
+                    <p class="text-sm text-brand-charcoal font-medium">Bapak {{ $secondPerson['father'] }}</p>
+                    <p class="text-sm text-brand-charcoal font-medium">& Ibu {{ $secondPerson['mother'] }}</p>
+                </div>
+
+                @if(!empty($secondPerson['ig']))
+                <a href="https://instagram.com/{{ $secondPerson['ig'] }}" target="_blank" class="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-brand-lightGold/50 text-brand-gold hover:bg-brand-gold hover:text-white transition text-xs font-semibold">
+                    <i class="fa-brands fa-instagram"></i> {{ $secondPerson['ig'] }}
+                </a>
+                @endif
+            </div>
+
+        </div>
+        </div>
+</section>
 
         {{-- STORY MEMPELAI (TOGGLE) --}}
         @if(!empty($content['is_story_active']) && !empty($content['love_stories']))
         <section id="story" class="py-28 px-6 bg-brand-white relative overflow-hidden">
             <div class="absolute inset-0 opacity-[0.03] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/paper-fibers.png')]"></div>
-            
+
             <div class="max-w-3xl mx-auto relative z-10">
                 <div class="text-center mb-20">
                     <p class="text-[10px] tracking-[0.5em] uppercase text-brand-gold mb-3 font-semibold">Our Journey</p>
@@ -288,28 +371,28 @@
                     <div class="absolute left-1/2 -translate-x-1/2 top-0 bottom-0 w-[1px] bg-gradient-to-b from-brand-gold/50 via-brand-gold/20 to-transparent"></div>
 
                     @foreach($content['love_stories'] as $index => $story)
-                        <div class="story-item relative flex flex-col items-center group {{ $index > 2 ? 'hidden extra-story' : '' }}">
-                            <div class="z-10 w-4 h-4 rounded-full bg-brand-white border-2 border-brand-gold mb-6 group-hover:scale-125 transition-transform duration-300"></div>
-                            <div class="w-full bg-brand-elegant/50 p-6 md:p-10 rounded-[2.5rem] border border-brand-lightGold/20 shadow-sm backdrop-blur-sm transition-all duration-500 hover:shadow-md">
-                                @if(!empty($story['image']))
-                                    <div class="aspect-video w-full rounded-2xl overflow-hidden mb-6 bg-brand-lightGold">
-                                        <img src="{{ asset('storage/'.$story['image']) }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" alt="{{ $story['title'] }}">
-                                    </div>
-                                @endif
-                                <span class="text-[10px] font-bold tracking-[0.2em] text-brand-gold uppercase">{{ $story['year'] }}</span>
-                                <h4 class="text-xl font-serif font-bold text-brand-charcoal mt-2 mb-3">{{ $story['title'] }}</h4>
-                                <p class="text-sm text-gray-500 leading-relaxed font-light">{{ $story['description'] }}</p>
+                    <div class="story-item relative flex flex-col items-center group {{ $index > 2 ? 'hidden extra-story' : '' }}">
+                        <div class="z-10 w-4 h-4 rounded-full bg-brand-white border-2 border-brand-gold mb-6 group-hover:scale-125 transition-transform duration-300"></div>
+                        <div class="w-full bg-brand-elegant/50 p-6 md:p-10 rounded-[2.5rem] border border-brand-lightGold/20 shadow-sm backdrop-blur-sm transition-all duration-500 hover:shadow-md">
+                            @if(!empty($story['image']))
+                            <div class="aspect-video w-full rounded-2xl overflow-hidden mb-6 bg-brand-lightGold">
+                                <img src="{{ asset('storage/'.$story['image']) }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" alt="{{ $story['title'] }}">
                             </div>
+                            @endif
+                            <span class="text-[10px] font-bold tracking-[0.2em] text-brand-gold uppercase">{{ $story['year'] }}</span>
+                            <h4 class="text-xl font-serif font-bold text-brand-charcoal mt-2 mb-3">{{ $story['title'] }}</h4>
+                            <p class="text-sm text-gray-500 leading-relaxed font-light">{{ $story['description'] }}</p>
                         </div>
+                    </div>
                     @endforeach
                 </div>
 
                 @if(count($content['love_stories']) > 3)
-                    <div class="mt-20 text-center">
-                        <button id="btn-read-more" onclick="toggleStories()" class="px-10 py-3.5 bg-transparent border border-brand-gold/40 text-brand-gold rounded-full text-xs font-bold uppercase tracking-widest hover:bg-brand-gold hover:text-white transition-all duration-500 shadow-sm">
-                            Baca Selengkapnya
-                        </button>
-                    </div>
+                <div class="mt-20 text-center">
+                    <button id="btn-read-more" onclick="toggleStories()" class="px-10 py-3.5 bg-transparent border border-brand-gold/40 text-brand-gold rounded-full text-xs font-bold uppercase tracking-widest hover:bg-brand-gold hover:text-white transition-all duration-500 shadow-sm">
+                        Baca Selengkapnya
+                    </button>
+                </div>
                 @endif
             </div>
         </section>
@@ -322,47 +405,47 @@
                 <h2 class="text-4xl font-serif text-brand-charcoal mb-4">Waktu & Lokasi Acara</h2>
                 <div class="h-[1px] w-12 bg-brand-gold/40 mx-auto mb-4"></div>
                 <p class="text-xs text-brand-gold tracking-[0.4em] uppercase font-medium mb-12">Kehadiran Anda Adalah Kehormatan</p>
-                
+
                 <div class="grid grid-cols-1 {{ count($content['events'] ?? []) > 0 ? 'md:grid-cols-2' : '' }} gap-8">
-                    
+
                     {{-- AKAD NIKAH STATIS --}}
                     @if(!empty($content['akad_location']))
-                        <div class="bg-brand-white p-10 rounded-[2.5rem] shadow-lg border border-brand-lightGold/50 h-full flex flex-col justify-between hover:-translate-y-2 transition-transform duration-500">
-                            <div>
-                                <i class="fa-solid fa-ring text-4xl text-brand-gold mb-6"></i>
-                                <h3 class="text-2xl font-serif font-bold mb-2">Akad Nikah</h3>
-                                <p class="text-brand-gold font-bold text-sm mb-4">{{ \Carbon\Carbon::parse($content['akad_date'])->translatedFormat('l, d F Y') }}</p>
-                                <p class="text-sm text-gray-600 mb-2 font-medium"><i class="fa-regular fa-clock mr-2"></i>{{ $content['akad_time'] }}</p>
-                                <p class="text-sm text-brand-charcoal font-bold mt-6 mb-1">{{ $content['akad_location'] }}</p>
-                                <p class="text-xs text-gray-500 leading-relaxed mb-8">{{ $content['akad_address'] }}</p>
-                            </div>
-                            @if(!empty($content['akad_map']))
-                                <a href="{{ $content['akad_map'] }}" target="_blank" class="block w-full py-3 bg-brand-elegant border border-brand-gold text-brand-gold rounded-full hover:bg-brand-gold hover:text-white transition-colors text-xs uppercase tracking-widest font-bold">
-                                    <i class="fa-solid fa-map-location-dot mr-2"></i> Buka Peta
-                                </a>
-                            @endif
+                    <div class="bg-brand-white p-10 rounded-[2.5rem] shadow-lg border border-brand-lightGold/50 h-full flex flex-col justify-between hover:-translate-y-2 transition-transform duration-500">
+                        <div>
+                            <i class="fa-solid fa-ring text-4xl text-brand-gold mb-6"></i>
+                            <h3 class="text-2xl font-serif font-bold mb-2">Akad Nikah</h3>
+                            <p class="text-brand-gold font-bold text-sm mb-4">{{ \Carbon\Carbon::parse($content['akad_date'])->translatedFormat('l, d F Y') }}</p>
+                            <p class="text-sm text-gray-600 mb-2 font-medium"><i class="fa-regular fa-clock mr-2"></i>{{ $content['akad_time'] }}</p>
+                            <p class="text-sm text-brand-charcoal font-bold mt-6 mb-1">{{ $content['akad_location'] }}</p>
+                            <p class="text-xs text-gray-500 leading-relaxed mb-8">{{ $content['akad_address'] }}</p>
                         </div>
+                        @if(!empty($content['akad_map']))
+                        <a href="{{ $content['akad_map'] }}" target="_blank" class="block w-full py-3 bg-brand-elegant border border-brand-gold text-brand-gold rounded-full hover:bg-brand-gold hover:text-white transition-colors text-xs uppercase tracking-widest font-bold">
+                            <i class="fa-solid fa-map-location-dot mr-2"></i> Buka Peta
+                        </a>
+                        @endif
+                    </div>
                     @endif
 
                     {{-- RESEPSI DINAMIS --}}
                     @if(!empty($content['events']))
-                        @foreach($content['events'] as $event)
-                            <div class="bg-brand-white p-10 rounded-[2.5rem] shadow-lg border border-brand-lightGold/50 h-full flex flex-col justify-between hover:-translate-y-2 transition-transform duration-500">
-                                <div>
-                                    <i class="fa-solid fa-champagne-glasses text-4xl text-brand-gold mb-6"></i>
-                                    <h3 class="text-2xl font-serif font-bold mb-2">{{ $event['title'] }}</h3>
-                                    <p class="text-brand-gold font-bold text-sm mb-4">{{ \Carbon\Carbon::parse($event['date'])->translatedFormat('l, d F Y') }}</p>
-                                    <p class="text-sm text-gray-600 mb-2 font-medium"><i class="fa-regular fa-clock mr-2"></i>{{ $event['time'] }}</p>
-                                    <p class="text-sm text-brand-charcoal font-bold mt-6 mb-1">{{ $event['location'] }}</p>
-                                    <p class="text-xs text-gray-500 leading-relaxed mb-8">{{ $event['address'] }}</p>
-                                </div>
-                                @if(!empty($event['map']))
-                                    <a href="{{ $event['map'] }}" target="_blank" class="block w-full py-3 bg-brand-elegant border border-brand-gold text-brand-gold rounded-full hover:bg-brand-gold hover:text-white transition-colors text-xs uppercase tracking-widest font-bold">
-                                        <i class="fa-solid fa-map-location-dot mr-2"></i> Buka Peta
-                                    </a>
-                                @endif
-                            </div>
-                        @endforeach
+                    @foreach($content['events'] as $event)
+                    <div class="bg-brand-white p-10 rounded-[2.5rem] shadow-lg border border-brand-lightGold/50 h-full flex flex-col justify-between hover:-translate-y-2 transition-transform duration-500">
+                        <div>
+                            <i class="fa-solid fa-champagne-glasses text-4xl text-brand-gold mb-6"></i>
+                            <h3 class="text-2xl font-serif font-bold mb-2">{{ $event['title'] }}</h3>
+                            <p class="text-brand-gold font-bold text-sm mb-4">{{ \Carbon\Carbon::parse($event['date'])->translatedFormat('l, d F Y') }}</p>
+                            <p class="text-sm text-gray-600 mb-2 font-medium"><i class="fa-regular fa-clock mr-2"></i>{{ $event['time'] }}</p>
+                            <p class="text-sm text-brand-charcoal font-bold mt-6 mb-1">{{ $event['location'] }}</p>
+                            <p class="text-xs text-gray-500 leading-relaxed mb-8">{{ $event['address'] }}</p>
+                        </div>
+                        @if(!empty($event['map']))
+                        <a href="{{ $event['map'] }}" target="_blank" class="block w-full py-3 bg-brand-elegant border border-brand-gold text-brand-gold rounded-full hover:bg-brand-gold hover:text-white transition-colors text-xs uppercase tracking-widest font-bold">
+                            <i class="fa-solid fa-map-location-dot mr-2"></i> Buka Peta
+                        </a>
+                        @endif
+                    </div>
+                    @endforeach
                     @endif
                 </div>
             </div>
@@ -375,23 +458,23 @@
             <div class="max-w-2xl mx-auto border-2 border-dashed border-brand-lightGold/50 rounded-[2rem] p-8">
                 <i class="fa-solid fa-circle-info text-2xl text-brand-gold mb-4"></i>
                 <h4 class="text-xl font-serif font-bold mb-6 text-brand-charcoal">Informasi Tamu</h4>
-                
+
                 @if(!empty($content['enable_dresscode']) && !empty($content['dresscode']))
-                    <div class="mb-6">
-                        <p class="text-[10px] uppercase tracking-widest text-gray-400 font-bold mb-1">Dresscode</p>
-                        <p class="text-sm font-medium text-brand-charcoal">{{ $content['dresscode'] }}</p>
-                    </div>
+                <div class="mb-6">
+                    <p class="text-[10px] uppercase tracking-widest text-gray-400 font-bold mb-1">Dresscode</p>
+                    <p class="text-sm font-medium text-brand-charcoal">{{ $content['dresscode'] }}</p>
+                </div>
                 @endif
-                
+
                 @if(!empty($content['enable_health_protocol']))
-                    <div>
-                        <p class="text-[10px] uppercase tracking-widest text-gray-400 font-bold mb-3">Protokol Kesehatan</p>
-                        <div class="flex justify-center gap-6 text-brand-gold text-2xl">
-                            <div class="flex flex-col items-center gap-2"><i class="fa-solid fa-head-side-mask"></i><span class="text-[9px] text-gray-500">Masker</span></div>
-                            <div class="flex flex-col items-center gap-2"><i class="fa-solid fa-hands-bubbles"></i><span class="text-[9px] text-gray-500">Cuci Tangan</span></div>
-                            <div class="flex flex-col items-center gap-2"><i class="fa-solid fa-people-arrows"></i><span class="text-[9px] text-gray-500">Jaga Jarak</span></div>
-                        </div>
+                <div>
+                    <p class="text-[10px] uppercase tracking-widest text-gray-400 font-bold mb-3">Protokol Kesehatan</p>
+                    <div class="flex justify-center gap-6 text-brand-gold text-2xl">
+                        <div class="flex flex-col items-center gap-2"><i class="fa-solid fa-head-side-mask"></i><span class="text-[9px] text-gray-500">Masker</span></div>
+                        <div class="flex flex-col items-center gap-2"><i class="fa-solid fa-hands-bubbles"></i><span class="text-[9px] text-gray-500">Cuci Tangan</span></div>
+                        <div class="flex flex-col items-center gap-2"><i class="fa-solid fa-people-arrows"></i><span class="text-[9px] text-gray-500">Jaga Jarak</span></div>
                     </div>
+                </div>
                 @endif
             </div>
         </section>
@@ -408,30 +491,30 @@
 
             {{-- YOUTUBE DINAMIS --}}
             @if(!empty($content['youtube_links']))
-                @foreach($content['youtube_links'] as $yt)
-                    @php $ytId = getYoutubeId($yt); @endphp
-                    @if($ytId)
-                        <div class="mb-12 animate-fade-in max-w-4xl mx-auto">
-                            <div class="relative w-full pb-[56.25%] rounded-[2rem] overflow-hidden shadow-2xl border-4 border-white">
-                                <iframe class="absolute top-0 left-0 w-full h-full" src="https://www.youtube.com/embed/{{ $ytId }}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-                            </div>
-                        </div>
-                    @endif
-                @endforeach
+            @foreach($content['youtube_links'] as $yt)
+            @php $ytId = getYoutubeId($yt); @endphp
+            @if($ytId)
+            <div class="mb-12 animate-fade-in max-w-4xl mx-auto">
+                <div class="relative w-full pb-[56.25%] rounded-[2rem] overflow-hidden shadow-2xl border-4 border-white">
+                    <iframe class="absolute top-0 left-0 w-full h-full" src="https://www.youtube.com/embed/{{ $ytId }}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                </div>
+            </div>
+            @endif
+            @endforeach
             @endif
 
             {{-- FOTO GALERI --}}
             @if($invitation->galleries->count() > 0)
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6" id="photo-grid">
-                    @foreach($invitation->galleries->where('type','photo') as $idx => $photo)
-                        <div class="group relative aspect-square bg-brand-lightGold rounded-3xl overflow-hidden shadow-sm border-4 border-white cursor-pointer" onclick="openLightbox({{ $idx }})">
-                            <img src="{{ asset('storage/'.$photo->file_path) }}" class="gallery-img w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" alt="Gallery">
-                            <div class="absolute inset-0 bg-brand-charcoal/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                                <i class="fa-solid fa-magnifying-glass-plus text-white text-2xl"></i>
-                            </div>
-                        </div>
-                    @endforeach
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6" id="photo-grid">
+                @foreach($invitation->galleries->where('type','photo') as $idx => $photo)
+                <div class="group relative aspect-square bg-brand-lightGold rounded-3xl overflow-hidden shadow-sm border-4 border-white cursor-pointer" onclick="openLightbox({{ $idx }})">
+                    <img src="{{ asset('storage/'.$photo->file_path) }}" class="gallery-img w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" alt="Gallery">
+                    <div class="absolute inset-0 bg-brand-charcoal/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                        <i class="fa-solid fa-magnifying-glass-plus text-white text-2xl"></i>
+                    </div>
                 </div>
+                @endforeach
+            </div>
             @endif
         </section>
 
@@ -465,25 +548,47 @@
                         Doa restu Anda merupakan karunia yang sangat berarti bagi kami. Namun jika Anda ingin memberikan tanda kasih, Anda dapat mengirimkannya melalui:
                     </p>
                 </div>
+                @php
+                    // Ambil semua logo bank yang aktif untuk dipasangkan dengan data inputan user
+                    $bankLogos = \App\Models\Bank::where('is_active', true)->pluck('logo', 'name')->toArray();
+                @endphp
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
                     @foreach($content['banks'] as $idx => $bank)
-                        <div class="group relative p-10 bg-brand-elegant/40 rounded-[3rem] border border-brand-lightGold/20 backdrop-blur-sm transition-all duration-500 hover:shadow-2xl hover:shadow-brand-gold/10 hover:-translate-y-2">
-                            <div class="flex flex-col items-center">
-                                <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-sm border border-brand-lightGold/30 mb-6 text-brand-gold text-2xl">
-                                    <i class="fa-solid fa-building-columns"></i>
-                                </div>
-                                <p class="text-sm uppercase tracking-widest text-brand-charcoal mb-4 font-bold">{{ $bank['name'] }}</p>
-                                <p class="text-[10px] uppercase tracking-[0.3em] text-brand-gold mb-2 font-bold">Nomor Rekening</p>
-                                <h3 id="rek-{{ $idx }}" class="text-3xl font-serif font-bold text-brand-charcoal mb-2 tracking-widest">{{ $bank['account_number'] }}</h3>
-                                <p class="text-sm text-gray-400 italic mb-8 font-light">a.n {{ $bank['account_name'] }}</p>
-                                
-                                <button onclick="copyToClipboard('rek-{{ $idx }}', this)" class="w-full py-4 bg-brand-gold text-white rounded-2xl text-[11px] font-bold uppercase tracking-[0.2em] transition-all duration-300 hover:bg-brand-charcoal shadow-lg shadow-brand-gold/20 active:scale-95">
-                                    <i class="fa-regular fa-copy mr-2"></i>
-                                    <span>Salin Nomor</span>
-                                </button>
+                    <div class="group relative p-10 bg-brand-elegant/40 rounded-[3rem] border border-brand-lightGold/20 backdrop-blur-sm transition-all duration-500 hover:shadow-2xl hover:shadow-brand-gold/10 hover:-translate-y-2">
+                        <div class="flex flex-col items-center">
+                            
+                            {{-- LINGKARAN LOGO --}}
+                            <div class="w-20 h-20 bg-white rounded-full flex items-center justify-center shadow-sm border border-brand-lightGold/30 mb-6 overflow-hidden p-4">
+                                @php 
+                                    $logoPath = $bankLogos[$bank['name']] ?? null; 
+                                @endphp
+
+                                @if($logoPath)
+                                    @if(str_starts_with($logoPath, 'http'))
+                                        {{-- Tampilkan jika URL External (Wikipedia/Wikimedia) --}}
+                                        <img src="{{ $logoPath }}" alt="{{ $bank['name'] }}" class="w-full h-full object-contain">
+                                    @else
+                                        {{-- Tampilkan jika File Lokal (Storage) --}}
+                                        <img src="{{ asset('storage/' . $logoPath) }}" alt="{{ $bank['name'] }}" class="w-full h-full object-contain">
+                                    @endif
+                                @else
+                                    {{-- Fallback ke Ikon jika logo tidak ada di database --}}
+                                    <i class="fa-solid fa-building-columns text-brand-gold text-2xl"></i>
+                                @endif
                             </div>
+
+                            <p class="text-sm uppercase tracking-widest text-brand-charcoal mb-4 font-bold">{{ $bank['name'] }}</p>
+                            <p class="text-[10px] uppercase tracking-[0.3em] text-brand-gold mb-2 font-bold">Nomor Rekening</p>
+                            <h3 id="rek-{{ $idx }}" class="text-3xl font-serif font-bold text-brand-charcoal mb-2 tracking-widest">{{ $bank['account_number'] }}</h3>
+                            <p class="text-sm text-gray-400 italic mb-8 font-light">a.n {{ $bank['account_name'] }}</p>
+
+                            <button onclick="copyToClipboard('rek-{{ $idx }}', this)" class="w-full py-4 bg-brand-gold text-white rounded-2xl text-[11px] font-bold uppercase tracking-[0.2em] transition-all duration-300 hover:bg-brand-charcoal shadow-lg shadow-brand-gold/20 active:scale-95">
+                                <i class="fa-regular fa-copy mr-2"></i>
+                                <span>Salin Nomor</span>
+                            </button>
                         </div>
+                    </div>
                     @endforeach
                 </div>
 
@@ -548,7 +653,7 @@
         {{-- FORM RSVP SELALU AKTIF (TERSEMBUNYI DALAM MODAL) --}}
         <section id="rsvp-modal" class="fixed inset-0 z-[100] invisible transition-all duration-500">
             <div onclick="closeRSVP()" class="absolute inset-0 bg-brand-charcoal/40 backdrop-blur-sm opacity-0 transition-opacity duration-500" id="rsvp-overlay"></div>
-            
+
             <div id="rsvp-content" class="absolute bottom-0 left-0 right-0 bg-brand-white rounded-t-[3rem] shadow-[0_-10px_40px_rgba(0,0,0,0.1)] transform translate-y-full transition-transform duration-500 ease-out px-6 pb-10 pt-4 max-w-2xl mx-auto">
                 <div class="w-12 h-1.5 bg-gray-200 rounded-full mx-auto mb-8"></div>
 
@@ -556,8 +661,8 @@
                     <h2 class="text-3xl font-serif text-brand-charcoal mb-2">RSVP & Ucapan</h2>
                     <p class="text-xs text-brand-gold tracking-widest uppercase">Konfirmasi Kehadiran Anda</p>
                 </div>
-                
-                <form id="rsvpForm" class="space-y-4 text-left">
+
+                <form id="rsvpForm" class="space-y-4 text-left" onsubmit="submitRSVP(event)">
                     <div>
                         <input type="text" id="input-nama-rsvp" name="name" placeholder="Nama Lengkap" class="w-full p-4 rounded-2xl bg-brand-elegant border border-brand-lightGold/50 focus:outline-none focus:border-brand-gold text-sm placeholder-gray-500" required>
                     </div>
@@ -588,7 +693,7 @@
 
                     <div class="flex gap-3 pt-2">
                         <button type="button" onclick="closeRSVP()" class="flex-1 py-4 bg-gray-100 text-gray-500 rounded-2xl font-semibold text-sm hover:bg-gray-200 transition-colors">Batal</button>
-                        <button type="button" onclick="submitRSVPDummy()" id="btnSubmitRsvp" class="flex-[2] py-4 bg-brand-gold hover:bg-brand-charcoal text-white rounded-2xl font-semibold text-sm transition-all shadow-lg shadow-brand-gold/20">Kirim RSVP</button>
+                        <button type="submit" id="btnSubmitRsvp" class="flex-[2] py-4 bg-brand-gold hover:bg-brand-charcoal text-white rounded-2xl font-semibold text-sm transition-all shadow-lg shadow-brand-gold/20">Kirim RSVP</button>
                     </div>
                 </form>
             </div>
@@ -599,7 +704,7 @@
                 <div class="mb-4 opacity-30 italic font-serif text-brand-gold text-lg">
                     {{ substr($pria,0,1) }} & {{ substr($wanita,0,1) }}
                 </div>
-                
+
                 <p class="text-[10px] tracking-[0.2em] uppercase text-gray-400 mb-4 font-light">Terima kasih atas doa & restu Anda</p>
 
                 <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-brand-elegant border border-brand-lightGold/30 shadow-sm">
@@ -642,19 +747,22 @@
     </nav>
 
     <script>
-        // Setup URL Parameter untuk Nama Tamu
         const urlParams = new URLSearchParams(window.location.search);
         let guestName = urlParams.get('to');
-        if (guestName) { guestName = decodeURIComponent(guestName); } 
-        else { guestName = 'Tamu Undangan'; }
-        
+        if (guestName) {
+            guestName = decodeURIComponent(guestName);
+        } else {
+            guestName = 'Tamu Undangan';
+        }
+
         const guestNameEl = document.getElementById('guest-name');
-        if(guestNameEl) guestNameEl.innerText = guestName;
+        if (guestNameEl) guestNameEl.innerText = guestName;
 
         const inputRSVP = document.getElementById('input-nama-rsvp');
-        if (inputRSVP) { inputRSVP.value = guestName !== 'Tamu Undangan' ? guestName : ''; }
+        if (inputRSVP) {
+            inputRSVP.value = guestName !== 'Tamu Undangan' ? guestName : '';
+        }
 
-        // Variabel Global
         const audio = document.getElementById('bg-music');
         let isMusicPlaying = false;
         let isAutoScrolling = false;
@@ -666,7 +774,7 @@
             document.getElementById('main-content').classList.remove('opacity-0');
             document.getElementById('fab-container').classList.remove('opacity-0');
             document.getElementById('bottom-nav').classList.remove('translate-y-32');
-            
+
             toggleMusic(true);
             toggleAutoScroll(true);
         }
@@ -683,7 +791,9 @@
                     isMusicPlaying = true;
                     icon.classList.remove('fa-volume-xmark');
                     icon.classList.add('fa-music', 'animate-spin');
-                }).catch(() => { console.log("Autoplay dicegah browser."); });
+                }).catch(() => {
+                    console.log("Autoplay dicegah browser.");
+                });
             }
         }
 
@@ -704,7 +814,10 @@
                 icon.classList.remove('fa-angles-down');
                 icon.classList.add('fa-pause');
                 scrollInterval = setInterval(() => {
-                    window.scrollBy({ top: 1, behavior: 'auto' });
+                    window.scrollBy({
+                        top: 1,
+                        behavior: 'auto'
+                    });
                     if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) toggleAutoScroll();
                 }, 35);
             }
@@ -713,7 +826,7 @@
         document.addEventListener("DOMContentLoaded", function() {
             const musicInfo = document.getElementById('music-info');
             setTimeout(() => {
-                if(musicInfo){
+                if (musicInfo) {
                     musicInfo.classList.remove('opacity-0', 'translate-x-4', 'pointer-events-none');
                     musicInfo.classList.add('opacity-100', 'translate-x-0');
                     setTimeout(() => {
@@ -725,17 +838,38 @@
             }, 1200);
         });
 
-        window.addEventListener('wheel', () => { if(isAutoScrolling) toggleAutoScroll(); }, { passive: true });
-        window.addEventListener('touchmove', () => { if(isAutoScrolling) toggleAutoScroll(); }, { passive: true });
-        
-        // Countdown
-        const targetDateStr = "{{ $content['akad_date'] ?? '' }}T{{ $content['akad_time'] ?? '00:00' }}";
-        if(targetDateStr.length > 5) {
+        window.addEventListener('wheel', () => {
+            if (isAutoScrolling) toggleAutoScroll();
+        }, {
+            passive: true
+        });
+        window.addEventListener('touchmove', () => {
+            if (isAutoScrolling) toggleAutoScroll();
+        }, {
+            passive: true
+        });
+
+        // ==========================================
+        // SCRIPT COUNTDOWN
+        // ==========================================
+        const targetDateStr = "{{ $countdownTarget }}";
+
+        if (targetDateStr.length > 10) {
             const weddingDate = new Date(targetDateStr).getTime();
-            if(!isNaN(weddingDate)){
+
+            if (!isNaN(weddingDate)) {
                 const countdownFunction = setInterval(function() {
                     const now = new Date().getTime();
                     const distance = weddingDate - now;
+
+                    if (distance < 0) {
+                        clearInterval(countdownFunction);
+                        document.getElementById("days").innerText = "00";
+                        document.getElementById("hours").innerText = "00";
+                        document.getElementById("minutes").innerText = "00";
+                        return;
+                    }
+
                     const days = Math.floor(distance / (1000 * 60 * 60 * 24));
                     const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
                     const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
@@ -744,10 +878,9 @@
                     document.getElementById("hours").innerText = hours < 10 ? "0" + hours : hours;
                     document.getElementById("minutes").innerText = minutes < 10 ? "0" + minutes : minutes;
 
-                    if (distance < 0) {
-                        clearInterval(countdownFunction);
-                    }
                 }, 1000);
+            } else {
+                console.error("Format waktu gagal diproses oleh sistem Countdown.");
             }
         }
 
@@ -755,7 +888,7 @@
             const extraStories = document.querySelectorAll('.extra-story');
             const btn = document.getElementById('btn-read-more');
             let isHidden = false;
-            
+
             extraStories.forEach(story => {
                 if (story.classList.contains('hidden')) {
                     story.classList.remove('hidden');
@@ -766,16 +899,15 @@
                     story.classList.remove('animate-fade-in');
                 }
             });
-            
+
             btn.innerText = isHidden ? 'Sembunyikan Cerita' : 'Baca Selengkapnya';
         }
 
-        // Lightbox
         const images = Array.from(document.querySelectorAll('.gallery-img')).map(img => img.src);
         let currentIndex = 0;
 
         function openLightbox(index) {
-            if(images.length === 0) return;
+            if (images.length === 0) return;
             currentIndex = index;
             updateLightbox();
             const modal = document.getElementById('lightbox');
@@ -783,12 +915,14 @@
             modal.classList.add('flex');
             document.body.style.overflow = 'hidden';
         }
+
         function closeLightbox() {
             const modal = document.getElementById('lightbox');
             modal.classList.add('hidden');
             modal.classList.remove('flex');
             document.body.style.overflow = 'auto';
         }
+
         function updateLightbox() {
             const imgElement = document.getElementById('lightbox-img');
             imgElement.style.opacity = '0';
@@ -797,12 +931,21 @@
                 imgElement.style.opacity = '1';
             }, 200);
         }
-        function nextImg() { currentIndex = (currentIndex + 1) % images.length; updateLightbox(); }
-        function prevImg() { currentIndex = (currentIndex - 1 + images.length) % images.length; updateLightbox(); }
 
-        let touchStartX = 0, touchEndX = 0;
+        function nextImg() {
+            currentIndex = (currentIndex + 1) % images.length;
+            updateLightbox();
+        }
+
+        function prevImg() {
+            currentIndex = (currentIndex - 1 + images.length) % images.length;
+            updateLightbox();
+        }
+
+        let touchStartX = 0,
+            touchEndX = 0;
         const lightboxEl = document.getElementById('lightbox');
-        if(lightboxEl) {
+        if (lightboxEl) {
             lightboxEl.addEventListener('touchstart', e => touchStartX = e.changedTouches[0].screenX);
             lightboxEl.addEventListener('touchend', e => {
                 touchEndX = e.changedTouches[0].screenX;
@@ -818,7 +961,6 @@
             }
         });
 
-        // Copy Rekening
         function copyToClipboard(id, btn) {
             const textToCopy = document.getElementById(id).innerText;
             const toast = document.getElementById('copy-toast');
@@ -835,8 +977,8 @@
             });
         }
 
-        // RSVP Modal & Logic
         let hasShownRSVPAtEnd = false;
+
         function openRSVP() {
             const modal = document.getElementById('rsvp-modal');
             const overlay = document.getElementById('rsvp-overlay');
@@ -847,6 +989,7 @@
                 content.classList.replace('translate-y-full', 'translate-y-0');
             }, 10);
         }
+
         function closeRSVP() {
             const overlay = document.getElementById('rsvp-overlay');
             const content = document.getElementById('rsvp-content');
@@ -874,11 +1017,18 @@
         }
 
         function selectGuestCount(count, btnElement) {
+            // 1. Ubah value yang akan dikirim ke database
             document.getElementById('input-guest-count').value = count;
+            
+            // 2. Matikan semua tombol (kembalikan ke warna abu-abu elegan)
             document.querySelectorAll('.guest-btn').forEach(btn => {
-                btn.classList.remove('border-brand-gold', 'text-brand-gold', 'font-bold');
+                btn.classList.remove('border-brand-gold', 'text-brand-gold', 'font-bold', 'bg-brand-gold/10');
+                btn.classList.add('border-brand-lightGold/30', 'text-gray-600', 'bg-brand-elegant');
             });
-            btnElement.classList.add('border-brand-gold', 'text-brand-gold', 'font-bold');
+            
+            // 3. Nyalakan tombol yang baru saja diklik (ubah ke warna emas)
+            btnElement.classList.remove('border-brand-lightGold/30', 'text-gray-600', 'bg-brand-elegant');
+            btnElement.classList.add('border-brand-gold', 'text-brand-gold', 'font-bold', 'bg-brand-gold/10');
         }
 
         window.addEventListener('scroll', () => {
@@ -886,73 +1036,159 @@
                 if (!hasShownRSVPAtEnd) {
                     openRSVP();
                     hasShownRSVPAtEnd = true;
-                    if(isAutoScrolling) toggleAutoScroll();
+                    if (isAutoScrolling) toggleAutoScroll();
                 }
             }
-        }, { passive: true });
+        }, {
+            passive: true
+        });
 
-        // Simulasi RSVP Tampilan Depan
-        let countAttendance = 142;
-        let countWishes = 89;
+        // ==========================================
+        // SISTEM RSVP & UCAPAN (REAL DATABASE)
+        // ==========================================
+        let countAttendance = {{ $invitation->rsvps->where('status_rsvp', 'hadir')->count() }};
+        let countWishes = {{ $invitation->rsvps->count() }};
         const totalHadirEl = document.getElementById('total-attendance');
         const totalUcapanEl = document.getElementById('total-wishes');
-        if(totalHadirEl) totalHadirEl.innerText = countAttendance;
-        if(totalUcapanEl) totalUcapanEl.innerText = countWishes;
+        if (totalHadirEl) totalHadirEl.innerText = countAttendance;
+        if (totalUcapanEl) totalUcapanEl.innerText = countWishes;
 
-        function submitRSVPDummy() {
+        function submitRSVP(event) {
+            event.preventDefault(); // Mencegah form reload halaman
+
             const status = document.getElementById('input-status').value;
-            if(!status) return alert('Silakan pilih kehadiran Anda.');
-            
+            const nama = document.getElementById('input-nama-rsvp').value;
+            const pesan = document.querySelector('textarea[name="message"]').value;
+            const guestCount = document.getElementById('input-guest-count').value;
+
+            if (!status || !nama || !pesan) return alert('Mohon lengkapi nama, kehadiran, dan ucapan Anda.');
+
             const btn = document.getElementById('btnSubmitRsvp');
+            const originalBtnText = btn.innerHTML;
             btn.innerHTML = 'MENGIRIM...';
-            
-            setTimeout(() => {
-                countWishes++;
-                if (status === "Hadir") countAttendance++;
-                if(totalHadirEl) totalHadirEl.innerText = countAttendance;
-                if(totalUcapanEl) totalUcapanEl.innerText = countWishes;
-                
-                alert('Terima kasih, RSVP Anda telah terkirim!');
-                closeRSVP();
-                btn.innerHTML = 'Kirim RSVP';
-                
-                // Tambahkan ucapan baru ke paling atas (simulasi)
-                if(document.getElementById('wishes-container')){
-                    const newCard = document.createElement('div');
-                    newCard.className = 'wish-card bg-brand-elegant/40 p-6 rounded-[2rem] border border-white animate-fade-in transition-all hover:bg-white hover:shadow-md';
-                    newCard.innerHTML = `<div class="flex flex-col md:flex-row md:items-center justify-between mb-3 gap-1"><h5 class="text-sm font-serif font-bold text-brand-charcoal">${document.getElementById('input-nama-rsvp').value || 'Tamu'}</h5><span class="text-[9px] text-gray-400 italic uppercase tracking-wider"><i class="fa-regular fa-clock mr-1"></i> Baru saja</span></div><p class="text-xs text-gray-500 leading-relaxed font-light italic">"${document.querySelector('textarea[name="message"]').value}"</p>`;
-                    document.getElementById('wishes-container').prepend(newCard);
-                }
-            }, 1000);
+            btn.disabled = true;
+
+            // Ambil data dari Guest URL jika ada (Penting untuk validasi Controller)
+            const urlParams = new URLSearchParams(window.location.search);
+            const guestId = urlParams.get('id'); // Opsional jika kamu menggunakan ID di URL
+
+            // Siapkan data untuk dikirim ke Controller
+            const formData = {
+                guest_name: nama,
+                status_rsvp: status === 'Hadir' ? 'hadir' : (status === 'Tidak Hadir' ? 'tidak_hadir' : 'ragu'),
+                pax: guestCount,
+                message: pesan,
+                _token: document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            };
+
+            // Kirim via AJAX Fetch ke Route: /{slug}/rsvp
+            fetch("{{ route('rsvp.store', $invitation->slug) }}", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                    },
+                    body: JSON.stringify(formData)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        countWishes++;
+                        if (status === "Hadir") countAttendance++;
+
+                        if (totalHadirEl) totalHadirEl.innerText = countAttendance;
+                        if (totalUcapanEl) totalUcapanEl.innerText = countWishes;
+
+                        alert('Terima kasih, RSVP Anda telah tersimpan di sistem!');
+                        closeRSVP();
+
+                        // Tambahkan Card Ucapan Baru secara Real-time ke tampilan
+                        addNewWishCard(nama, pesan, 'Baru saja');
+                    } else {
+                        alert('Gagal mengirim RSVP. Silakan coba lagi.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Terjadi kesalahan pada server.');
+                })
+                .finally(() => {
+                    btn.innerHTML = originalBtnText;
+                    btn.disabled = false;
+                    document.getElementById('rsvpForm').reset(); // Bersihkan form
+                });
         }
 
-        // Load Ucapan
+        // Fungsi Helper untuk menambah kartu ucapan ke tampilan HTML (Berdasarkan Tema)
+        function addNewWishCard(nama, pesan, waktu) {
+            const container = document.getElementById('wishes-container');
+            if (!container) return;
+
+            const card = document.createElement('div');
+
+            // CEK TEMA SAAT INI UNTUK CSS CLASS
+            const isDarkTheme = document.body.classList.contains('bg-brand-dark');
+
+            if (isDarkTheme) {
+                // Style untuk Template 2 (Dark)
+                card.className = 'wish-card bg-white/5 p-6 rounded-[1.5rem] border border-white/10 animate-fade-in-up transition-all duration-500 hover:bg-white/10 hover:border-brand-gold/30';
+                card.innerHTML = `<div class="flex flex-col md:flex-row md:items-center justify-between mb-4 gap-2"><div class="flex items-center gap-3"><div class="w-8 h-8 rounded-full bg-brand-gold/20 flex items-center justify-center border border-brand-gold/30"><i class="fa-solid fa-user text-[10px] text-brand-gold"></i></div><h5 class="text-sm font-serif font-bold text-white tracking-wide">${nama}</h5></div><span class="text-[8px] text-brand-gold/60 italic uppercase tracking-[0.2em] flex items-center"><i class="fa-regular fa-clock mr-1.5"></i> ${waktu}</span></div><div class="relative"><i class="fa-solid fa-quote-left absolute -top-2 -left-2 text-brand-gold/10 text-2xl"></i><p class="text-[13px] text-white/70 leading-relaxed font-light italic pl-4">${pesan}</p></div>`;
+            } else {
+                // Style untuk Template 1 (Light)
+                card.className = 'wish-card bg-brand-elegant/40 p-6 rounded-[2rem] border border-brand-lightGold/20 animate-fade-in transition-all hover:bg-white hover:shadow-md';
+                card.innerHTML = `<div class="flex flex-col md:flex-row md:items-center justify-between mb-3 gap-1"><h5 class="text-sm font-serif font-bold text-brand-charcoal">${nama}</h5><span class="text-[9px] text-gray-400 italic uppercase tracking-wider"><i class="fa-regular fa-clock mr-1"></i> ${waktu}</span></div><p class="text-xs text-gray-500 leading-relaxed font-light italic">"${pesan}"</p>`;
+            }
+
+            container.prepend(card);
+        }
+
+        // ==========================================
+        // LOAD UCAPAN DARI DATABASE
+        // ==========================================
         const allWishes = [
-            { nama: "M. Fauzan", pesan: "Selamat menempuh hidup baru!", waktu: "2 Jam yang lalu" },
-            { nama: "Jati Nugroho", pesan: "Lancar-lancar sampai hari H ya!", waktu: "5 Jam yang lalu" },
-            { nama: "Budi Santoso", pesan: "Sakinah Mawaddah Warahmah.", waktu: "1 Hari yang lalu" },
-            { nama: "Lestari Putri", pesan: "Selamat ya kalian berdua!", waktu: "2 Hari yang lalu" },
+            @foreach($invitation->rsvps()->latest()->get() as $wish)
+            { 
+                nama: "{{ addslashes($wish->guest_name) }}", 
+                pesan: "{{ addslashes(trim(preg_replace('/\s\s+/', ' ', $wish->message))) }}", 
+                waktu: "{{ $wish->created_at->diffForHumans() }}" 
+            },
+            @endforeach
         ];
+        
         let displayedCount = 0;
+
         function renderWishes() {
             const container = document.getElementById('wishes-container');
             const btnLoadMore = document.getElementById('btn-load-more');
-            if(!container) return;
+            if (!container) return;
+
+            // Bersihkan placeholder/loading jika ada pada pemanggilan pertama
+            if (displayedCount === 0) container.innerHTML = '';
 
             let nextLimit = displayedCount + 3;
             const wishesToDisplay = allWishes.slice(displayedCount, nextLimit);
-            
+
             wishesToDisplay.forEach(wish => {
-                const card = document.createElement('div');
-                card.className = 'wish-card bg-brand-elegant/40 p-6 rounded-[2rem] border border-white animate-fade-in transition-all hover:bg-white hover:shadow-md';
-                card.innerHTML = `<div class="flex flex-col md:flex-row md:items-center justify-between mb-3 gap-1"><h5 class="text-sm font-serif font-bold text-brand-charcoal">${wish.nama}</h5><span class="text-[9px] text-gray-400 italic uppercase tracking-wider"><i class="fa-regular fa-clock mr-1"></i> ${wish.waktu}</span></div><p class="text-xs text-gray-500 leading-relaxed font-light italic">"${wish.pesan}"</p>`;
-                container.appendChild(card);
+                // Panggil fungsi Helper untuk membuat elemen HTML
+                addNewWishCard(wish.nama, wish.pesan, wish.waktu);
             });
-            displayedCount = nextLimit;
-            if (displayedCount >= allWishes.length && btnLoadMore) btnLoadMore.style.display = 'none';
+            
+            displayedCount = Math.min(nextLimit, allWishes.length);
+            
+            // Sembunyikan tombol jika semua data sudah ditampilkan
+            if (displayedCount >= allWishes.length && btnLoadMore) {
+                btnLoadMore.style.display = 'none';
+            }
         }
-        document.addEventListener('DOMContentLoaded', () => { renderWishes(); });
-        function loadMoreWishes() { renderWishes(); }
+        
+        document.addEventListener('DOMContentLoaded', () => { 
+            renderWishes(); 
+        });
+
+        function loadMoreWishes() { 
+            renderWishes(); 
+        }
     </script>
 </body>
+
 </html>

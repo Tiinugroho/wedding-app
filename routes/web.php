@@ -49,7 +49,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::resource('categories', CategoryController::class)->except(['show']);
             Route::resource('templates', TemplateController::class)->except(['show']);
             Route::resource('musics', MusicController::class)->except(['show']);
-            
+
             // Profile Admin
             Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
             Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -65,12 +65,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('customer.')
         ->group(function () {
             Route::get('/dashboard', [CustomerDashboard::class, 'index'])->name('dashboard');
-            
+
             // Route Undangan Saya
             Route::resource('invitations', InvitationController::class);
             Route::post('invitations/{id}/gallery', [InvitationController::class, 'uploadGallery'])->name('invitations.gallery.upload');
             Route::delete('gallery/{id}', [InvitationController::class, 'deleteGallery'])->name('invitations.gallery.delete');
-            
+
             // Profile Customer
             Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
             Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -78,8 +78,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
             // Di dalam Grup Middleware Customer:
-Route::post('/checkout/{invitation_id}', [CheckoutController::class, 'process'])->name('customer.checkout');
-            
+            Route::post('/checkout/{invitation_id}', [CheckoutController::class, 'process'])->name('customer.checkout');
+
             // DIHAPUS: Route showInvitation tidak boleh ada di sini karena ini area rahasia (wajib login)
         });
 });
