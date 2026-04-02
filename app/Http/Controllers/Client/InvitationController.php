@@ -151,8 +151,7 @@ class InvitationController extends Controller
             'groom_photo' => 'nullable|image|mimes:jpg,jpeg,png|max:5048',
             'bride_photo' => 'nullable|image|mimes:jpg,jpeg,png|max:5048',
 
-            'turut_mengundang_groom' => 'nullable|string',
-            'turut_mengundang_bride' => 'nullable|string',
+'turut_mengundang' => 'nullable|string',
 
             // Validasi Akad Statis
             'akad_date' => 'nullable|date',
@@ -254,11 +253,11 @@ class InvitationController extends Controller
         }
 
         $processTurutMengundang = function ($text) {
-            if (empty($text)) return [];
-            $text = str_replace(["\r\n", "\r", "\n"], ',', $text);
-            $arr = explode(',', $text);
-            return array_values(array_filter(array_map('trim', $arr)));
-        };
+        if (empty($text)) return [];
+        $text = str_replace(["\r\n", "\r", "\n"], ',', $text);
+        $arr = explode(',', $text);
+        return array_values(array_filter(array_map('trim', $arr)));
+    };
 
         // Kumpulkan Data
         $contentData = [
@@ -288,9 +287,7 @@ class InvitationController extends Controller
             'bride_father' => $request->bride_father,
             'bride_mother' => $request->bride_mother,
             'bride_ig' => $request->bride_ig,
-
-            'turut_mengundang_groom' => $processTurutMengundang($request->turut_mengundang_groom),
-            'turut_mengundang_bride' => $processTurutMengundang($request->turut_mengundang_bride),
+'turut_mengundang' => $processTurutMengundang($request->turut_mengundang),
 
             // Akad Statis
             'akad_date' => $request->akad_date,
