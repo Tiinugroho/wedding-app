@@ -1,11 +1,14 @@
 <!DOCTYPE html>
 <html lang="id" class="scroll-smooth">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Undangan Digital Elegan - Romeo & Juliet (Optimized Photo)</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;600&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <script>
@@ -43,65 +46,68 @@
         }
     </script>
 
-<style>
-    /* 1. Pembersihan Tampilan Utama */
-    ::-webkit-scrollbar { 
-        width: 0px; 
-        background: transparent; 
-    }
-    
-    body { 
-        overflow-y: hidden; /* Dikunci hingga cover dibuka oleh user */
-        background-color: #0F0F0F; /* Dasar gelap agar transisi smooth */
-        color: #FFFFFF;
-        -webkit-font-smoothing: antialiased;
-    }
-
-    /* 2. Update Floating Nav ke Dark Glassmorphism */
-    .floating-nav {
-        background: rgba(15, 15, 15, 0.75); /* Gelap transparan */
-        backdrop-filter: blur(15px);
-        -webkit-backdrop-filter: blur(15px);
-        border: 1px solid rgba(197, 160, 101, 0.25); /* Border emas tipis */
-        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
-    }
-
-    /* 3. Overlay Mist (Transisi dari Cover ke Konten) */
-    /* Kita ubah dari putih ke gradasi gelap yang mewah */
-    .landing-mist {
-        background: linear-gradient(
-            to bottom, 
-            rgba(0, 0, 0, 0.2) 0%, 
-            rgba(15, 15, 15, 0.95) 100%
-        );
-    }
-
-    /* 4. Text Shadow Protection (Untuk teks di atas foto/background) */
-    .text-protected {
-        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
-    }
-
-    /* 5. Animasi Tambahan untuk Kesan Premium */
-    @keyframes fade-in-up {
-        from { 
-            opacity: 0; 
-            transform: translateY(30px); 
+    <style>
+        /* 1. Pembersihan Tampilan Utama */
+        ::-webkit-scrollbar {
+            width: 0px;
+            background: transparent;
         }
-        to { 
-            opacity: 1; 
-            transform: translateY(0); 
+
+        body {
+            overflow-y: hidden;
+            /* Dikunci hingga cover dibuka oleh user */
+            background-color: #0F0F0F;
+            /* Dasar gelap agar transisi smooth */
+            color: #FFFFFF;
+            -webkit-font-smoothing: antialiased;
         }
-    }
 
-    .animate-fade-in-up {
-        animation: fade-in-up 1.2s cubic-bezier(0.23, 1, 0.32, 1) forwards;
-    }
+        /* 2. Update Floating Nav ke Dark Glassmorphism */
+        .floating-nav {
+            background: rgba(15, 15, 15, 0.75);
+            /* Gelap transparan */
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(197, 160, 101, 0.25);
+            /* Border emas tipis */
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+        }
 
-    /* Efek Glow untuk Elemen Emas */
-    .gold-glow {
-        filter: drop-shadow(0 0 5px rgba(197, 160, 101, 0.3));
-    }
-</style>
+        /* 3. Overlay Mist (Transisi dari Cover ke Konten) */
+        /* Kita ubah dari putih ke gradasi gelap yang mewah */
+        .landing-mist {
+            background: linear-gradient(to bottom,
+                    rgba(0, 0, 0, 0.2) 0%,
+                    rgba(15, 15, 15, 0.95) 100%);
+        }
+
+        /* 4. Text Shadow Protection (Untuk teks di atas foto/background) */
+        .text-protected {
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        /* 5. Animasi Tambahan untuk Kesan Premium */
+        @keyframes fade-in-up {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-fade-in-up {
+            animation: fade-in-up 1.2s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+        }
+
+        /* Efek Glow untuk Elemen Emas */
+        .gold-glow {
+            filter: drop-shadow(0 0 5px rgba(197, 160, 101, 0.3));
+        }
+    </style>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;600&display=swap');
 
@@ -133,22 +139,35 @@
             left: -50%;
             width: 200%;
             height: 200%;
-            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
             transform: rotate(45deg);
             animation: shimmer-effect 4s infinite;
         }
 
         @keyframes shimmer-effect {
-            0% { left: -100%; }
-            100% { left: 100%; }
+            0% {
+                left: -100%;
+            }
+
+            100% {
+                left: 100%;
+            }
         }
     </style>
     <style>
         /* Animasi Halus untuk Elemen Form */
         @keyframes slide-up-soft {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
+
         .animate-slide-up {
             animation: slide-up-soft 0.5s ease-out forwards;
         }
@@ -160,6 +179,7 @@
             color: white;
             transition: all 0.3s ease;
         }
+
         .input-luxury:focus {
             border-color: #C5A065;
             background: rgba(255, 255, 255, 0.07);
@@ -171,14 +191,16 @@
         .scroll-custom::-webkit-scrollbar {
             width: 3px;
         }
+
         .scroll-custom::-webkit-scrollbar-track {
             background: rgba(255, 255, 255, 0.05);
         }
+
         .scroll-custom::-webkit-scrollbar-thumb {
             background: #C5A065;
             border-radius: 10px;
         }
-        
+
         /* Efek Glassmorphism yang lebih dalam */
         .glass-stat {
             background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
@@ -187,16 +209,21 @@
         }
     </style>
 </head>
-<body class="bg-brand-elegant text-brand-charcoal font-sans antialiased relative selection:bg-brand-gold selection:text-white">
+
+<body
+    class="bg-brand-elegant text-brand-charcoal font-sans antialiased relative selection:bg-brand-gold selection:text-white">
 
     <audio id="bg-music" loop>
         <source src="https://cdn.pixabay.com/audio/2021/07/18/audio_c993f91966.mp3" type="audio/mpeg">
     </audio>
 
-    <div id="cover-page" class="fixed inset-0 z-50 flex items-center justify-center w-screen h-screen bg-brand-dark overflow-hidden">
-    
+    <div id="cover-page"
+        class="fixed inset-0 z-50 flex items-center justify-center w-screen h-screen bg-brand-dark overflow-hidden">
+
         <div class="absolute inset-0 z-0">
-            <div class="absolute inset-0 opacity-30 animate-slow-zoom bg-[url('https://images.unsplash.com/photo-1511795409834-ef04bbd61622?q=80&w=2069&auto=format&fit=crop')] bg-cover bg-center"></div>
+            <div
+                class="absolute inset-0 opacity-30 animate-slow-zoom bg-[url('https://images.unsplash.com/photo-1511795409834-ef04bbd61622?q=80&w=2069&auto=format&fit=crop')] bg-cover bg-center">
+            </div>
             <div class="absolute inset-0 bg-brand-dark/80 backdrop-blur-[2px]"></div>
         </div>
 
@@ -204,60 +231,76 @@
             <div class="absolute inset-12 border border-brand-gold/20"></div>
             <div class="absolute top-20 left-20 w-32 h-32 border-t border-l border-brand-gold/40"></div>
             <div class="absolute bottom-20 right-20 w-32 h-32 border-b border-r border-brand-gold/40"></div>
-            
+
             <div class="absolute left-20 top-1/2 -translate-y-1/2 -rotate-90 origin-left">
-                <p class="text-[10px] tracking-[1em] uppercase text-brand-gold/40 font-light whitespace-nowrap">The Wedding of Romeo & Juliet — 18.07.2026</p>
+                <p class="text-[10px] tracking-[1em] uppercase text-brand-gold/40 font-light whitespace-nowrap">The
+                    Wedding of Romeo & Juliet — 18.07.2026</p>
             </div>
         </div>
 
-        <div class="relative z-20 w-full max-w-[90%] md:max-w-2xl lg:max-w-3xl px-6 py-12 flex flex-col items-center justify-center min-h-[600px]">
-            
+        <div
+            class="relative z-20 w-full max-w-[90%] md:max-w-2xl lg:max-w-3xl px-6 py-12 flex flex-col items-center justify-center min-h-[600px]">
+
             <div class="mb-8 animate-float">
                 <div class="w-12 h-12 border border-brand-gold/40 rotate-45 flex items-center justify-center">
                     <div class="w-8 h-8 border border-brand-gold"></div>
                 </div>
             </div>
-            
-            <p class="text-[10px] md:text-xs tracking-[0.5em] md:tracking-[0.8em] uppercase text-brand-gold/90 mb-6 font-medium">The Wedding Celebration of</p>
-            
+
+            <p
+                class="text-[10px] md:text-xs tracking-[0.5em] md:tracking-[0.8em] uppercase text-brand-gold/90 mb-6 font-medium">
+                The Wedding Celebration of</p>
+
             <div class="text-center mb-8">
-                <h1 class="text-6xl md:text-8xl lg:text-9xl font-serif text-white tracking-tighter leading-[0.85] flex flex-col md:flex-row items-center justify-center md:gap-8">
+                <h1
+                    class="text-6xl md:text-8xl lg:text-9xl font-serif text-white tracking-tighter leading-[0.85] flex flex-col md:flex-row items-center justify-center md:gap-8">
                     <span>Romeo</span>
-                    <span class="italic font-light text-brand-gold text-4xl md:text-7xl lg:text-8xl my-2 md:my-0">&</span>
+                    <span
+                        class="italic font-light text-brand-gold text-4xl md:text-7xl lg:text-8xl my-2 md:my-0">&</span>
                     <span>Juliet</span>
                 </h1>
             </div>
-            
+
             <div class="flex items-center justify-center gap-6 mb-12 w-full max-w-sm">
                 <div class="h-[1px] flex-1 bg-gradient-to-r from-transparent via-brand-gold/50 to-brand-gold/50"></div>
-                <p class="text-xs md:text-sm font-sans tracking-[0.4em] text-brand-muted uppercase whitespace-nowrap font-light">18 . 07 . 2026</p>
+                <p
+                    class="text-xs md:text-sm font-sans tracking-[0.4em] text-brand-muted uppercase whitespace-nowrap font-light">
+                    18 . 07 . 2026</p>
                 <div class="h-[1px] flex-1 bg-gradient-to-l from-transparent via-brand-gold/50 to-brand-gold/50"></div>
             </div>
-            
-            <div class="glass-card p-8 md:p-12 rounded-3xl mb-12 relative w-full max-w-lg transition-all duration-700 hover:bg-white/5 border border-white/10 group">
-                <div class="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 bg-brand-gold text-brand-dark text-[10px] uppercase font-bold tracking-widest rounded-full shadow-lg">
+
+            <div
+                class="glass-card p-8 md:p-12 rounded-3xl mb-12 relative w-full max-w-lg transition-all duration-700 hover:bg-white/5 border border-white/10 group">
+                <div
+                    class="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 bg-brand-gold text-brand-dark text-[10px] uppercase font-bold tracking-widest rounded-full shadow-lg">
                     Special Guest
                 </div>
-                
-                <p class="text-[11px] text-brand-muted mb-4 tracking-widest uppercase italic font-light">Dear Bapak/Ibu/Saudara/i</p>
-                <h2 id="guest-name" class="text-3xl md:text-5xl font-serif text-white mb-6 leading-tight drop-shadow-lg">
+
+                <p class="text-[11px] text-brand-muted mb-4 tracking-widest uppercase italic font-light">Dear
+                    Bapak/Ibu/Saudara/i</p>
+                <h2 id="guest-name"
+                    class="text-3xl md:text-5xl font-serif text-white mb-6 leading-tight drop-shadow-lg">
                     Nama Tamu Undangan
                 </h2>
-                
-                <div class="flex items-center justify-center gap-3 text-xs text-brand-gold tracking-widest border-t border-white/5 pt-6">
+
+                <div
+                    class="flex items-center justify-center gap-3 text-xs text-brand-gold tracking-widest border-t border-white/5 pt-6">
                     <i class="fa-solid fa-location-dot"></i>
                     <span class="uppercase">Grand Ballroom Hotel, Jakarta</span>
                 </div>
             </div>
 
             <div class="relative">
-                <div class="absolute inset-0 bg-brand-gold blur-xl opacity-20 group-hover:opacity-40 transition-opacity"></div>
-                <button onclick="openInvitation()" class="shimmer relative px-12 py-4 bg-brand-gold text-brand-dark rounded-full transition-all duration-500 hover:scale-110 hover:shadow-[0_0_40px_rgba(212,175,55,0.4)] active:scale-95 flex items-center justify-center gap-4">
+                <div
+                    class="absolute inset-0 bg-brand-gold blur-xl opacity-20 group-hover:opacity-40 transition-opacity">
+                </div>
+                <button onclick="openInvitation()"
+                    class="shimmer relative px-12 py-4 bg-brand-gold text-brand-dark rounded-full transition-all duration-500 hover:scale-110 hover:shadow-[0_0_40px_rgba(212,175,55,0.4)] active:scale-95 flex items-center justify-center gap-4">
                     <i class="fa-solid fa-envelope-open-text text-sm"></i>
                     <span class="font-bold uppercase tracking-[0.3em] text-[11px]">Open Invitation</span>
                 </button>
             </div>
-            
+
         </div>
 
         <div class="hidden lg:block absolute bottom-10 left-10 opacity-20">
@@ -267,43 +310,53 @@
     </div>
 
     <main id="main-content" class="min-h-screen pb-28 opacity-0 transition-opacity duration-1000 bg-brand-dark">
-    
-        <section id="home" class="min-h-screen flex flex-col items-center justify-center text-center p-6 md:p-12 relative overflow-hidden">
-            
+
+        <section id="home"
+            class="min-h-screen flex flex-col items-center justify-center text-center p-6 md:p-12 relative overflow-hidden">
+
             <div class="absolute inset-0 z-0">
-                <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1511285560929-80b456fea0bc?q=80&w=1000&auto=format&fit=crop')] bg-cover bg-center bg-fixed opacity-20"></div>
+                <div
+                    class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1511285560929-80b456fea0bc?q=80&w=1000&auto=format&fit=crop')] bg-cover bg-center bg-fixed opacity-20">
+                </div>
                 <div class="absolute inset-0 bg-gradient-to-b from-brand-dark via-transparent to-brand-dark"></div>
             </div>
-            
+
             <div class="relative z-10 max-w-4xl w-full">
-                
+
                 <div class="mb-12 md:mb-20 animate-fade-in">
                     <span class="inline-block w-12 h-[1px] bg-brand-gold/50 mb-6"></span>
                     <h3 class="font-serif italic text-2xl md:text-5xl text-white mb-6 leading-relaxed">
                         "And they lived <span class="text-brand-gold">happily</span> ever after."
                     </h3>
-                    <p class="text-xs md:text-sm text-brand-muted max-w-lg mx-auto leading-loose tracking-wide font-light px-4">
-                        Dengan memohon rahmat dan ridho Allah SWT, kami mengundang Bapak/Ibu/Saudara/i untuk menghadiri momen bahagia pernikahan kami.
+                    <p
+                        class="text-xs md:text-sm text-brand-muted max-w-lg mx-auto leading-loose tracking-wide font-light px-4">
+                        Dengan memohon rahmat dan ridho Allah SWT, kami mengundang Bapak/Ibu/Saudara/i untuk menghadiri
+                        momen bahagia pernikahan kami.
                     </p>
                 </div>
 
-                <div class="glass-card md:max-w-3xl mx-auto p-8 md:p-16 rounded-[3rem] border border-white/5 relative overflow-hidden group">
+                <div
+                    class="glass-card md:max-w-3xl mx-auto p-8 md:p-16 rounded-[3rem] border border-white/5 relative overflow-hidden group">
                     <div class="absolute top-0 left-1/2 -translate-x-1/2 opacity-10">
                         <i class="fa-solid fa-quote-right text-9xl text-brand-gold"></i>
                     </div>
 
-                    <p class="text-[10px] md:text-xs tracking-[0.5em] uppercase text-brand-gold mb-12 font-bold">The Waiting Moment</p>
-                    
+                    <p class="text-[10px] md:text-xs tracking-[0.5em] uppercase text-brand-gold mb-12 font-bold">The
+                        Waiting Moment</p>
+
                     <div class="flex flex-row justify-center items-center gap-4 md:gap-12">
-                        
+
                         <div class="flex flex-col items-center">
                             <div class="relative flex items-center justify-center w-20 h-20 md:w-32 md:h-32">
                                 <svg class="absolute inset-0 w-full h-full -rotate-90 opacity-20">
-                                    <circle cx="50%" cy="50%" r="48%" stroke="currentColor" stroke-width="2" fill="none" class="text-brand-gold"></circle>
+                                    <circle cx="50%" cy="50%" r="48%" stroke="currentColor" stroke-width="2" fill="none"
+                                        class="text-brand-gold"></circle>
                                 </svg>
-                                <span id="days" class="text-3xl md:text-5xl font-serif text-white leading-none">00</span>
+                                <span id="days"
+                                    class="text-3xl md:text-5xl font-serif text-white leading-none">00</span>
                             </div>
-                            <span class="text-[8px] md:text-[10px] uppercase tracking-[0.3em] text-brand-muted mt-4">Days</span>
+                            <span
+                                class="text-[8px] md:text-[10px] uppercase tracking-[0.3em] text-brand-muted mt-4">Days</span>
                         </div>
 
                         <div class="text-brand-gold/30 font-serif italic text-2xl hidden md:block mt-[-2rem]">:</div>
@@ -311,11 +364,14 @@
                         <div class="flex flex-col items-center">
                             <div class="relative flex items-center justify-center w-20 h-20 md:w-32 md:h-32">
                                 <svg class="absolute inset-0 w-full h-full -rotate-90 opacity-20">
-                                    <circle cx="50%" cy="50%" r="48%" stroke="currentColor" stroke-width="2" fill="none" class="text-brand-gold"></circle>
+                                    <circle cx="50%" cy="50%" r="48%" stroke="currentColor" stroke-width="2" fill="none"
+                                        class="text-brand-gold"></circle>
                                 </svg>
-                                <span id="hours" class="text-3xl md:text-5xl font-serif text-white leading-none">00</span>
+                                <span id="hours"
+                                    class="text-3xl md:text-5xl font-serif text-white leading-none">00</span>
                             </div>
-                            <span class="text-[8px] md:text-[10px] uppercase tracking-[0.3em] text-brand-muted mt-4">Hours</span>
+                            <span
+                                class="text-[8px] md:text-[10px] uppercase tracking-[0.3em] text-brand-muted mt-4">Hours</span>
                         </div>
 
                         <div class="text-brand-gold/30 font-serif italic text-2xl hidden md:block mt-[-2rem]">:</div>
@@ -323,19 +379,26 @@
                         <div class="flex flex-col items-center">
                             <div class="relative flex items-center justify-center w-20 h-20 md:w-32 md:h-32">
                                 <svg class="absolute inset-0 w-full h-full -rotate-90 opacity-20">
-                                    <circle cx="50%" cy="50%" r="48%" stroke="currentColor" stroke-width="2" fill="none" class="text-brand-gold"></circle>
+                                    <circle cx="50%" cy="50%" r="48%" stroke="currentColor" stroke-width="2" fill="none"
+                                        class="text-brand-gold"></circle>
                                 </svg>
-                                <span id="minutes" class="text-3xl md:text-5xl font-serif text-white leading-none">00</span>
+                                <span id="minutes"
+                                    class="text-3xl md:text-5xl font-serif text-white leading-none">00</span>
                             </div>
-                            <span class="text-[8px] md:text-[10px] uppercase tracking-[0.3em] text-brand-muted mt-4">Minutes</span>
+                            <span
+                                class="text-[8px] md:text-[10px] uppercase tracking-[0.3em] text-brand-muted mt-4">Minutes</span>
                         </div>
                     </div>
-                    
-                    <button class="mt-14 group relative overflow-hidden px-8 py-3 rounded-full border border-brand-gold/30 hover:border-brand-gold transition-all duration-500">
-                        <span class="relative z-10 text-[10px] font-bold uppercase tracking-[0.2em] text-brand-gold group-hover:text-brand-dark flex items-center gap-3">
+
+                    <button
+                        class="mt-14 group relative overflow-hidden px-8 py-3 rounded-full border border-brand-gold/30 hover:border-brand-gold transition-all duration-500">
+                        <span
+                            class="relative z-10 text-[10px] font-bold uppercase tracking-[0.2em] text-brand-gold group-hover:text-brand-dark flex items-center gap-3">
                             <i class="fa-regular fa-calendar-check text-sm"></i> Save the Date
                         </span>
-                        <div class="absolute inset-0 bg-brand-gold translate-y-full group-hover:translate-y-0 transition-transform duration-500"></div>
+                        <div
+                            class="absolute inset-0 bg-brand-gold translate-y-full group-hover:translate-y-0 transition-transform duration-500">
+                        </div>
                     </button>
                 </div>
             </div>
@@ -344,33 +407,43 @@
                 <span class="text-[8px] uppercase tracking-[0.4em] text-brand-gold">Scroll</span>
                 <div class="w-[1px] h-12 bg-gradient-to-b from-brand-gold to-transparent"></div>
             </div>
-            
+
         </section>
 
         <section id="mempelai" class="py-24 px-6 bg-brand-dark relative overflow-hidden">
-            <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/black-linen.png')] opacity-30 pointer-events-none"></div>
-            
+            <div
+                class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/black-linen.png')] opacity-30 pointer-events-none">
+            </div>
+
             <div class="max-w-6xl mx-auto relative z-10">
                 <div class="flex flex-col items-center mb-24">
-                    <span class="text-[10px] tracking-[0.6em] uppercase text-brand-gold mb-4 font-bold">The Happy Couple</span>
+                    <span class="text-[10px] tracking-[0.6em] uppercase text-brand-gold mb-4 font-bold">The Happy
+                        Couple</span>
                     <h2 class="text-4xl md:text-6xl font-serif text-white italic drop-shadow-md">Mempelai</h2>
                     <div class="h-[2px] w-16 bg-brand-gold mt-6"></div>
                 </div>
-                
+
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-20 lg:gap-12 items-center">
-                    
+
                     <div class="flex flex-col md:flex-row items-center gap-8 md:gap-12 lg:pr-12 group">
                         <div class="relative w-64 h-80 md:w-72 md:h-[28rem] order-1 md:order-2 flex-shrink-0">
-                            <div class="absolute inset-0 border-2 border-brand-gold translate-x-4 translate-y-4 rounded-2xl z-0"></div>
-                            <div class="absolute inset-0 bg-brand-accent overflow-hidden rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] z-10">
-                                <img src="https://images.soco.id/230-58.jpg.jpeg" class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" alt="Romeo">
+                            <div
+                                class="absolute inset-0 border-2 border-brand-gold translate-x-4 translate-y-4 rounded-2xl z-0">
+                            </div>
+                            <div
+                                class="absolute inset-0 bg-brand-accent overflow-hidden rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] z-10">
+                                <img src="https://images.soco.id/230-58.jpg.jpeg"
+                                    class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
+                                    alt="Romeo">
                             </div>
                         </div>
                         <div class="text-center md:text-right order-2 md:order-1 flex-1">
                             <p class="text-brand-gold font-serif italic text-2xl mb-2">The Groom</p>
-                            <h3 class="text-4xl md:text-5xl font-serif text-white mb-6 tracking-wide leading-tight">Romeo Montague</h3>
+                            <h3 class="text-4xl md:text-5xl font-serif text-white mb-6 tracking-wide leading-tight">
+                                Romeo Montague</h3>
                             <div class="space-y-3">
-                                <p class="uppercase text-[10px] tracking-[0.3em] text-brand-gold font-bold">Putra Tercinta dari</p>
+                                <p class="uppercase text-[10px] tracking-[0.3em] text-brand-gold font-bold">Putra
+                                    Tercinta dari</p>
                                 <p class="text-white text-lg font-medium">Bapak Montague</p>
                                 <p class="text-white text-lg font-medium">& Ibu Montague</p>
                             </div>
@@ -379,16 +452,23 @@
 
                     <div class="flex flex-col md:flex-row items-center gap-8 md:gap-12 lg:pl-12 group mt-0 lg:mt-40">
                         <div class="relative w-64 h-80 md:w-72 md:h-[28rem] flex-shrink-0">
-                            <div class="absolute inset-0 border-2 border-brand-gold -translate-x-4 translate-y-4 rounded-2xl z-0"></div>
-                            <div class="absolute inset-0 bg-brand-accent overflow-hidden rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] z-10">
-                                <img src="https://images.pexels.com/photos/157757/wedding-dresses-fashion-character-bride-157757.jpeg" class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" alt="Juliet">
+                            <div
+                                class="absolute inset-0 border-2 border-brand-gold -translate-x-4 translate-y-4 rounded-2xl z-0">
+                            </div>
+                            <div
+                                class="absolute inset-0 bg-brand-accent overflow-hidden rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] z-10">
+                                <img src="https://images.pexels.com/photos/157757/wedding-dresses-fashion-character-bride-157757.jpeg"
+                                    class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
+                                    alt="Juliet">
                             </div>
                         </div>
                         <div class="text-center md:text-left flex-1">
                             <p class="text-brand-gold font-serif italic text-2xl mb-2">The Bride</p>
-                            <h3 class="text-4xl md:text-5xl font-serif text-white mb-6 tracking-wide leading-tight">Juliet Capulet</h3>
+                            <h3 class="text-4xl md:text-5xl font-serif text-white mb-6 tracking-wide leading-tight">
+                                Juliet Capulet</h3>
                             <div class="space-y-3">
-                                <p class="uppercase text-[10px] tracking-[0.3em] text-brand-gold font-bold">Putri Tercinta dari</p>
+                                <p class="uppercase text-[10px] tracking-[0.3em] text-brand-gold font-bold">Putri
+                                    Tercinta dari</p>
                                 <p class="text-white text-lg font-medium">Bapak Capulet</p>
                                 <p class="text-white text-lg font-medium">& Ibu Capulet</p>
                             </div>
@@ -398,13 +478,24 @@
 
                 <div class="mt-32 p-1 bg-gradient-to-r from-transparent via-brand-gold/30 to-transparent">
                     <div class="bg-brand-dark py-12 px-6">
-                        <p class="text-[10px] tracking-[0.6em] uppercase text-brand-gold mb-10 font-bold text-center">Turut Mengundang</p>
+                        <p class="text-[10px] tracking-[0.6em] uppercase text-brand-gold mb-10 font-bold text-center">
+                            Turut Mengundang</p>
                         <div class="flex flex-wrap justify-center gap-x-10 gap-y-6 max-w-4xl mx-auto">
-                            <span class="text-white/90 text-sm font-light tracking-wide hover:text-brand-gold transition-colors">Keluarga Besar Montague</span>
-                            <span class="text-white/90 text-sm font-light tracking-wide hover:text-brand-gold transition-colors">Keluarga Besar Capulet</span>
-                            <span class="text-white/90 text-sm font-light tracking-wide hover:text-brand-gold transition-colors">Keluarga Besar Verona</span>
-                            <span class="text-white/90 text-sm font-light tracking-wide hover:text-brand-gold transition-colors">Sahabat Romeo & Juliet</span>
-                            <span class="text-white/90 text-sm font-light tracking-wide hover:text-brand-gold transition-colors">Rekan Kerja & Kerabat</span>
+                            <span
+                                class="text-white/90 text-sm font-light tracking-wide hover:text-brand-gold transition-colors">Keluarga
+                                Besar Montague</span>
+                            <span
+                                class="text-white/90 text-sm font-light tracking-wide hover:text-brand-gold transition-colors">Keluarga
+                                Besar Capulet</span>
+                            <span
+                                class="text-white/90 text-sm font-light tracking-wide hover:text-brand-gold transition-colors">Keluarga
+                                Besar Verona</span>
+                            <span
+                                class="text-white/90 text-sm font-light tracking-wide hover:text-brand-gold transition-colors">Sahabat
+                                Romeo & Juliet</span>
+                            <span
+                                class="text-white/90 text-sm font-light tracking-wide hover:text-brand-gold transition-colors">Rekan
+                                Kerja & Kerabat</span>
                         </div>
                     </div>
                 </div>
@@ -412,77 +503,118 @@
         </section>
 
         <section id="story" class="py-24 px-6 bg-brand-dark relative overflow-hidden">
-            <div class="absolute inset-0 opacity-20 pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/black-linen.png')]"></div>
-            
+            <div
+                class="absolute inset-0 opacity-20 pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/black-linen.png')]">
+            </div>
+
             <div class="max-w-6xl mx-auto relative z-10">
                 <div class="text-center mb-24 flex flex-col items-center">
-                    <span class="text-[10px] tracking-[0.6em] uppercase text-brand-gold mb-4 font-bold">Our Journey</span>
+                    <span class="text-[10px] tracking-[0.6em] uppercase text-brand-gold mb-4 font-bold">Our
+                        Journey</span>
                     <h2 class="text-4xl md:text-6xl font-serif italic text-white drop-shadow-md">Cerita Cinta Kami</h2>
                     <div class="h-[2px] w-16 bg-brand-gold mt-8"></div>
                 </div>
 
                 <div class="relative space-y-20 md:space-y-32">
-                    <div class="hidden md:block absolute left-1/2 -translate-x-1/2 top-0 bottom-0 w-[1px] bg-gradient-to-b from-brand-gold/50 via-brand-gold/10 to-transparent"></div>
+                    <div
+                        class="hidden md:block absolute left-1/2 -translate-x-1/2 top-0 bottom-0 w-[1px] bg-gradient-to-b from-brand-gold/50 via-brand-gold/10 to-transparent">
+                    </div>
 
                     <div class="relative grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-16 items-center group">
-                        <div class="hidden md:flex absolute left-1/2 -translate-x-1/2 z-20 w-12 h-12 rounded-full bg-brand-dark border-2 border-brand-gold items-center justify-center group-hover:scale-110 transition-transform duration-500 shadow-[0_0_20px_rgba(212,175,55,0.4)]">
+                        <div
+                            class="hidden md:flex absolute left-1/2 -translate-x-1/2 z-20 w-12 h-12 rounded-full bg-brand-dark border-2 border-brand-gold items-center justify-center group-hover:scale-110 transition-transform duration-500 shadow-[0_0_20px_rgba(212,175,55,0.4)]">
                             <div class="w-3 h-3 rounded-full bg-brand-gold animate-pulse"></div>
                         </div>
-                        
+
                         <div class="relative order-1 md:order-1 flex justify-center md:justify-end md:pr-10 lg:pr-16">
-                            <div class="relative w-full max-w-md aspect-[4/3] rounded-3xl overflow-hidden border border-white/5 shadow-2xl transition-all duration-700 hover:border-brand-gold/30">
-                                <img src="https://images.unsplash.com/photo-1519741497674-611481863552?w=800&auto=format&fit=crop" class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" alt="Pertama Bertemu">
-                                <div class="absolute inset-0 bg-gradient-to-t from-brand-dark/80 via-transparent to-transparent"></div>
+                            <div
+                                class="relative w-full max-w-md aspect-[4/3] rounded-3xl overflow-hidden border border-white/5 shadow-2xl transition-all duration-700 hover:border-brand-gold/30">
+                                <img src="https://images.unsplash.com/photo-1519741497674-611481863552?w=800&auto=format&fit=crop"
+                                    class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
+                                    alt="Pertama Bertemu">
+                                <div
+                                    class="absolute inset-0 bg-gradient-to-t from-brand-dark/80 via-transparent to-transparent">
+                                </div>
                             </div>
                         </div>
 
-                        <div class="order-2 md:order-2 text-center md:text-left md:pl-10 lg:pl-16 flex flex-col items-center md:items-start">
-                            <span class="text-[10px] font-bold tracking-[0.3em] text-brand-gold uppercase bg-brand-gold/10 px-3 py-1.5 rounded-full inline-block mb-6">Desember 2022</span>
-                            <h4 class="text-3xl md:text-4xl font-serif text-white mb-5 leading-snug">Pertemuan Pertama</h4>
-                            <p class="text-sm md:text-base text-white/80 leading-relaxed font-light max-w-xl mx-auto md:mx-0">
-                                Berawal dari sebuah pertemuan singkat di sebuah perpustakaan kota, kami tidak pernah menyangka bahwa percakapan sederhana tentang buku favorit akan membawa kami sejauh ini.
+                        <div
+                            class="order-2 md:order-2 text-center md:text-left md:pl-10 lg:pl-16 flex flex-col items-center md:items-start">
+                            <span
+                                class="text-[10px] font-bold tracking-[0.3em] text-brand-gold uppercase bg-brand-gold/10 px-3 py-1.5 rounded-full inline-block mb-6">Desember
+                                2022</span>
+                            <h4 class="text-3xl md:text-4xl font-serif text-white mb-5 leading-snug">Pertemuan Pertama
+                            </h4>
+                            <p
+                                class="text-sm md:text-base text-white/80 leading-relaxed font-light max-w-xl mx-auto md:mx-0">
+                                Berawal dari sebuah pertemuan singkat di sebuah perpustakaan kota, kami tidak pernah
+                                menyangka bahwa percakapan sederhana tentang buku favorit akan membawa kami sejauh ini.
                             </p>
                         </div>
                     </div>
 
                     <div class="relative grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-16 items-center group">
-                        <div class="hidden md:flex absolute left-1/2 -translate-x-1/2 z-20 w-12 h-12 rounded-full bg-brand-dark border-2 border-brand-gold items-center justify-center group-hover:scale-110 transition-transform duration-500 shadow-[0_0_20px_rgba(212,175,55,0.4)]">
+                        <div
+                            class="hidden md:flex absolute left-1/2 -translate-x-1/2 z-20 w-12 h-12 rounded-full bg-brand-dark border-2 border-brand-gold items-center justify-center group-hover:scale-110 transition-transform duration-500 shadow-[0_0_20px_rgba(212,175,55,0.4)]">
                             <div class="w-3 h-3 rounded-full bg-brand-gold animate-pulse"></div>
                         </div>
 
-                        <div class="order-2 md:order-1 text-center md:text-right md:pr-10 lg:pr-16 flex flex-col items-center md:items-end">
-                            <span class="text-[10px] font-bold tracking-[0.3em] text-brand-gold uppercase bg-brand-gold/10 px-3 py-1.5 rounded-full inline-block mb-6">Maret 2024</span>
-                            <h4 class="text-3xl md:text-4xl font-serif text-white mb-5 leading-snug">Menjalin Komitmen</h4>
-                            <p class="text-sm md:text-base text-white/80 leading-relaxed font-light max-w-xl mx-auto md:mx-0">
-                                Setahun mengenal satu sama lain, kami memutuskan untuk melangkah lebih serius. Menjalani hari-hari penuh tawa dan dukungan dalam setiap langkah perjuangan masing-masing.
+                        <div
+                            class="order-2 md:order-1 text-center md:text-right md:pr-10 lg:pr-16 flex flex-col items-center md:items-end">
+                            <span
+                                class="text-[10px] font-bold tracking-[0.3em] text-brand-gold uppercase bg-brand-gold/10 px-3 py-1.5 rounded-full inline-block mb-6">Maret
+                                2024</span>
+                            <h4 class="text-3xl md:text-4xl font-serif text-white mb-5 leading-snug">Menjalin Komitmen
+                            </h4>
+                            <p
+                                class="text-sm md:text-base text-white/80 leading-relaxed font-light max-w-xl mx-auto md:mx-0">
+                                Setahun mengenal satu sama lain, kami memutuskan untuk melangkah lebih serius. Menjalani
+                                hari-hari penuh tawa dan dukungan dalam setiap langkah perjuangan masing-masing.
                             </p>
                         </div>
 
                         <div class="relative order-1 md:order-2 flex justify-center md:justify-start md:pl-10 lg:pl-16">
-                            <div class="relative w-full max-w-md aspect-[4/3] rounded-3xl overflow-hidden border border-white/5 shadow-2xl transition-all duration-700 hover:border-brand-gold/30">
-                                <img src="https://images.unsplash.com/photo-1510154221590-ff63e90a136f?w=800&auto=format&fit=crop" class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" alt="Menjalin Komitmen">
-                                <div class="absolute inset-0 bg-gradient-to-t from-brand-dark/80 via-transparent to-transparent"></div>
+                            <div
+                                class="relative w-full max-w-md aspect-[4/3] rounded-3xl overflow-hidden border border-white/5 shadow-2xl transition-all duration-700 hover:border-brand-gold/30">
+                                <img src="https://images.unsplash.com/photo-1510154221590-ff63e90a136f?w=800&auto=format&fit=crop"
+                                    class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
+                                    alt="Menjalin Komitmen">
+                                <div
+                                    class="absolute inset-0 bg-gradient-to-t from-brand-dark/80 via-transparent to-transparent">
+                                </div>
                             </div>
                         </div>
                     </div>
 
                     <div class="relative grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-16 items-center group">
-                        <div class="hidden md:flex absolute left-1/2 -translate-x-1/2 z-20 w-12 h-12 rounded-full bg-brand-dark border-2 border-brand-gold items-center justify-center group-hover:scale-110 transition-transform duration-500 shadow-[0_0_20px_rgba(212,175,55,0.4)]">
+                        <div
+                            class="hidden md:flex absolute left-1/2 -translate-x-1/2 z-20 w-12 h-12 rounded-full bg-brand-dark border-2 border-brand-gold items-center justify-center group-hover:scale-110 transition-transform duration-500 shadow-[0_0_20px_rgba(212,175,55,0.4)]">
                             <div class="w-3 h-3 rounded-full bg-brand-gold animate-pulse"></div>
                         </div>
 
                         <div class="relative order-1 md:order-1 flex justify-center md:justify-end md:pr-10 lg:pr-16">
-                            <div class="relative w-full max-w-md aspect-[4/3] rounded-3xl overflow-hidden border border-white/5 shadow-2xl transition-all duration-700 hover:border-brand-gold/30">
-                                <img src="https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?w=800&auto=format&fit=crop" class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" alt="Satu Langkah Lebih Dekat">
-                                <div class="absolute inset-0 bg-gradient-to-t from-brand-dark/80 via-transparent to-transparent"></div>
+                            <div
+                                class="relative w-full max-w-md aspect-[4/3] rounded-3xl overflow-hidden border border-white/5 shadow-2xl transition-all duration-700 hover:border-brand-gold/30">
+                                <img src="https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?w=800&auto=format&fit=crop"
+                                    class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
+                                    alt="Satu Langkah Lebih Dekat">
+                                <div
+                                    class="absolute inset-0 bg-gradient-to-t from-brand-dark/80 via-transparent to-transparent">
+                                </div>
                             </div>
                         </div>
 
-                        <div class="order-2 md:order-2 text-center md:text-left md:pl-10 lg:pl-16 flex flex-col items-center md:items-start">
-                            <span class="text-[10px] font-bold tracking-[0.3em] text-brand-gold uppercase bg-brand-gold/10 px-3 py-1.5 rounded-full inline-block mb-6">Januari 2026</span>
-                            <h4 class="text-3xl md:text-4xl font-serif text-white mb-5 leading-snug">Satu Langkah Lebih Dekat</h4>
-                            <p class="text-sm md:text-base text-white/80 leading-relaxed font-light max-w-xl mx-auto md:mx-0">
-                                Di hadapan kedua keluarga besar, kami mengikat janji suci dalam sebuah pertunangan. Langkah awal untuk membangun mahligai rumah tangga yang kami impikan.
+                        <div
+                            class="order-2 md:order-2 text-center md:text-left md:pl-10 lg:pl-16 flex flex-col items-center md:items-start">
+                            <span
+                                class="text-[10px] font-bold tracking-[0.3em] text-brand-gold uppercase bg-brand-gold/10 px-3 py-1.5 rounded-full inline-block mb-6">Januari
+                                2026</span>
+                            <h4 class="text-3xl md:text-4xl font-serif text-white mb-5 leading-snug">Satu Langkah Lebih
+                                Dekat</h4>
+                            <p
+                                class="text-sm md:text-base text-white/80 leading-relaxed font-light max-w-xl mx-auto md:mx-0">
+                                Di hadapan kedua keluarga besar, kami mengikat janji suci dalam sebuah pertunangan.
+                                Langkah awal untuk membangun mahligai rumah tangga yang kami impikan.
                             </p>
                         </div>
                     </div>
@@ -490,10 +622,184 @@
                 </div>
 
                 <div class="mt-24 text-center">
-                    <button id="btn-read-more" onclick="toggleStories()" class="group relative px-12 py-4 bg-transparent border border-brand-gold/50 text-brand-gold rounded-full overflow-hidden transition-all duration-500 hover:border-brand-gold active:scale-95 shadow-[0_0_20px_rgba(212,175,55,0.1)]">
-                        <span class="relative z-10 text-[11px] font-bold uppercase tracking-[0.3em] group-hover:text-brand-dark transition-colors duration-500">Baca Selengkapnya</span>
-                        <div class="absolute inset-0 bg-brand-gold translate-y-full group-hover:translate-y-0 transition-transform duration-500"></div>
+                    <button id="btn-read-more" onclick="toggleStories()"
+                        class="group relative px-12 py-4 bg-transparent border border-brand-gold/50 text-brand-gold rounded-full overflow-hidden transition-all duration-500 hover:border-brand-gold active:scale-95 shadow-[0_0_20px_rgba(212,175,55,0.1)]">
+                        <span
+                            class="relative z-10 text-[11px] font-bold uppercase tracking-[0.3em] group-hover:text-brand-dark transition-colors duration-500">Baca
+                            Selengkapnya</span>
+                        <div
+                            class="absolute inset-0 bg-brand-gold translate-y-full group-hover:translate-y-0 transition-transform duration-500">
+                        </div>
                     </button>
+                </div>
+            </div>
+        </section>
+
+        <section id="guest-info" class="py-24 px-6 bg-brand-dark relative overflow-hidden">
+            <div
+                class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-brand-gold/5 blur-[120px] rounded-full pointer-events-none">
+            </div>
+
+            <div class="max-w-4xl mx-auto relative z-10">
+                <div class="text-center mb-16 animate-fade-in-up">
+                    <i class="fa-solid fa-circle-info text-brand-gold/60 text-xl mb-4 gold-glow"></i>
+                    <span class="block text-[10px] tracking-[0.6em] uppercase text-brand-gold mb-2 font-bold">Important
+                        Notice</span>
+                    <h2 class="text-4xl md:text-5xl font-serif italic text-white">Informasi Tamu</h2>
+                    <div
+                        class="h-[1px] w-24 bg-gradient-to-r from-transparent via-brand-gold to-transparent mx-auto mt-6">
+                    </div>
+                </div>
+
+                <div
+                    class="glass-card rounded-[2.5rem] p-8 md:p-12 mb-12 text-center border border-white/10 hover:border-brand-gold/30 transition-all duration-700 group">
+                    <p class="text-[10px] uppercase tracking-[0.4em] text-brand-gold mb-4 font-bold opacity-80">
+                        Dresscode</p>
+                    <h4 class="text-2xl md:text-3xl font-serif text-white mb-2">Formal & Elegant</h4>
+                    <p class="text-brand-muted text-sm font-light tracking-wide italic">"Your presence is our greatest
+                        gift, your elegance completes our joy."</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+
+                    <div class="glass-card rounded-[2.5rem] p-10 border border-white/5 relative overflow-hidden group">
+                        <h5
+                            class="text-xs tracking-[0.3em] uppercase text-brand-gold font-bold mb-10 flex items-center gap-3">
+                            <span class="w-8 h-[1px] bg-brand-gold/30"></span>
+                            Protokol Kesehatan
+                        </h5>
+
+                        <div class="grid grid-cols-3 gap-y-10 gap-x-4">
+                            <div id="protokol-cuci-tangan" class="flex flex-col items-center group/icon">
+                                <div
+                                    class="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center mb-3 group-hover/icon:bg-brand-gold/20 transition-all">
+                                    <i class="fa-solid fa-hands-bubbles text-brand-gold text-lg"></i>
+                                </div>
+                                <span
+                                    class="text-[9px] text-brand-muted uppercase tracking-widest text-center leading-tight">Cuci
+                                    Tangan</span>
+                            </div>
+
+                            <div id="protokol-pakai-masker" class="flex flex-col items-center group/icon">
+                                <div
+                                    class="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center mb-3 group-hover/icon:bg-brand-gold/20 transition-all">
+                                    <i class="fa-solid fa-head-side-mask text-brand-gold text-lg"></i>
+                                </div>
+                                <span
+                                    class="text-[9px] text-brand-muted uppercase tracking-widest text-center leading-tight">Pakai
+                                    Masker</span>
+                            </div>
+
+                            <div id="protokol-jaga-jarak" class="flex flex-col items-center group/icon">
+                                <div
+                                    class="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center mb-3 group-hover/icon:bg-brand-gold/20 transition-all">
+                                    <i class="fa-solid fa-people-arrows text-brand-gold text-lg"></i>
+                                </div>
+                                <span
+                                    class="text-[9px] text-brand-muted uppercase tracking-widest text-center leading-tight">Jaga
+                                    Jarak</span>
+                            </div>
+
+                            <div id="protokol-hindari-kerumunan" class="flex flex-col items-center group/icon">
+                                <div
+                                    class="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center mb-3 group-hover/icon:bg-brand-gold/20 transition-all">
+                                    <i class="fa-solid fa-users-slash text-brand-gold text-lg"></i>
+                                </div>
+                                <span
+                                    class="text-[9px] text-brand-muted uppercase tracking-widest text-center leading-tight">No
+                                    Kerumunan</span>
+                            </div>
+
+                            <div id="protokol-cek-suhu" class="flex flex-col items-center group/icon">
+                                <div
+                                    class="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center mb-3 group-hover/icon:bg-brand-gold/20 transition-all">
+                                    <i class="fa-solid fa-temperature-high text-brand-gold text-lg"></i>
+                                </div>
+                                <span
+                                    class="text-[9px] text-brand-muted uppercase tracking-widest text-center leading-tight">Cek
+                                    Suhu</span>
+                            </div>
+
+                            <div id="protokol-desinfektan" class="flex flex-col items-center group/icon">
+                                <div
+                                    class="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center mb-3 group-hover/icon:bg-brand-gold/20 transition-all">
+                                    <i class="fa-solid fa-spray-can-sparkles text-brand-gold text-lg"></i>
+                                </div>
+                                <span
+                                    class="text-[9px] text-brand-muted uppercase tracking-widest text-center leading-tight">Desinfektan</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="glass-card rounded-[2.5rem] p-10 border border-white/5 relative overflow-hidden group">
+                        <h5
+                            class="text-xs tracking-[0.3em] uppercase text-brand-gold font-bold mb-10 flex items-center gap-3">
+                            <span class="w-8 h-[1px] bg-brand-gold/30"></span>
+                            Adab Walimah
+                        </h5>
+
+                        <div class="grid grid-cols-3 gap-y-10 gap-x-4">
+                            <div id="adab-sholat" class="flex flex-col items-center group/icon">
+                                <div
+                                    class="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center mb-3 group-hover/icon:bg-brand-gold/20 transition-all">
+                                    <i class="fa-solid fa-mosque text-brand-gold text-lg"></i>
+                                </div>
+                                <span
+                                    class="text-[9px] text-brand-muted uppercase tracking-widest text-center leading-tight">Waktu
+                                    Sholat</span>
+                            </div>
+
+                            <div id="adab-makan-minum" class="flex flex-col items-center group/icon">
+                                <div
+                                    class="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center mb-3 group-hover/icon:bg-brand-gold/20 transition-all">
+                                    <i class="fa-solid fa-utensils text-brand-gold text-lg"></i>
+                                </div>
+                                <span
+                                    class="text-[9px] text-brand-muted uppercase tracking-widest text-center leading-tight">Adab
+                                    Makan</span>
+                            </div>
+
+                            <div id="adab-mendoakan" class="flex flex-col items-center group/icon">
+                                <div
+                                    class="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center mb-3 group-hover/icon:bg-brand-gold/20 transition-all">
+                                    <i class="fa-solid fa-hands-praying text-brand-gold text-lg"></i>
+                                </div>
+                                <span
+                                    class="text-[9px] text-brand-muted uppercase tracking-widest text-center leading-tight">Doa
+                                    Restu</span>
+                            </div>
+
+                            <div id="adab-jaga-jarak" class="flex flex-col items-center group/icon">
+                                <div
+                                    class="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center mb-3 group-hover/icon:bg-brand-gold/20 transition-all">
+                                    <i class="fa-solid fa-restroom text-brand-gold text-lg"></i>
+                                </div>
+                                <span
+                                    class="text-[9px] text-brand-muted uppercase tracking-widest text-center leading-tight">Jaga
+                                    Jarak</span>
+                            </div>
+
+                            <div id="adab-pakaian-sopan" class="flex flex-col items-center group/icon">
+                                <div
+                                    class="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center mb-3 group-hover/icon:bg-brand-gold/20 transition-all">
+                                    <i class="fa-solid fa-shirt text-brand-gold text-lg"></i>
+                                </div>
+                                <span
+                                    class="text-[9px] text-brand-muted uppercase tracking-widest text-center leading-tight">Baju
+                                    Sopan</span>
+                            </div>
+
+                            <div id="adab-larangan-foto" class="flex flex-col items-center group/icon">
+                                <div
+                                    class="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center mb-3 group-hover/icon:bg-brand-gold/20 transition-all">
+                                    <i class="fa-solid fa-video-slash text-brand-gold text-lg"></i>
+                                </div>
+                                <span
+                                    class="text-[9px] text-brand-muted uppercase tracking-widest text-center leading-tight">Izin
+                                    Foto</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
@@ -503,52 +809,79 @@
 
             <div class="max-w-6xl mx-auto relative z-10">
                 <div class="text-center mb-16">
-                    <p class="text-[10px] tracking-[0.6em] uppercase text-brand-gold mb-4 font-bold">Captured Moments</p>
+                    <p class="text-[10px] tracking-[0.6em] uppercase text-brand-gold mb-4 font-bold">Captured Moments
+                    </p>
                     <h2 class="text-5xl md:text-6xl font-serif italic text-white drop-shadow-md">Our Gallery</h2>
                     <div class="h-[2px] w-12 bg-brand-gold mx-auto mt-6"></div>
                 </div>
 
                 <div id="video-container" class="hidden mb-16 animate-fade-in group">
-                    <div class="relative w-full max-w-4xl mx-auto pb-[56.25%] rounded-[2.5rem] overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.5)] border border-white/10 group-hover:border-brand-gold/30 transition-colors duration-500">
-                        <iframe id="youtube-iframe" class="absolute top-0 left-0 w-full h-full grayscale-[0.2] group-hover:grayscale-0 transition-all duration-700" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                    <div
+                        class="relative w-full max-w-4xl mx-auto pb-[56.25%] rounded-[2.5rem] overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.5)] border border-white/10 group-hover:border-brand-gold/30 transition-colors duration-500">
+                        <iframe id="youtube-iframe"
+                            class="absolute top-0 left-0 w-full h-full grayscale-[0.2] group-hover:grayscale-0 transition-all duration-700"
+                            src="" frameborder="0"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowfullscreen></iframe>
                     </div>
                 </div>
 
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-5" id="photo-grid">
-                    
-                    <div class="group relative md:row-span-2 rounded-2xl md:rounded-[2rem] overflow-hidden cursor-pointer shadow-xl border border-white/5" onclick="openLightbox(0)">
-                        <img src="https://images.unsplash.com/photo-1522673607200-164d1b6ce486?w=800" class="gallery-img w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" alt="Prewedding 1">
-                        <div class="absolute inset-0 bg-brand-dark/40 opacity-0 group-hover:opacity-100 transition-all duration-500 flex items-center justify-center backdrop-blur-[2px]">
-                            <div class="p-3 rounded-full border border-brand-gold/50 text-brand-gold scale-50 group-hover:scale-100 transition-transform duration-500">
+
+                    <div class="group relative md:row-span-2 rounded-2xl md:rounded-[2rem] overflow-hidden cursor-pointer shadow-xl border border-white/5"
+                        onclick="openLightbox(0)">
+                        <img src="https://images.unsplash.com/photo-1522673607200-164d1b6ce486?w=800"
+                            class="gallery-img w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
+                            alt="Prewedding 1">
+                        <div
+                            class="absolute inset-0 bg-brand-dark/40 opacity-0 group-hover:opacity-100 transition-all duration-500 flex items-center justify-center backdrop-blur-[2px]">
+                            <div
+                                class="p-3 rounded-full border border-brand-gold/50 text-brand-gold scale-50 group-hover:scale-100 transition-transform duration-500">
                                 <i class="fa-solid fa-expand text-xl"></i>
                             </div>
                         </div>
                     </div>
 
-                    <div class="group relative aspect-square rounded-2xl md:rounded-[2rem] overflow-hidden cursor-pointer shadow-xl border border-white/5" onclick="openLightbox(1)">
-                        <img src="https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?w=800" class="gallery-img w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" alt="Prewedding 2">
-                        <div class="absolute inset-0 bg-brand-dark/40 opacity-0 group-hover:opacity-100 transition-all duration-500 flex items-center justify-center backdrop-blur-[2px]">
+                    <div class="group relative aspect-square rounded-2xl md:rounded-[2rem] overflow-hidden cursor-pointer shadow-xl border border-white/5"
+                        onclick="openLightbox(1)">
+                        <img src="https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?w=800"
+                            class="gallery-img w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
+                            alt="Prewedding 2">
+                        <div
+                            class="absolute inset-0 bg-brand-dark/40 opacity-0 group-hover:opacity-100 transition-all duration-500 flex items-center justify-center backdrop-blur-[2px]">
                             <i class="fa-solid fa-plus text-brand-gold text-2xl"></i>
                         </div>
                     </div>
 
-                    <div class="group relative aspect-square rounded-2xl md:rounded-[2rem] overflow-hidden cursor-pointer shadow-xl border border-white/5" onclick="openLightbox(2)">
-                        <img src="https://images.unsplash.com/photo-1606800052052-a08af7148866?w=800" class="gallery-img w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" alt="Prewedding 3">
-                        <div class="absolute inset-0 bg-brand-dark/40 opacity-0 group-hover:opacity-100 transition-all duration-500 flex items-center justify-center backdrop-blur-[2px]">
+                    <div class="group relative aspect-square rounded-2xl md:rounded-[2rem] overflow-hidden cursor-pointer shadow-xl border border-white/5"
+                        onclick="openLightbox(2)">
+                        <img src="https://images.unsplash.com/photo-1606800052052-a08af7148866?w=800"
+                            class="gallery-img w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
+                            alt="Prewedding 3">
+                        <div
+                            class="absolute inset-0 bg-brand-dark/40 opacity-0 group-hover:opacity-100 transition-all duration-500 flex items-center justify-center backdrop-blur-[2px]">
                             <i class="fa-solid fa-plus text-brand-gold text-2xl"></i>
                         </div>
                     </div>
 
-                    <div class="group relative aspect-square rounded-2xl md:rounded-[2rem] overflow-hidden cursor-pointer shadow-xl border border-white/5" onclick="openLightbox(3)">
-                        <img src="https://images.unsplash.com/photo-1591604466107-ec97de577aff?w=800" class="gallery-img w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" alt="Prewedding 4">
-                        <div class="absolute inset-0 bg-brand-dark/40 opacity-0 group-hover:opacity-100 transition-all duration-500 flex items-center justify-center backdrop-blur-[2px]">
+                    <div class="group relative aspect-square rounded-2xl md:rounded-[2rem] overflow-hidden cursor-pointer shadow-xl border border-white/5"
+                        onclick="openLightbox(3)">
+                        <img src="https://images.unsplash.com/photo-1591604466107-ec97de577aff?w=800"
+                            class="gallery-img w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
+                            alt="Prewedding 4">
+                        <div
+                            class="absolute inset-0 bg-brand-dark/40 opacity-0 group-hover:opacity-100 transition-all duration-500 flex items-center justify-center backdrop-blur-[2px]">
                             <i class="fa-solid fa-plus text-brand-gold text-2xl"></i>
                         </div>
                     </div>
 
-                    <div class="group relative md:col-span-2 rounded-2xl md:rounded-[2rem] overflow-hidden cursor-pointer shadow-xl border border-white/5 h-48 md:h-auto" onclick="openLightbox(4)">
-                        <img src="https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=1000" class="gallery-img w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" alt="Prewedding 5">
-                        <div class="absolute inset-0 bg-brand-dark/40 opacity-0 group-hover:opacity-100 transition-all duration-500 flex items-center justify-center backdrop-blur-[2px]">
+                    <div class="group relative md:col-span-2 rounded-2xl md:rounded-[2rem] overflow-hidden cursor-pointer shadow-xl border border-white/5 h-48 md:h-auto"
+                        onclick="openLightbox(4)">
+                        <img src="https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=1000"
+                            class="gallery-img w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
+                            alt="Prewedding 5">
+                        <div
+                            class="absolute inset-0 bg-brand-dark/40 opacity-0 group-hover:opacity-100 transition-all duration-500 flex items-center justify-center backdrop-blur-[2px]">
                             <i class="fa-solid fa-plus text-brand-gold text-2xl"></i>
                         </div>
                     </div>
@@ -556,47 +889,60 @@
             </div>
         </section>
 
-        <div id="lightbox" class="fixed inset-0 z-[100] hidden flex-col items-center justify-center bg-brand-dark/95 backdrop-blur-xl p-4 transition-all duration-500">
-            <button onclick="closeLightbox()" class="absolute top-6 right-6 text-white/50 hover:text-brand-gold transition-colors text-3xl z-[110]">
+        <div id="lightbox"
+            class="fixed inset-0 z-[100] hidden flex-col items-center justify-center bg-brand-dark/95 backdrop-blur-xl p-4 transition-all duration-500">
+            <button onclick="closeLightbox()"
+                class="absolute top-6 right-6 text-white/50 hover:text-brand-gold transition-colors text-3xl z-[110]">
                 <i class="fa-solid fa-xmark"></i>
             </button>
-            
+
             <div class="relative w-full max-w-5xl flex items-center justify-center group">
-                <button onclick="prevImg()" class="absolute left-0 md:-left-20 text-white/30 hover:text-brand-gold transition-all text-4xl hidden md:block group-hover:translate-x-2">
+                <button onclick="prevImg()"
+                    class="absolute left-0 md:-left-20 text-white/30 hover:text-brand-gold transition-all text-4xl hidden md:block group-hover:translate-x-2">
                     <i class="fa-solid fa-chevron-left"></i>
                 </button>
-                
-                <img id="lightbox-img" src="" class="max-h-[85vh] max-w-full rounded-lg shadow-2xl transition-opacity duration-300 ease-in-out border border-white/10" alt="Zoomed Photo">
-                
-                <button onclick="nextImg()" class="absolute right-0 md:-right-20 text-white/30 hover:text-brand-gold transition-all text-4xl hidden md:block group-hover:-translate-x-2">
+
+                <img id="lightbox-img" src=""
+                    class="max-h-[85vh] max-w-full rounded-lg shadow-2xl transition-opacity duration-300 ease-in-out border border-white/10"
+                    alt="Zoomed Photo">
+
+                <button onclick="nextImg()"
+                    class="absolute right-0 md:-right-20 text-white/30 hover:text-brand-gold transition-all text-4xl hidden md:block group-hover:-translate-x-2">
                     <i class="fa-solid fa-chevron-right"></i>
                 </button>
             </div>
-            
-            <p class="mt-8 text-brand-gold tracking-[0.3em] text-[10px] uppercase font-bold">Image <span id="current-count">1</span> of <span id="total-count">5</span></p>
+
+            <p class="mt-8 text-brand-gold tracking-[0.3em] text-[10px] uppercase font-bold">Image <span
+                    id="current-count">1</span> of <span id="total-count">5</span></p>
         </div>
 
         <section id="lokasi" class="py-24 px-6 bg-brand-dark relative overflow-hidden">
-            <div class="absolute inset-0 opacity-10 pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
+            <div
+                class="absolute inset-0 opacity-10 pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]">
+            </div>
             <div class="absolute -top-24 -right-24 w-96 h-96 bg-brand-gold/10 rounded-full blur-[100px]"></div>
 
             <div class="max-w-6xl mx-auto relative z-10">
                 <div class="text-center mb-16 flex flex-col items-center">
-                    <span class="text-[10px] tracking-[0.6em] uppercase text-brand-gold mb-4 font-bold">The Celebration</span>
+                    <span class="text-[10px] tracking-[0.6em] uppercase text-brand-gold mb-4 font-bold">The
+                        Celebration</span>
                     <h2 class="text-5xl md:text-6xl font-serif italic text-white drop-shadow-md">Waktu & Tempat</h2>
                     <div class="h-[2px] w-16 bg-brand-gold mt-8"></div>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 items-stretch">
-                    
-                    <div class="glass-card p-10 md:p-14 rounded-[3rem] border border-white/10 relative group hover:border-brand-gold/40 transition-all duration-500 flex flex-col items-center text-center">
-                        <div class="w-20 h-20 rounded-full bg-brand-gold/10 flex items-center justify-center mb-8 border border-brand-gold/20 group-hover:scale-110 transition-transform duration-500">
+
+                    <div
+                        class="glass-card p-10 md:p-14 rounded-[3rem] border border-white/10 relative group hover:border-brand-gold/40 transition-all duration-500 flex flex-col items-center text-center">
+                        <div
+                            class="w-20 h-20 rounded-full bg-brand-gold/10 flex items-center justify-center mb-8 border border-brand-gold/20 group-hover:scale-110 transition-transform duration-500">
                             <i class="fa-solid fa-ring text-3xl text-brand-gold"></i>
                         </div>
-                        
+
                         <h3 class="text-3xl font-serif text-white mb-2 italic">Akad Nikah</h3>
-                        <p class="text-brand-gold text-[10px] tracking-[0.4em] uppercase font-bold mb-8">Sacred Union</p>
-                        
+                        <p class="text-brand-gold text-[10px] tracking-[0.4em] uppercase font-bold mb-8">Sacred Union
+                        </p>
+
                         <div class="space-y-6 mb-10 flex-1">
                             <div class="flex flex-col items-center">
                                 <i class="fa-regular fa-calendar-check text-brand-gold/60 mb-2"></i>
@@ -615,19 +961,23 @@
                             </div>
                         </div>
 
-                        <a href="https://maps.google.com" target="_blank" class="w-full py-4 bg-transparent border border-brand-gold/50 text-brand-gold rounded-full text-[11px] font-bold uppercase tracking-widest hover:bg-brand-gold hover:text-brand-dark transition-all duration-500 flex items-center justify-center gap-3">
+                        <a href="https://maps.google.com" target="_blank"
+                            class="w-full py-4 bg-transparent border border-brand-gold/50 text-brand-gold rounded-full text-[11px] font-bold uppercase tracking-widest hover:bg-brand-gold hover:text-brand-dark transition-all duration-500 flex items-center justify-center gap-3">
                             <i class="fa-solid fa-map-location-dot text-sm"></i> Petunjuk Lokasi
                         </a>
                     </div>
 
-                    <div class="glass-card p-10 md:p-14 rounded-[3rem] border border-white/10 relative group hover:border-brand-gold/40 transition-all duration-500 flex flex-col items-center text-center">
-                        <div class="w-20 h-20 rounded-full bg-brand-gold/10 flex items-center justify-center mb-8 border border-brand-gold/20 group-hover:scale-110 transition-transform duration-500">
+                    <div
+                        class="glass-card p-10 md:p-14 rounded-[3rem] border border-white/10 relative group hover:border-brand-gold/40 transition-all duration-500 flex flex-col items-center text-center">
+                        <div
+                            class="w-20 h-20 rounded-full bg-brand-gold/10 flex items-center justify-center mb-8 border border-brand-gold/20 group-hover:scale-110 transition-transform duration-500">
                             <i class="fa-solid fa-champagne-glasses text-3xl text-brand-gold"></i>
                         </div>
-                        
+
                         <h3 class="text-3xl font-serif text-white mb-2 italic">Resepsi</h3>
-                        <p class="text-brand-gold text-[10px] tracking-[0.4em] uppercase font-bold mb-8">Grand Celebration</p>
-                        
+                        <p class="text-brand-gold text-[10px] tracking-[0.4em] uppercase font-bold mb-8">Grand
+                            Celebration</p>
+
                         <div class="space-y-6 mb-10 flex-1">
                             <div class="flex flex-col items-center">
                                 <i class="fa-regular fa-calendar-check text-brand-gold/60 mb-2"></i>
@@ -646,49 +996,171 @@
                             </div>
                         </div>
 
-                        <a href="https://maps.google.com" target="_blank" class="w-full py-4 bg-transparent border border-brand-gold/50 text-brand-gold rounded-full text-[11px] font-bold uppercase tracking-widest hover:bg-brand-gold hover:text-brand-dark transition-all duration-500 flex items-center justify-center gap-3">
+                        <a href="https://maps.google.com" target="_blank"
+                            class="w-full py-4 bg-transparent border border-brand-gold/50 text-brand-gold rounded-full text-[11px] font-bold uppercase tracking-widest hover:bg-brand-gold hover:text-brand-dark transition-all duration-500 flex items-center justify-center gap-3">
                             <i class="fa-solid fa-map-location-dot text-sm"></i> Petunjuk Lokasi
                         </a>
                     </div>
 
                 </div>
 
-                <div class="mt-16 rounded-[2.5rem] overflow-hidden border border-white/10 shadow-2xl h-80 grayscale invert contrast-[0.9] hover:grayscale-0 hover:invert-0 transition-all duration-1000">
-                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3966.273155348332!2d106.816666!3d-6.222222!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNsKwMTMnMTkuOCJTIDEwNsKwNDknMDAuMCJF!5e0!3m2!1sen!2sid!4v1625000000000!5m2!1sen!2sid" 
+                <div
+                    class="mt-16 rounded-[2.5rem] overflow-hidden border border-white/10 shadow-2xl h-80 grayscale invert contrast-[0.9] hover:grayscale-0 hover:invert-0 transition-all duration-1000">
+                    <iframe
+                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3966.273155348332!2d106.816666!3d-6.222222!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNsKwMTMnMTkuOCJTIDEwNsKwNDknMDAuMCJF!5e0!3m2!1sen!2sid!4v1625000000000!5m2!1sen!2sid"
                         class="w-full h-full border-0" allowfullscreen="" loading="lazy"></iframe>
                 </div>
             </div>
         </section>
 
+        <!-- Section live streaming Ada JS untuk switch platform streaming dan lightbox gallery di bagian bawah body -->
+        <section id="live-streaming" class="py-24 px-6 bg-brand-dark relative overflow-hidden">
+            <div
+                class="absolute top-0 right-0 w-[500px] h-[500px] bg-brand-gold/5 blur-[120px] rounded-full pointer-events-none">
+            </div>
+            <div
+                class="absolute bottom-0 left-0 w-[300px] h-[300px] bg-brand-gold/5 blur-[100px] rounded-full pointer-events-none">
+            </div>
+
+            <div class="max-w-4xl mx-auto text-center relative z-10">
+                <div class="mb-16">
+                    <div
+                        class="inline-flex items-center gap-3 px-5 py-2 bg-red-500/10 border border-red-500/20 rounded-full mb-8 shadow-[0_0_15px_rgba(239,68,68,0.2)]">
+                        <span class="relative flex h-2.5 w-2.5">
+                            <span
+                                class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-500"></span>
+                        </span>
+                        <span class="text-[10px] font-bold uppercase tracking-[0.3em] text-red-500">Live Virtual
+                            Wedding</span>
+                    </div>
+                    <h2 class="text-4xl md:text-5xl font-serif italic text-white mb-6">Siaran Langsung</h2>
+                    <p class="text-brand-muted text-sm font-light max-w-md mx-auto leading-relaxed">
+                        Bergabunglah bersama kami secara virtual untuk menyaksikan momen sakral penyatuan janji suci
+                        kami.
+                    </p>
+                </div>
+
+                <div
+                    class="relative max-w-3xl mx-auto p-3 md:p-6 glass-card rounded-[3rem] border border-white/10 shadow-2xl">
+
+                    <div id="streaming-display"
+                        class="relative aspect-video rounded-[2.2rem] bg-brand-charcoal overflow-hidden flex items-center justify-center shadow-2xl transition-all duration-700">
+                        <div class="absolute inset-0 opacity-20 grayscale transition-all duration-1000 bg-cover bg-center"
+                            style="background-image: url('https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1000&q=80');">
+                        </div>
+
+                        <div class="relative z-10 flex flex-col items-center p-6 text-white text-center">
+                            <div
+                                class="mb-6 w-20 h-20 bg-white/5 backdrop-blur-2xl rounded-3xl border border-white/10 flex items-center justify-center shadow-2xl gold-glow group-hover:scale-110 transition-transform duration-500">
+                                <i id="platform-icon" class="fa-brands fa-youtube text-4xl text-brand-gold"></i>
+                            </div>
+                            <h3 id="platform-title" class="text-2xl font-serif italic mb-2 tracking-wide">YouTube Live
+                            </h3>
+                            <p id="platform-desc"
+                                class="text-[10px] uppercase tracking-[0.3em] text-brand-gold mb-8 font-bold opacity-80">
+                                Mulai Pukul 09.00 WIB</p>
+
+                            <a id="platform-link" href="https://youtube.com/live/URL_ANDA" target="_blank"
+                                class="group/btn relative px-12 py-4 bg-brand-gold text-white rounded-full text-[11px] font-bold uppercase tracking-[0.3em] overflow-hidden transition-all duration-500 hover:shadow-[0_10px_30px_rgba(180,150,90,0.4)] active:scale-95">
+                                <span class="relative z-10">Gabung Sekarang</span>
+                                <div
+                                    class="absolute inset-0 bg-white/20 translate-y-full group-hover/btn:translate-y-0 transition-transform duration-300">
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-5 gap-3 mt-8 px-2 md:px-6">
+                        <button
+                            onclick="switchPlatform('youtube', 'YouTube Live', 'Mulai Pukul 09.00 WIB', 'fa-brands fa-youtube', 'https://youtube.com/...')"
+                            class="platform-btn flex flex-col items-center gap-3 p-4 rounded-2xl hover:bg-white/5 transition-all duration-500 group">
+                            <i
+                                class="fa-brands fa-youtube text-xl text-brand-gold opacity-40 group-hover:opacity-100 group-hover:scale-110 transition-all"></i>
+                            <span
+                                class="text-[8px] uppercase tracking-widest text-brand-muted font-bold group-hover:text-white">YouTube</span>
+                        </button>
+
+                        <button
+                            onclick="switchPlatform('instagram', 'Instagram Live', '@AkunMempelai', 'fa-brands fa-instagram', 'https://instagram.com/...')"
+                            class="platform-btn flex flex-col items-center gap-3 p-4 rounded-2xl hover:bg-white/5 transition-all duration-500 group">
+                            <i
+                                class="fa-brands fa-instagram text-xl text-brand-gold opacity-40 group-hover:opacity-100 group-hover:scale-110 transition-all"></i>
+                            <span
+                                class="text-[8px] uppercase tracking-widest text-brand-muted font-bold group-hover:text-white">Instagram</span>
+                        </button>
+
+                        <button
+                            onclick="switchPlatform('tiktok', 'TikTok Live', 'Live Streaming Wedding', 'fa-brands fa-tiktok', 'https://tiktok.com/...')"
+                            class="platform-btn flex flex-col items-center gap-3 p-4 rounded-2xl hover:bg-white/5 transition-all duration-500 group">
+                            <i
+                                class="fa-brands fa-tiktok text-xl text-brand-gold opacity-40 group-hover:opacity-100 group-hover:scale-110 transition-all"></i>
+                            <span
+                                class="text-[8px] uppercase tracking-widest text-brand-muted font-bold group-hover:text-white">TikTok</span>
+                        </button>
+
+                        <button
+                            onclick="switchPlatform('zoom', 'Zoom Meeting', 'ID: 123 456 7890', 'fa-solid fa-video', 'https://zoom.us/...')"
+                            class="platform-btn flex flex-col items-center gap-3 p-4 rounded-2xl hover:bg-white/5 transition-all duration-500 group">
+                            <i
+                                class="fa-solid fa-video text-xl text-brand-gold opacity-40 group-hover:opacity-100 group-hover:scale-110 transition-all"></i>
+                            <span
+                                class="text-[8px] uppercase tracking-widest text-brand-muted font-bold group-hover:text-white">Zoom</span>
+                        </button>
+
+                        <button
+                            onclick="switchPlatform('gmeet', 'Google Meet', 'meet.google.com/xyz', 'fa-solid fa-camera-retro', 'https://meet.google.com/...')"
+                            class="platform-btn flex flex-col items-center gap-3 p-4 rounded-2xl hover:bg-white/5 transition-all duration-500 group">
+                            <i
+                                class="fa-solid fa-camera-retro text-xl text-brand-gold opacity-40 group-hover:opacity-100 group-hover:scale-110 transition-all"></i>
+                            <span
+                                class="text-[8px] uppercase tracking-widest text-brand-muted font-bold group-hover:text-white">G-Meet</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <section id="guest-stats" class="py-24 px-6 bg-brand-dark relative overflow-hidden">
-            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-brand-gold/5 rounded-full blur-[120px] pointer-events-none"></div>
+            <div
+                class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-brand-gold/5 rounded-full blur-[120px] pointer-events-none">
+            </div>
 
             <div class="max-w-4xl mx-auto relative z-10">
-                
+
                 <div class="text-center mb-16">
-                    <p class="text-[10px] tracking-[0.5em] uppercase text-brand-gold mb-3 font-bold">Guest Participation</p>
+                    <p class="text-[10px] tracking-[0.5em] uppercase text-brand-gold mb-3 font-bold">Guest Participation
+                    </p>
                     <h2 class="text-4xl md:text-5xl font-serif italic text-white drop-shadow-md">Kehadiran & Doa</h2>
                     <div class="h-[1px] w-16 bg-brand-gold/30 mx-auto mt-6"></div>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
-                    
-                    <div class="glass-stat p-8 rounded-[2.5rem] flex items-center gap-6 transition-all duration-500 hover:border-brand-gold/30 group">
-                        <div class="w-16 h-16 bg-brand-gold/10 rounded-2xl flex items-center justify-center shrink-0 border border-brand-gold/20 group-hover:bg-brand-gold group-hover:text-brand-dark transition-all duration-500">
+
+                    <div
+                        class="glass-stat p-8 rounded-[2.5rem] flex items-center gap-6 transition-all duration-500 hover:border-brand-gold/30 group">
+                        <div
+                            class="w-16 h-16 bg-brand-gold/10 rounded-2xl flex items-center justify-center shrink-0 border border-brand-gold/20 group-hover:bg-brand-gold group-hover:text-brand-dark transition-all duration-500">
                             <i class="fa-solid fa-user-check text-brand-gold text-2xl group-hover:text-brand-dark"></i>
                         </div>
                         <div>
-                            <h4 id="total-attendance" class="text-4xl md:text-5xl font-serif font-bold text-white mb-1">0</h4>
-                            <p class="text-[9px] uppercase tracking-[0.2em] text-brand-gold font-bold">Tamu Akan Hadir</p>
+                            <h4 id="total-attendance" class="text-4xl md:text-5xl font-serif font-bold text-white mb-1">
+                                0</h4>
+                            <p class="text-[9px] uppercase tracking-[0.2em] text-brand-gold font-bold">Tamu Akan Hadir
+                            </p>
                         </div>
                     </div>
 
-                    <div class="glass-stat p-8 rounded-[2.5rem] flex items-center gap-6 transition-all duration-500 hover:border-brand-gold/30 group">
-                        <div class="w-16 h-16 bg-brand-gold/10 rounded-2xl flex items-center justify-center shrink-0 border border-brand-gold/20 group-hover:bg-brand-gold group-hover:text-brand-dark transition-all duration-500">
-                            <i class="fa-solid fa-envelope-open-text text-brand-gold text-2xl group-hover:text-brand-dark"></i>
+                    <div
+                        class="glass-stat p-8 rounded-[2.5rem] flex items-center gap-6 transition-all duration-500 hover:border-brand-gold/30 group">
+                        <div
+                            class="w-16 h-16 bg-brand-gold/10 rounded-2xl flex items-center justify-center shrink-0 border border-brand-gold/20 group-hover:bg-brand-gold group-hover:text-brand-dark transition-all duration-500">
+                            <i
+                                class="fa-solid fa-envelope-open-text text-brand-gold text-2xl group-hover:text-brand-dark"></i>
                         </div>
                         <div>
-                            <h4 id="total-wishes" class="text-4xl md:text-5xl font-serif font-bold text-white mb-1">0</h4>
+                            <h4 id="total-wishes" class="text-4xl md:text-5xl font-serif font-bold text-white mb-1">0
+                            </h4>
                             <p class="text-[9px] uppercase tracking-[0.2em] text-brand-gold font-bold">Ucapan Hangat</p>
                         </div>
                     </div>
@@ -697,7 +1169,8 @@
 
                 <div class="mt-12 glass-stat rounded-[3rem] border border-white/10 p-2 overflow-hidden shadow-2xl">
                     <div class="flex items-center justify-between p-6 md:px-10 border-b border-white/5 mb-2">
-                        <span class="text-[10px] font-bold uppercase tracking-[0.3em] text-brand-gold">Wishes Wall</span>
+                        <span class="text-[10px] font-bold uppercase tracking-[0.3em] text-brand-gold">Wishes
+                            Wall</span>
                         <div class="flex gap-2">
                             <div class="w-2 h-2 rounded-full bg-red-500/50"></div>
                             <div class="w-2 h-2 rounded-full bg-yellow-500/50"></div>
@@ -705,7 +1178,8 @@
                         </div>
                     </div>
 
-                    <div id="wishes-container" class="max-h-[500px] overflow-y-auto scroll-custom px-6 md:px-10 py-4 space-y-6">
+                    <div id="wishes-container"
+                        class="max-h-[500px] overflow-y-auto scroll-custom px-6 md:px-10 py-4 space-y-6">
                         <div class="p-5 rounded-2xl bg-white/5 border border-white/5 animate-pulse">
                             <div class="h-4 w-24 bg-white/10 rounded mb-3"></div>
                             <div class="h-3 w-full bg-white/5 rounded"></div>
@@ -713,9 +1187,14 @@
                     </div>
 
                     <div class="p-8 text-center border-t border-white/5">
-                        <button id="btn-load-more" onclick="loadMoreWishes()" class="group relative px-10 py-3.5 bg-transparent border border-brand-gold/40 text-brand-gold rounded-full overflow-hidden transition-all duration-500 hover:border-brand-gold">
-                            <span class="relative z-10 text-[10px] font-bold uppercase tracking-widest group-hover:text-brand-dark transition-colors">Lihat Semua Pesan</span>
-                            <div class="absolute inset-0 bg-brand-gold translate-y-full group-hover:translate-y-0 transition-transform duration-500"></div>
+                        <button id="btn-load-more" onclick="loadMoreWishes()"
+                            class="group relative px-10 py-3.5 bg-transparent border border-brand-gold/40 text-brand-gold rounded-full overflow-hidden transition-all duration-500 hover:border-brand-gold">
+                            <span
+                                class="relative z-10 text-[10px] font-bold uppercase tracking-widest group-hover:text-brand-dark transition-colors">Lihat
+                                Semua Pesan</span>
+                            <div
+                                class="absolute inset-0 bg-brand-gold translate-y-full group-hover:translate-y-0 transition-transform duration-500">
+                            </div>
                         </button>
                     </div>
                 </div>
@@ -727,30 +1206,40 @@
         </section>
 
         <section id="hadiah" class="py-24 px-6 bg-brand-dark relative overflow-hidden">
-            <div class="absolute -bottom-48 -left-48 w-[500px] h-[500px] bg-brand-gold/5 rounded-full blur-[120px] pointer-events-none"></div>
+            <div
+                class="absolute -bottom-48 -left-48 w-[500px] h-[500px] bg-brand-gold/5 rounded-full blur-[120px] pointer-events-none">
+            </div>
 
             <div class="max-w-4xl mx-auto text-center relative z-10">
                 <div class="mb-16">
-                    <span class="text-[9px] tracking-[0.6em] uppercase text-brand-gold font-bold mb-4 block">Wedding Gift</span>
+                    <span class="text-[9px] tracking-[0.6em] uppercase text-brand-gold font-bold mb-4 block">Wedding
+                        Gift</span>
                     <h2 class="text-5xl font-serif italic text-white drop-shadow-md">Tanda Kasih</h2>
                     <div class="h-[1px] w-12 bg-brand-gold/30 mx-auto mt-6 mb-8"></div>
                     <p class="text-sm text-white/60 font-light leading-relaxed max-w-lg mx-auto italic">
-                        Doa restu Anda adalah karunia terindah bagi kami. Namun jika Anda ingin memberikan tanda kasih, pintu hati kami terbuka untuk menerimanya melalui:
+                        Doa restu Anda adalah karunia terindah bagi kami. Namun jika Anda ingin memberikan tanda kasih,
+                        pintu hati kami terbuka untuk menerimanya melalui:
                     </p>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-10">
-                    
-                    <div class="group relative p-10 bg-white/5 rounded-[3.5rem] border border-white/10 backdrop-blur-md transition-all duration-700 hover:border-brand-gold/40 hover:-translate-y-2">
+
+                    <div
+                        class="group relative p-10 bg-white/5 rounded-[3.5rem] border border-white/10 backdrop-blur-md transition-all duration-700 hover:border-brand-gold/40 hover:-translate-y-2">
                         <div class="flex flex-col items-center">
-                            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRRX5iHirHPd4xIHtMMJU9Bj_MEpJYZygKavQ&s" 
-                                class="h-6 object-contain mb-10 brightness-0 invert opacity-40 group-hover:opacity-100 transition-all duration-700" alt="Mandiri">
-                            
-                            <p class="text-[9px] uppercase tracking-[0.4em] text-brand-gold/60 mb-3 font-bold">Nomor Rekening</p>
-                            <h3 id="rek-1" class="text-3xl font-serif font-bold text-white mb-2 tracking-widest group-hover:text-brand-gold transition-colors duration-500">1234567890</h3>
-                            <p class="text-xs text-white/40 italic mb-10 font-light tracking-wide">a.n Romeo Montague</p>
-                            
-                            <button onclick="copyToClipboard('rek-1', this)" 
+                            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRRX5iHirHPd4xIHtMMJU9Bj_MEpJYZygKavQ&s"
+                                class="h-6 object-contain mb-10 brightness-0 invert opacity-40 group-hover:opacity-100 transition-all duration-700"
+                                alt="Mandiri">
+
+                            <p class="text-[9px] uppercase tracking-[0.4em] text-brand-gold/60 mb-3 font-bold">Nomor
+                                Rekening</p>
+                            <h3 id="rek-1"
+                                class="text-3xl font-serif font-bold text-white mb-2 tracking-widest group-hover:text-brand-gold transition-colors duration-500">
+                                1234567890</h3>
+                            <p class="text-xs text-white/40 italic mb-10 font-light tracking-wide">a.n Romeo Montague
+                            </p>
+
+                            <button onclick="copyToClipboard('rek-1', this)"
                                 class="w-full py-4 bg-transparent border border-brand-gold/40 text-brand-gold rounded-2xl text-[10px] font-bold uppercase tracking-[0.2em] transition-all duration-500 hover:bg-brand-gold hover:text-brand-dark hover:shadow-[0_10px_30px_rgba(197,160,101,0.2)]">
                                 <i class="fa-regular fa-copy mr-2"></i>
                                 <span>Salin Nomor</span>
@@ -758,16 +1247,22 @@
                         </div>
                     </div>
 
-                    <div class="group relative p-10 bg-white/5 rounded-[3.5rem] border border-white/10 backdrop-blur-md transition-all duration-700 hover:border-brand-gold/40 hover:-translate-y-2">
+                    <div
+                        class="group relative p-10 bg-white/5 rounded-[3.5rem] border border-white/10 backdrop-blur-md transition-all duration-700 hover:border-brand-gold/40 hover:-translate-y-2">
                         <div class="flex flex-col items-center">
-                            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQyyDL48YXf0J3DjfcEKeyvCxbT9uJVND1kEQ&s" 
-                                class="h-6 object-contain mb-10 brightness-0 invert opacity-40 group-hover:opacity-100 transition-all duration-700" alt="BCA">
-                            
-                            <p class="text-[9px] uppercase tracking-[0.4em] text-brand-gold/60 mb-3 font-bold">Nomor Rekening</p>
-                            <h3 id="rek-2" class="text-3xl font-serif font-bold text-white mb-2 tracking-widest group-hover:text-brand-gold transition-colors duration-500">0987654321</h3>
-                            <p class="text-xs text-white/40 italic mb-10 font-light tracking-wide">a.n Juliet Capulet</p>
-                            
-                            <button onclick="copyToClipboard('rek-2', this)" 
+                            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQyyDL48YXf0J3DjfcEKeyvCxbT9uJVND1kEQ&s"
+                                class="h-6 object-contain mb-10 brightness-0 invert opacity-40 group-hover:opacity-100 transition-all duration-700"
+                                alt="BCA">
+
+                            <p class="text-[9px] uppercase tracking-[0.4em] text-brand-gold/60 mb-3 font-bold">Nomor
+                                Rekening</p>
+                            <h3 id="rek-2"
+                                class="text-3xl font-serif font-bold text-white mb-2 tracking-widest group-hover:text-brand-gold transition-colors duration-500">
+                                0987654321</h3>
+                            <p class="text-xs text-white/40 italic mb-10 font-light tracking-wide">a.n Juliet Capulet
+                            </p>
+
+                            <button onclick="copyToClipboard('rek-2', this)"
                                 class="w-full py-4 bg-transparent border border-brand-gold/40 text-brand-gold rounded-2xl text-[10px] font-bold uppercase tracking-[0.2em] transition-all duration-500 hover:bg-brand-gold hover:text-brand-dark hover:shadow-[0_10px_30px_rgba(197,160,101,0.2)]">
                                 <i class="fa-regular fa-copy mr-2"></i>
                                 <span>Salin Nomor</span>
@@ -777,64 +1272,317 @@
 
                 </div>
 
-                <div id="copy-toast" class="fixed bottom-28 left-1/2 -translate-x-1/2 z-[300] px-10 py-4 bg-brand-gold text-brand-dark text-[10px] rounded-full tracking-[0.3em] uppercase font-bold opacity-0 translate-y-10 transition-all duration-700 pointer-events-none shadow-[0_20px_40px_rgba(197,160,101,0.3)] border border-white/20">
+                <div id="copy-toast"
+                    class="fixed bottom-28 left-1/2 -translate-x-1/2 z-[300] px-10 py-4 bg-brand-gold text-brand-dark text-[10px] rounded-full tracking-[0.3em] uppercase font-bold opacity-0 translate-y-10 transition-all duration-700 pointer-events-none shadow-[0_20px_40px_rgba(197,160,101,0.3)] border border-white/20">
                     <i class="fa-solid fa-check-circle mr-2"></i> Tersalin ke Clipboard
                 </div>
             </div>
         </section>
 
+        <section id="kirim-kado" class="py-24 px-6 bg-brand-dark relative overflow-hidden">
+            <div
+                class="absolute top-1/2 left-0 w-[400px] h-[400px] bg-brand-gold/5 blur-[100px] rounded-full pointer-events-none">
+            </div>
+
+            <div class="max-w-4xl mx-auto text-center relative z-10">
+                <div class="mb-16">
+                    <i class="fa-solid fa-box-open text-brand-gold/60 text-3xl mb-6 gold-glow"></i>
+                    <span class="block text-[10px] tracking-[0.6em] uppercase text-brand-gold mb-2 font-bold">Gift
+                        Registry</span>
+                    <h2 class="text-4xl md:text-5xl font-serif italic text-white mb-6">Tanda Kasih</h2>
+                    <div
+                        class="h-[1px] w-24 bg-gradient-to-r from-transparent via-brand-gold/40 to-transparent mx-auto mb-8">
+                    </div>
+                    <p class="text-brand-muted text-sm font-light max-w-lg mx-auto leading-relaxed">
+                        Doa restu Anda adalah karunia terindah bagi kami. Namun, jika Anda ingin memberikan tanda kasih,
+                        Anda dapat mengirimkannya melalui alamat berikut.
+                    </p>
+                </div>
+
+                <div class="flex flex-col items-center gap-8">
+                    <div
+                        class="group relative p-10 bg-white/5 rounded-[3rem] border border-white/10 backdrop-blur-md max-w-xl w-full hover:border-brand-gold/30 transition-all duration-700 shadow-2xl">
+                        <div
+                            class="w-12 h-12 bg-brand-gold/10 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                            <i class="fa-solid fa-location-dot text-brand-gold"></i>
+                        </div>
+                        <p class="text-[10px] uppercase tracking-[0.4em] text-brand-gold mb-4 font-bold">Alamat
+                            Pengiriman</p>
+                        <div id="alamat-kado" class="text-lg text-white font-serif italic leading-relaxed mb-10">
+                            Jl. Gegerkalong Hilir No. 123,<br>
+                            Sukasari, Kota Bandung, Jawa Barat 40153
+                        </div>
+
+                        <div class="flex flex-col sm:flex-row justify-center gap-4">
+                            <button onclick="copyToClipboardText('alamat-kado', this)"
+                                class="px-8 py-4 bg-white/5 text-white border border-white/10 rounded-2xl text-[10px] font-bold uppercase tracking-widest transition-all hover:bg-white hover:text-brand-dark active:scale-95">
+                                Salin Alamat
+                            </button>
+                            <button onclick="toggleGiftModal(true)"
+                                class="px-8 py-4 bg-brand-gold text-white rounded-2xl text-[10px] font-bold uppercase tracking-widest transition-all shadow-lg shadow-brand-gold/20 hover:scale-105 active:scale-95">
+                                <i class="fa-solid fa-list-check mr-2"></i> Daftar Kebutuhan
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="gift-modal" class="fixed inset-0 z-[500] hidden flex items-center justify-center p-4">
+                <div class="absolute inset-0 bg-brand-dark/90 backdrop-blur-md" onclick="toggleGiftModal(false)"></div>
+
+                <div
+                    class="relative bg-brand-charcoal w-full max-w-lg rounded-[3.5rem] border border-white/10 overflow-hidden shadow-2xl flex flex-col max-h-[85vh] animate-fade-in-up">
+                    <div class="p-8 md:p-10 border-b border-white/5 bg-brand-charcoal shrink-0">
+                        <div class="flex justify-between items-center mb-6">
+                            <div>
+                                <h3 class="text-2xl font-serif italic text-white">Daftar Kebutuhan</h3>
+                                <p class="text-[10px] text-brand-gold uppercase tracking-[0.3em] mt-1 font-bold">Wedding
+                                    Registry</p>
+                            </div>
+                            <button onclick="toggleGiftModal(false)"
+                                class="w-12 h-12 flex items-center justify-center rounded-2xl bg-white/5 text-white hover:bg-red-500/20 hover:text-red-500 transition-all">
+                                <i class="fa-solid fa-xmark"></i>
+                            </button>
+                        </div>
+                        <div class="p-5 bg-brand-gold/10 rounded-[1.5rem] border border-brand-gold/20">
+                            <p class="text-[11px] text-brand-gold italic leading-relaxed text-center">
+                                "Terima kasih atas kebaikan hati Anda untuk membantu kami membangun rumah tangga baru."
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="flex-1 overflow-y-auto p-8 pt-4 custom-scrollbar bg-brand-charcoal"
+                        id="gift-list-container">
+                        <div class="space-y-4">
+                            <div id="item-1"
+                                class="gift-item-row p-6 rounded-[2rem] border border-white/5 bg-white/5 flex flex-col sm:flex-row items-center justify-between gap-4 transition-all hover:bg-white/10 hover:border-brand-gold/30 group">
+                                <div class="text-center sm:text-left flex-1">
+                                    <h4
+                                        class="text-sm font-bold text-white uppercase tracking-wider group-hover:text-brand-gold transition-colors">
+                                        Air Fryer Digital</h4>
+                                    <p class="text-[10px] text-brand-muted font-light mt-1 uppercase tracking-widest">
+                                        Kapasitas 4L - Warna Putih/Cream</p>
+                                </div>
+                                <button onclick="confirmGift('item-1', 'Air Fryer Digital')"
+                                    class="shrink-0 px-6 py-3 bg-brand-gold/10 text-brand-gold border border-brand-gold/30 rounded-xl text-[9px] font-bold uppercase tracking-widest hover:bg-brand-gold hover:text-white transition-all duration-300">
+                                    Pilih Kado
+                                </button>
+                            </div>
+
+                            <div id="item-2"
+                                class="gift-item-row p-6 rounded-[2rem] border border-white/5 bg-white/5 flex flex-col sm:flex-row items-center justify-between gap-4 transition-all hover:bg-white/10 hover:border-brand-gold/30 group">
+                                <div class="text-center sm:text-left flex-1">
+                                    <h4
+                                        class="text-sm font-bold text-white uppercase tracking-wider group-hover:text-brand-gold transition-colors">
+                                        Set Sprei King Size</h4>
+                                    <p class="text-[10px] text-brand-muted font-light mt-1 uppercase tracking-widest">
+                                        Bahan Tencel - Warna Earth Tone</p>
+                                </div>
+                                <button onclick="confirmGift('item-2', 'Set Sprei King Size')"
+                                    class="shrink-0 px-6 py-3 bg-brand-gold/10 text-brand-gold border border-brand-gold/30 rounded-xl text-[9px] font-bold uppercase tracking-widest hover:bg-brand-gold hover:text-white transition-all duration-300">Pilih
+                                    Kado</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="p-6 bg-brand-dark/50 text-center shrink-0 border-t border-white/5">
+                        <p class="text-[9px] text-brand-muted uppercase tracking-[0.2em]">Terima kasih atas segala
+                            perhatian Anda</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="confirm-modal" class="fixed inset-0 z-[600] hidden flex items-center justify-center p-6">
+                <div class="absolute inset-0 bg-brand-dark/95 backdrop-blur-xl"></div>
+                <div
+                    class="relative bg-brand-charcoal w-full max-w-sm rounded-[3rem] p-12 text-center shadow-2xl border border-white/10">
+                    <div
+                        class="w-20 h-20 bg-brand-gold/10 text-brand-gold rounded-full flex items-center justify-center mx-auto mb-8 shadow-[0_0_20px_rgba(180,150,90,0.2)]">
+                        <i class="fa-solid fa-heart text-3xl"></i>
+                    </div>
+                    <h4 class="text-2xl font-serif italic text-white mb-4">Niat Baik Anda</h4>
+                    <p id="confirm-text" class="text-sm text-brand-muted font-light leading-relaxed mb-10">
+                        Apakah Anda yakin ingin membantu menyediakan kado ini? Nama Anda akan kami catat sebagai bentuk
+                        syukur kami.
+                    </p>
+                    <div class="flex flex-col gap-4">
+                        <button id="final-confirm-btn"
+                            class="w-full py-4 bg-brand-gold text-white rounded-2xl text-[11px] font-bold uppercase tracking-widest shadow-lg shadow-brand-gold/20 active:scale-95 transition-all">
+                            Ya, Saya Bersedia
+                        </button>
+                        <button onclick="closeConfirmModal()"
+                            class="w-full py-4 bg-transparent text-brand-muted text-[10px] font-bold uppercase tracking-widest hover:text-white transition-all">
+                            Batalkan
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="gift-toast"
+                class="fixed bottom-10 left-1/2 -translate-x-1/2 z-[700] px-10 py-5 bg-brand-gold text-white rounded-full text-[11px] font-bold uppercase tracking-[0.3em] shadow-2xl opacity-0 transition-all duration-500 pointer-events-none text-center min-w-[320px]">
+                Terima kasih atas ketulusan Anda!
+            </div>
+        </section>
+
+        <style>
+            /* Custom Scrollbar untuk Modal Dark */
+            .custom-scrollbar::-webkit-scrollbar {
+                width: 4px;
+            }
+
+            .custom-scrollbar::-webkit-scrollbar-track {
+                background: rgba(255, 255, 255, 0.02);
+            }
+
+            .custom-scrollbar::-webkit-scrollbar-thumb {
+                background: rgba(180, 150, 90, 0.3);
+                border-radius: 10px;
+            }
+
+            .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+                background: rgba(180, 150, 90, 0.6);
+            }
+
+            .gift-item-row {
+                transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            }
+        </style>
+
+        <section id="qr-tamu" class="py-24 px-6 bg-brand-dark relative overflow-hidden">
+            <div
+                class="absolute -bottom-20 -right-20 w-64 h-64 bg-brand-gold/10 blur-[80px] rounded-full pointer-events-none">
+            </div>
+
+            <div class="max-w-4xl mx-auto text-center relative z-10">
+                <div class="mb-16">
+                    <div
+                        class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-white/5 border border-white/10 mb-6">
+                        <i class="fa-solid fa-qrcode text-brand-gold text-2xl gold-glow"></i>
+                    </div>
+                    <h2 class="text-4xl md:text-5xl font-serif italic text-white mb-6">QR Code Tamu</h2>
+                    <div
+                        class="h-[1px] w-24 bg-gradient-to-r from-transparent via-brand-gold/40 to-transparent mx-auto mb-8">
+                    </div>
+                    <p class="text-brand-muted text-sm font-light leading-relaxed max-w-lg mx-auto">
+                        Silakan tunjukkan kode unik Anda di bawah ini kepada petugas penerima tamu untuk memudahkan
+                        proses absensi kehadiran.
+                    </p>
+                </div>
+
+                <div class="flex justify-center">
+                    <div
+                        class="group relative p-12 bg-white/5 rounded-[4rem] border border-white/10 backdrop-blur-xl transition-all duration-700 hover:shadow-[0_20px_50px_rgba(0,0,0,0.5)] hover:border-brand-gold/30 max-w-sm w-full mx-auto overflow-hidden">
+
+                        <div
+                            class="absolute -inset-1 bg-gradient-to-b from-brand-gold/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 blur-xl">
+                        </div>
+
+                        <div class="relative flex flex-col items-center z-10">
+                            <div
+                                class="relative p-6 bg-white rounded-[2.5rem] mb-10 shadow-2xl transition-transform duration-700 group-hover:scale-105">
+                                <img id="qr-image"
+                                    src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=Tamu"
+                                    class="w-44 h-44 object-contain grayscale-[0.2] hover:grayscale-0 transition-all"
+                                    alt="QR Code Tamu">
+
+                                <div class="absolute top-4 left-4 w-6 h-6 border-t-2 border-l-2 border-brand-gold/30">
+                                </div>
+                                <div
+                                    class="absolute bottom-4 right-4 w-6 h-6 border-b-2 border-r-2 border-brand-gold/30">
+                                </div>
+                            </div>
+
+                            <div class="space-y-2 mb-10 text-center">
+                                <span
+                                    class="text-[10px] uppercase tracking-[0.5em] text-brand-gold font-bold block mb-2">Guest
+                                    Identity</span>
+                                <h3 id="guest-name-qr"
+                                    class="text-2xl font-serif font-medium text-white tracking-wide uppercase leading-tight">
+                                    Tamu Undangan
+                                </h3>
+                                <p id="guest-id-qr"
+                                    class="text-xs text-brand-muted italic font-light tracking-widest uppercase">
+                                    E-Invitation Only</p>
+                            </div>
+
+                            <div
+                                class="w-full py-5 bg-white/5 rounded-3xl border border-dashed border-white/10 group-hover:border-brand-gold/30 transition-colors">
+                                <p class="text-[9px] uppercase tracking-[0.3em] font-bold text-brand-gold/70">
+                                    Scan to RSVP Verification
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <section id="rsvp-modal" class="fixed inset-0 z-[100] invisible transition-all duration-500 overflow-hidden">
-            <div onclick="closeRSVP()" class="absolute inset-0 bg-brand-dark/80 backdrop-blur-md opacity-0 transition-opacity duration-500" id="rsvp-overlay"></div>
-            
-            <div id="rsvp-content" class="absolute bottom-0 left-0 right-0 bg-brand-dark rounded-t-[3.5rem] border-t border-white/10 shadow-[0_-20px_50px_rgba(0,0,0,0.5)] transform translate-y-full transition-transform duration-700 ease-[cubic-bezier(0.23,1,0.32,1)] px-6 pb-12 pt-4 max-w-2xl mx-auto">
-                
+            <div onclick="closeRSVP()"
+                class="absolute inset-0 bg-brand-dark/80 backdrop-blur-md opacity-0 transition-opacity duration-500"
+                id="rsvp-overlay"></div>
+
+            <div id="rsvp-content"
+                class="absolute bottom-0 left-0 right-0 bg-brand-dark rounded-t-[3.5rem] border-t border-white/10 shadow-[0_-20px_50px_rgba(0,0,0,0.5)] transform translate-y-full transition-transform duration-700 ease-[cubic-bezier(0.23,1,0.32,1)] px-6 pb-12 pt-4 max-w-2xl mx-auto">
+
                 <div class="w-12 h-1 bg-white/10 rounded-full mx-auto mb-10"></div>
 
                 <div class="text-center mb-10">
-                    <span class="text-[9px] text-brand-gold tracking-[0.5em] uppercase font-bold mb-2 block">Guest Book</span>
+                    <span class="text-[9px] text-brand-gold tracking-[0.5em] uppercase font-bold mb-2 block">Guest
+                        Book</span>
                     <h2 class="text-4xl font-serif text-white italic">RSVP & Ucapan</h2>
                     <div class="h-[1px] w-12 bg-brand-gold/30 mx-auto mt-4"></div>
                 </div>
-                
+
                 <form id="form-rsvp" class="space-y-5 text-left">
                     <div class="group">
-                        <label class="text-[10px] uppercase tracking-widest text-brand-gold ml-4 mb-2 block opacity-60">Nama Lengkap</label>
-                        <input type="text" id="input-nama-rsvp" placeholder="Tulis nama Anda..." 
+                        <label
+                            class="text-[10px] uppercase tracking-widest text-brand-gold ml-4 mb-2 block opacity-60">Nama
+                            Lengkap</label>
+                        <input type="text" id="input-nama-rsvp" placeholder="Tulis nama Anda..."
                             class="input-luxury w-full p-5 rounded-[1.8rem] text-sm placeholder-white/20 outline-none">
                     </div>
 
                     <div class="grid grid-cols-2 gap-4">
-                        <button type="button" onclick="selectAttendance('Hadir')" id="btn-hadir" 
+                        <button type="button" onclick="selectAttendance('Hadir')" id="btn-hadir"
                             class="py-4 rounded-[1.5rem] border border-white/10 text-[11px] font-bold uppercase tracking-widest transition-all duration-300 bg-white/5 text-white/50 hover:border-brand-gold/50">
                             <i class="fa-solid fa-check mr-2 text-[10px]"></i> Hadir
                         </button>
-                        <button type="button" onclick="selectAttendance('Tidak Hadir')" id="btn-absen" 
+                        <button type="button" onclick="selectAttendance('Tidak Hadir')" id="btn-absen"
                             class="py-4 rounded-[1.5rem] border border-white/10 text-[11px] font-bold uppercase tracking-widest transition-all duration-300 bg-white/5 text-white/50 hover:border-brand-gold/50">
                             <i class="fa-solid fa-xmark mr-2 text-[10px]"></i> Absen
                         </button>
                     </div>
 
-                    <div id="guest-selection" class="hidden animate-slide-up bg-white/5 p-6 rounded-[2rem] border border-white/5">
-                        <label class="text-[10px] uppercase tracking-widest text-brand-gold mb-4 block font-bold text-center">Berapa orang yang hadir?</label>
+                    <div id="guest-selection"
+                        class="hidden animate-slide-up bg-white/5 p-6 rounded-[2rem] border border-white/5">
+                        <label
+                            class="text-[10px] uppercase tracking-widest text-brand-gold mb-4 block font-bold text-center">Berapa
+                            orang yang hadir?</label>
                         <div class="flex gap-3">
-                            <button type="button" class="guest-btn flex-1 py-3 rounded-xl border border-white/10 text-[10px] text-white hover:bg-brand-gold hover:text-brand-dark transition-all">1</button>
-                            <button type="button" class="guest-btn flex-1 py-3 rounded-xl border border-white/10 text-[10px] text-white hover:bg-brand-gold hover:text-brand-dark transition-all">2</button>
-                            <button type="button" class="guest-btn flex-1 py-3 rounded-xl border border-white/10 text-[10px] text-white hover:bg-brand-gold hover:text-brand-dark transition-all">3+</button>
+                            <button type="button"
+                                class="guest-btn flex-1 py-3 rounded-xl border border-white/10 text-[10px] text-white hover:bg-brand-gold hover:text-brand-dark transition-all">1</button>
+                            <button type="button"
+                                class="guest-btn flex-1 py-3 rounded-xl border border-white/10 text-[10px] text-white hover:bg-brand-gold hover:text-brand-dark transition-all">2</button>
+                            <button type="button"
+                                class="guest-btn flex-1 py-3 rounded-xl border border-white/10 text-[10px] text-white hover:bg-brand-gold hover:text-brand-dark transition-all">3+</button>
                         </div>
                     </div>
 
                     <div class="group">
-                        <label class="text-[10px] uppercase tracking-widest text-brand-gold ml-4 mb-2 block opacity-60">Doa & Ucapan</label>
-                        <textarea id="input-pesan-rsvp" rows="4" placeholder="Berikan doa terbaik Anda untuk kami..." 
+                        <label
+                            class="text-[10px] uppercase tracking-widest text-brand-gold ml-4 mb-2 block opacity-60">Doa
+                            & Ucapan</label>
+                        <textarea id="input-pesan-rsvp" rows="4" placeholder="Berikan doa terbaik Anda untuk kami..."
                             class="input-luxury w-full p-5 rounded-[1.8rem] text-sm placeholder-white/20 outline-none resize-none"></textarea>
                     </div>
 
                     <div class="flex gap-4 pt-4">
-                        <button type="button" onclick="closeRSVP()" 
+                        <button type="button" onclick="closeRSVP()"
                             class="flex-1 py-4 bg-white/5 text-white/40 rounded-[1.5rem] font-bold text-[10px] uppercase tracking-widest hover:bg-white/10 transition-all">
                             Batal
                         </button>
-                        <button type="submit" 
+                        <button type="submit"
                             class="flex-[2] py-4 bg-brand-gold text-brand-dark rounded-[1.5rem] font-bold text-[10px] uppercase tracking-widest transition-all shadow-[0_10px_30px_rgba(197,160,101,0.3)] hover:scale-[1.02] active:scale-95">
                             Kirim Konfirmasi <i class="fa-solid fa-paper-plane ml-2"></i>
                         </button>
@@ -843,71 +1591,110 @@
             </div>
         </section>
 
-        <footer class="py-12 px-6 bg-brand-white border-t border-brand-lightGold/20 text-center">
-            <div class="max-w-md mx-auto">
-                <div class="mb-4 opacity-30 italic font-serif text-brand-gold text-lg">
-                    R & J
-                </div>
-                
-                <p class="text-[10px] tracking-[0.2em] uppercase text-gray-400 mb-4 font-light">
-                    Terima kasih atas doa & restu Anda
-                </p>
+        <footer class="py-24 px-6 bg-brand-dark border-t border-white/5 text-center relative overflow-hidden">
+            <div
+                class="absolute inset-0 opacity-[0.03] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/natural-paper.png')]">
+            </div>
+            <div
+                class="absolute top-0 left-1/2 -translate-x-1/2 w-[300px] h-[300px] bg-brand-gold/5 blur-[120px] rounded-full">
+            </div>
 
-                <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-brand-elegant border border-brand-lightGold/30 shadow-sm">
-                    <span class="text-[10px] text-gray-500 font-sans uppercase tracking-wider">Created with love by</span>
-                    <a href="https://instagram.com/ruangrestu.undangan" target="_blank" rel="noopener noreferrer" class="text-[11px] font-semibold text-brand-gold hover:text-brand-charcoal transition-colors flex items-center gap-1">
-                        <i class="fa-brands fa-instagram text-sm"></i>
+            <div class="max-w-xl mx-auto relative z-10">
+                <div class="mb-12 flex flex-col items-center">
+                    <div class="text-4xl font-serif italic text-brand-gold/30 mb-4 gold-glow">
+                        R & J
+                    </div>
+                    <div class="h-[1px] w-12 bg-gradient-to-r from-transparent via-brand-gold/40 to-transparent"></div>
+                </div>
+
+                <div class="mb-16">
+                    <p class="text-lg font-serif italic text-white/80 mb-6 leading-relaxed px-4">
+                        "Merupakan suatu kehormatan dan kebahagiaan bagi kami <br class="hidden md:block">
+                        apabila Bapak/Ibu/Saudara/i berkenan hadir dan memberikan doa restu <br class="hidden md:block">
+                        atas dimulainya perjalanan ibadah panjang kami ini."
+                    </p>
+                    <p class="text-[10px] tracking-[0.4em] uppercase text-brand-gold font-bold opacity-80">
+                        Sampai jumpa di hari bahagia kami
+                    </p>
+                </div>
+
+                <div class="mb-16">
+                    <p class="text-xs text-brand-muted font-light tracking-widest uppercase mb-3">Kami yang berbahagia,
+                    </p>
+                    <h3 class="text-3xl font-serif italic text-brand-gold mb-2">Romeo & Juliet</h3>
+                    <p class="text-[10px] text-brand-muted uppercase tracking-[0.3em] font-light italic">Beserta
+                        Keluarga Besar</p>
+                </div>
+
+                <div
+                    class="inline-flex items-center gap-3 px-6 py-3 rounded-full bg-white/5 border border-white/10 backdrop-blur-md shadow-2xl transition-all hover:border-brand-gold/30 group">
+                    <span class="text-[9px] text-brand-muted font-sans uppercase tracking-[0.2em]">Digital Invitation
+                        by</span>
+                    <a href="https://instagram.com/ruangrestu.undangan" target="_blank" rel="noopener noreferrer"
+                        class="text-[10px] font-bold text-white group-hover:text-brand-gold transition-colors flex items-center gap-2">
+                        <i class="fa-brands fa-instagram text-xs"></i>
                         @ruangrestu.undangan
                     </a>
                 </div>
 
-                <p class="mt-8 text-[9px] text-gray-300 font-light italic">
-                    &copy; 2026 Romeo & Juliet Wedding Invitation. All Rights Reserved.
-                </p>
+                <div class="mt-12 pt-8 border-t border-white/5">
+                    <p class="text-[9px] text-brand-muted font-light tracking-[0.2em] uppercase">
+                        &copy; 2026 Romeo & Juliet Wedding. <br class="md:hidden"> All Rights Reserved.
+                    </p>
+                </div>
             </div>
         </footer>
 
     </main>
 
     <!-- Button Audio dan AutoScroll -->
-    <div id="fab-container" class="fixed right-5 bottom-28 flex flex-col gap-4 z-40 opacity-0 transition-opacity duration-1000">
+    <div id="fab-container"
+        class="fixed right-5 bottom-28 flex flex-col gap-4 z-40 opacity-0 transition-opacity duration-1000">
         <div class="relative flex items-center group">
-            <div id="music-info" class="absolute right-full mr-3 px-3 py-1 bg-brand-white/90 backdrop-blur border border-brand-lightGold/50 rounded-lg text-brand-gold text-xs whitespace-nowrap shadow-md opacity-0 translate-x-4 pointer-events-none transition-all duration-500 group-hover:opacity-100 group-hover:translate-x-0">
+            <div id="music-info"
+                class="absolute right-full mr-3 px-3 py-1 bg-brand-white/90 backdrop-blur border border-brand-lightGold/50 rounded-lg text-brand-gold text-xs whitespace-nowrap shadow-md opacity-0 translate-x-4 pointer-events-none transition-all duration-500 group-hover:opacity-100 group-hover:translate-x-0">
                 Now Playing: Judul Lagu - Artis
             </div>
-            
-            <button id="btn-music" onclick="toggleMusic()" class="w-11 h-11 bg-brand-white backdrop-blur border border-brand-lightGold/70 rounded-full flex items-center justify-center text-brand-gold shadow-lg hover:bg-brand-gold hover:text-white transition-all">
+
+            <button id="btn-music" onclick="toggleMusic()"
+                class="w-11 h-11 bg-brand-white backdrop-blur border border-brand-lightGold/70 rounded-full flex items-center justify-center text-brand-gold shadow-lg hover:bg-brand-gold hover:text-white transition-all">
                 <i class="fa-solid fa-music animate-spin-slow" id="icon-music"></i>
             </button>
         </div>
 
-        <button id="btn-scroll" onclick="toggleAutoScroll()" class="w-11 h-11 bg-brand-white backdrop-blur border border-brand-lightGold/70 rounded-full flex items-center justify-center text-brand-gold shadow-lg hover:bg-brand-gold hover:text-white transition-all">
+        <button id="btn-scroll" onclick="toggleAutoScroll()"
+            class="w-11 h-11 bg-brand-white backdrop-blur border border-brand-lightGold/70 rounded-full flex items-center justify-center text-brand-gold shadow-lg hover:bg-brand-gold hover:text-white transition-all">
             <i class="fa-solid fa-angles-down" id="icon-scroll"></i>
         </button>
     </div>
 
-    <nav id="bottom-nav" class="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 floating-nav rounded-[2rem] transition-all duration-1000 translate-y-32">
+    <nav id="bottom-nav"
+        class="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 floating-nav rounded-[2rem] transition-all duration-1000 translate-y-32">
         <ul class="flex justify-around items-center h-20 w-[340px] md:w-[450px] px-4">
             <li>
-                <a href="#home" class="nav-link flex flex-col items-center text-[10px] uppercase tracking-[0.2em] font-bold gap-2">
+                <a href="#home"
+                    class="nav-link flex flex-col items-center text-[10px] uppercase tracking-[0.2em] font-bold gap-2">
                     <i class="fa-solid fa-house-chimney text-lg"></i>
                     <span class="hidden md:block">Home</span>
                 </a>
             </li>
             <li>
-                <a href="#gallery" class="nav-link flex flex-col items-center text-[10px] uppercase tracking-[0.2em] font-bold gap-2">
+                <a href="#gallery"
+                    class="nav-link flex flex-col items-center text-[10px] uppercase tracking-[0.2em] font-bold gap-2">
                     <i class="fa-solid fa-cloud-sun text-lg"></i>
                     <span class="hidden md:block">Gallery</span>
                 </a>
             </li>
             <li>
-                <a href="#lokasi" class="nav-link flex flex-col items-center text-[10px] uppercase tracking-[0.2em] font-bold gap-2">
+                <a href="#lokasi"
+                    class="nav-link flex flex-col items-center text-[10px] uppercase tracking-[0.2em] font-bold gap-2">
                     <i class="fa-solid fa-compass text-lg"></i>
                     <span class="hidden md:block">Venue</span>
                 </a>
             </li>
             <li>
-                <a href="javascript:void(0)" onclick="openRSVP()" class="nav-link flex flex-col items-center text-[10px] uppercase tracking-[0.2em] font-bold gap-2">
+                <a href="javascript:void(0)" onclick="openRSVP()"
+                    class="nav-link flex flex-col items-center text-[10px] uppercase tracking-[0.2em] font-bold gap-2">
                     <div class="relative">
                         <i class="fa-solid fa-paper-plane text-lg"></i>
                         <span class="absolute -top-1 -right-1 w-2 h-2 bg-brand-gold rounded-full animate-pulse"></span>
@@ -923,17 +1710,36 @@
         const urlParams = new URLSearchParams(window.location.search);
         let guestName = urlParams.get('to');
 
-        // Format nama (mengganti '+' atau '%20' menjadi spasi jika diperlukan)
+        // Format nama
         if (guestName) {
             guestName = decodeURIComponent(guestName);
         } else {
             guestName = 'Tamu Undangan';
         }
 
-        // Tampilkan di teks Cover/Landing Page
-        document.getElementById('guest-name').innerText = guestName;
+        // --- TAMPILKAN DI BERBAGAI TEMPAT ---
 
-        // Tampilkan otomatis di Input Form RSVP
+        // A. Tampilkan di Section QR Code (Teks)
+        const qrNameDisplay = document.getElementById('guest-name-qr');
+        if (qrNameDisplay) {
+            qrNameDisplay.innerText = guestName;
+        }
+
+        // B. Update Gambar QR Code secara Dinamis
+        const qrImage = document.getElementById('qr-image');
+        if (qrImage) {
+            // Membuat QR Code berisi nama tamu agar bisa di-scan petugas
+            const qrData = encodeURIComponent(guestName);
+            qrImage.src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${qrData}`;
+        }
+
+        // C. Tampilkan di teks Cover/Landing Page (Jika ID-nya guest-name)
+        const coverName = document.getElementById('guest-name');
+        if (coverName) {
+            coverName.innerText = guestName;
+        }
+
+        // D. Tampilkan otomatis di Input Form RSVP
         const inputRSVP = document.getElementById('input-nama-rsvp');
         if (inputRSVP) {
             inputRSVP.value = guestName !== 'Tamu Undangan' ? guestName : '';
@@ -950,7 +1756,7 @@
             // Animasi Cover Naik
             const cover = document.getElementById('cover-page');
             cover.classList.add('-translate-y-full');
-            
+
             // Izinkan Body Scroll
             document.body.style.overflowY = 'auto';
 
@@ -967,7 +1773,7 @@
         // 3. Fungsi Toggle Music
         function toggleMusic(forcePlay = false) {
             const icon = document.getElementById('icon-music');
-            
+
             if (isMusicPlaying && !forcePlay) {
                 audio.pause();
                 isMusicPlaying = false;
@@ -1004,11 +1810,11 @@
                 btn.classList.add('bg-brand-gold', 'text-white');
                 icon.classList.remove('fa-angles-down');
                 icon.classList.add('fa-pause');
-                
+
                 scrollInterval = setInterval(() => {
                     // Scroll ke bawah pelan (1 px per 35ms)
                     window.scrollBy({ top: 1, behavior: 'auto' });
-                    
+
                     // Otomatis stop di mentok bawah
                     if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
                         toggleAutoScroll();
@@ -1018,7 +1824,7 @@
         }
 
         // 5. Fungsi Music dan details music play.
-        document.addEventListener("DOMContentLoaded", function() {
+        document.addEventListener("DOMContentLoaded", function () {
             const musicInfo = document.getElementById('music-info');
             const fabContainer = document.getElementById('fab-container');
 
@@ -1033,7 +1839,7 @@
                     // Kita kembalikan ke state awal agar hover CSS tetap bekerja nanti
                     musicInfo.classList.remove('opacity-100', 'translate-x-0');
                     musicInfo.classList.add('opacity-0', 'translate-x-4', 'pointer-events-none');
-                    
+
                     // Setelah transisi selesai, hapus class pointer-events-none agar hover manual berfungsi
                     setTimeout(() => {
                         musicInfo.classList.remove('pointer-events-none');
@@ -1043,14 +1849,93 @@
         });
 
         // UX: Stop auto-scroll jika user scroll manual
-        window.addEventListener('wheel', () => { if(isAutoScrolling) toggleAutoScroll(); }, { passive: true });
-        window.addEventListener('touchmove', () => { if(isAutoScrolling) toggleAutoScroll(); }, { passive: true });
+        window.addEventListener('wheel', () => { if (isAutoScrolling) toggleAutoScroll(); }, { passive: true });
+        window.addEventListener('touchmove', () => { if (isAutoScrolling) toggleAutoScroll(); }, { passive: true });
+    </script>
+
+    <script>
+        // Script untuk mengelola interaksi pada Gift Registry, termasuk konfirmasi niat baik dan pencatatan klaim hadiah.
+        let currentSelectedItemId = null;
+        let currentSelectedItemName = '';
+
+        // Fungsi Membuka Modal Konfirmasi
+        function confirmGift(id, name) {
+            currentSelectedItemId = id;
+            currentSelectedItemName = name;
+
+            // Ambil nama dari URL untuk pesan personal
+            const urlParams = new URLSearchParams(window.location.search);
+            let guestName = urlParams.get('to') ? decodeURIComponent(urlParams.get('to')) : "Tamu Undangan";
+
+            const confirmText = document.getElementById('confirm-text');
+            confirmText.innerHTML = `Terima kasih atas niat baiknya, <b>${guestName}</b>.<br><br>Apakah Anda yakin ingin mengirimkan <b>${name}</b> sebagai tanda kasih? Nama Anda akan kami catat dengan penuh rasa syukur.`;
+
+            // Tampilkan Modal Konfirmasi
+            document.getElementById('confirm-modal').classList.remove('hidden');
+
+            // Set Action Button
+            document.getElementById('final-confirm-btn').onclick = function () {
+                processClaim(guestName, name);
+            };
+        }
+
+        function closeConfirmModal() {
+            document.getElementById('confirm-modal').classList.add('hidden');
+        }
+
+        // Fungsi Final saat User Klik "Ya, Saya Yakin"
+        function processClaim(guestName, giftName) {
+            const itemElement = document.getElementById(currentSelectedItemId);
+
+            if (itemElement) {
+                // Hilangkan tombol dan ganti dengan status apresiasi
+                const actionArea = itemElement.querySelector('button');
+                actionArea.outerHTML = `
+            <div class="flex items-center gap-2 text-green-600 animate-pulse">
+                <span class="text-[9px] font-bold uppercase tracking-widest">Tercatat untuk Anda</span>
+                <i class="fa-solid fa-circle-check text-lg"></i>
+            </div>
+        `;
+
+                // Tambahkan styling border hijau pada item
+                itemElement.classList.add('border-green-100', 'bg-green-50/30');
+            }
+
+            // Tutup Modal Konfirmasi
+            closeConfirmModal();
+
+            // Tampilkan Toast Terima Kasih
+            const toast = document.getElementById('gift-toast');
+            toast.innerHTML = `Hati kami sangat tersentuh, ${guestName}.<br>Kado "${giftName}" telah tercatat atas nama Anda.`;
+            toast.style.opacity = '1';
+            toast.style.bottom = '40px';
+
+            // Sembunyikan Toast & Tutup Modal Utama setelah beberapa detik
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.bottom = '10px';
+                setTimeout(() => {
+                    toggleGiftModal(false);
+                }, 500);
+            }, 4000);
+        }
+
+        function toggleGiftModal(show) {
+            const modal = document.getElementById('gift-modal');
+            if (show) {
+                modal.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+            } else {
+                modal.classList.add('hidden');
+                document.body.style.overflow = 'auto';
+            }
+        }
     </script>
 
     <script>
         // Inisialisasi angka (Sesuaikan dengan data real Anda)
-        let countAttendance = 142; 
-        let countWishes = 89;      
+        let countAttendance = 142;
+        let countWishes = 89;
 
         // Update tampilan saat halaman dimuat
         document.getElementById('total-attendance').innerText = countAttendance;
@@ -1065,7 +1950,7 @@
                 countAttendance++;
                 document.getElementById('total-attendance').innerText = countAttendance;
             }
-            
+
             // Animasi angka saat berubah
             const statsNumbers = document.querySelectorAll('#guest-stats h4');
             statsNumbers.forEach(num => {
@@ -1081,7 +1966,7 @@
         function copyToClipboard(id, btn) {
             const textToCopy = document.getElementById(id).innerText;
             const toast = document.getElementById('copy-toast');
-            
+
             navigator.clipboard.writeText(textToCopy).then(() => {
                 // Animasi Tombol
                 const originalContent = btn.innerHTML;
@@ -1096,7 +1981,7 @@
                     // Kembalikan Tombol
                     btn.classList.remove('bg-brand-gold', 'text-brand-dark');
                     btn.innerHTML = originalContent;
-                    
+
                     // Sembunyikan Toast
                     toast.classList.add('opacity-0', 'translate-y-10');
                     toast.classList.remove('opacity-100', 'translate-y-0');
@@ -1105,38 +1990,38 @@
         }
     </script>
 
-        <script>
-            let hasShownRSVPAtEnd = false;
+    <script>
+        let hasShownRSVPAtEnd = false;
 
-            // 1. Fungsi Membuka RSVP
-            function openRSVP() {
-                const modal = document.getElementById('rsvp-modal');
-                const overlay = document.getElementById('rsvp-overlay');
-                const content = document.getElementById('rsvp-content');
+        // 1. Fungsi Membuka RSVP
+        function openRSVP() {
+            const modal = document.getElementById('rsvp-modal');
+            const overlay = document.getElementById('rsvp-overlay');
+            const content = document.getElementById('rsvp-content');
 
-                modal.classList.remove('invisible');
-                setTimeout(() => {
-                    overlay.classList.replace('opacity-0', 'opacity-100');
-                    content.classList.replace('translate-y-full', 'translate-y-0');
-                }, 10);
-            }
+            modal.classList.remove('invisible');
+            setTimeout(() => {
+                overlay.classList.replace('opacity-0', 'opacity-100');
+                content.classList.replace('translate-y-full', 'translate-y-0');
+            }, 10);
+        }
 
-            // 2. Fungsi Menutup RSVP
-            function closeRSVP() {
-                const overlay = document.getElementById('rsvp-overlay');
-                const content = document.getElementById('rsvp-content');
-                const modal = document.getElementById('rsvp-modal');
+        // 2. Fungsi Menutup RSVP
+        function closeRSVP() {
+            const overlay = document.getElementById('rsvp-overlay');
+            const content = document.getElementById('rsvp-content');
+            const modal = document.getElementById('rsvp-modal');
 
-                overlay.classList.replace('opacity-100', 'opacity-0');
-                content.classList.replace('translate-y-0', 'translate-y-full');
-                
-                setTimeout(() => {
-                    modal.classList.add('invisible');
-                }, 500);
-            }
+            overlay.classList.replace('opacity-100', 'opacity-0');
+            content.classList.replace('translate-y-0', 'translate-y-full');
 
-            // 3. Logika Pilihan Kehadiran (Style Toggle)
-            function selectAttendance(status) {
+            setTimeout(() => {
+                modal.classList.add('invisible');
+            }, 500);
+        }
+
+        // 3. Logika Pilihan Kehadiran (Style Toggle)
+        function selectAttendance(status) {
             const btnHadir = document.getElementById('btn-hadir');
             const btnAbsen = document.getElementById('btn-absen');
             const guestDiv = document.getElementById('guest-selection');
@@ -1162,188 +2047,188 @@
             }
         }
 
-            // 4. Deteksi Scroll Akhir Halaman
-            window.addEventListener('scroll', () => {
-                // Toleransi 50px dari bawah
-                if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 50) {
-                    if (!hasShownRSVPAtEnd) {
-                        openRSVP();
-                        hasShownRSVPAtEnd = true; // Agar tidak muncul berkali-kali secara otomatis
-                        
-                        // Jika sedang auto-scroll, matikan auto-scroll-nya saat RSVP muncul
-                        if(typeof toggleAutoScroll === "function" && isAutoScrolling) {
-                            toggleAutoScroll();
-                        }
+        // 4. Deteksi Scroll Akhir Halaman
+        window.addEventListener('scroll', () => {
+            // Toleransi 50px dari bawah
+            if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 50) {
+                if (!hasShownRSVPAtEnd) {
+                    openRSVP();
+                    hasShownRSVPAtEnd = true; // Agar tidak muncul berkali-kali secara otomatis
+
+                    // Jika sedang auto-scroll, matikan auto-scroll-nya saat RSVP muncul
+                    if (typeof toggleAutoScroll === "function" && isAutoScrolling) {
+                        toggleAutoScroll();
                     }
                 }
-            }, { passive: true });
-
-            // 5. Hubungkan Navbar RSVP ke Fungsi ini
-            // Pastikan pada <a> RSVP di navbar anda menggunakan: href="javascript:void(0)" onclick="openRSVP()"
-        </script>
-
-        <script>
-            // Mekanis Countdown
-            // Pengaturan Tanggal Pernikahan (Format: Tahun, Bulan [0-11], Tanggal, Jam, Menit)
-            // Contoh: 18 Juli 2026 jam 11:00 pagi
-            const weddingDate = new Date(2026, 6, 18, 11, 0, 0).getTime();
-
-            const countdownFunction = setInterval(function() {
-                const now = new Date().getTime();
-                const distance = weddingDate - now;
-
-                // Perhitungan Waktu
-                const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-                const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-
-                // Masukkan ke Elemen HTML
-                document.getElementById("days").innerText = days < 10 ? "0" + days : days;
-                document.getElementById("hours").innerText = hours < 10 ? "0" + hours : hours;
-                document.getElementById("minutes").innerText = minutes < 10 ? "0" + minutes : minutes;
-
-                // Jika waktu sudah lewat
-                if (distance < 0) {
-                    clearInterval(countdownFunction);
-                    document.getElementById("countdown").innerHTML = "<p class='text-brand-gold font-serif italic text-xl'>Hari Bahagia Telah Tiba!</p>";
-                }
-            }, 1000);
-        </script>
-
-        <script>
-            // Mekanis Story Baca Selengkapnya
-            function toggleStories() {
-                const extraStories = document.getElementById('extra-stories');
-                const btn = document.getElementById('btn-read-more');
-                
-                if (extraStories.classList.contains('hidden')) {
-                    // Tampilkan Cerita
-                    extraStories.classList.remove('hidden');
-                    extraStories.classList.add('animate-fade-in-up'); // Gunakan animasi yang sudah ada
-                    btn.innerText = 'Sembunyikan Cerita';
-                } else {
-                    // Sembunyikan Cerita
-                    extraStories.classList.add('hidden');
-                    btn.innerText = 'Baca Selengkapnya';
-                    
-                    // Scroll kembali ke atas section story agar tidak bingung
-                    // document.getElementById('story').scrollIntoView({ behavior: 'smooth' });
-                }
             }
-        </script>
+        }, { passive: true });
 
-        <script>
-            // Mekanis PopUp Gallery
-            // --- CONFIGURATION ---
-            
-            const youtubeID = "YOUR_VIDEO_ID"; // Ganti dengan ID video Youtube (misal: dQw4w9WgXcQ). Kosongkan "" jika tidak ada video.
-            const images = Array.from(document.querySelectorAll('.gallery-img')).map(img => img.src);
-            let currentIndex = 0;
+        // 5. Hubungkan Navbar RSVP ke Fungsi ini
+        // Pastikan pada <a> RSVP di navbar anda menggunakan: href="javascript:void(0)" onclick="openRSVP()"
+    </script>
 
-            // --- VIDEO LOGIC ---
-            if (youtubeID && youtubeID.trim() !== "") {
-                document.getElementById('video-container').classList.remove('hidden');
-                document.getElementById('youtube-iframe').src = `https://www.youtube.com/embed/${youtubeID}`;
+    <script>
+        // Mekanis Countdown
+        // Pengaturan Tanggal Pernikahan (Format: Tahun, Bulan [0-11], Tanggal, Jam, Menit)
+        // Contoh: 18 Juli 2026 jam 11:00 pagi
+        const weddingDate = new Date(2026, 6, 18, 11, 0, 0).getTime();
+
+        const countdownFunction = setInterval(function () {
+            const now = new Date().getTime();
+            const distance = weddingDate - now;
+
+            // Perhitungan Waktu
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+
+            // Masukkan ke Elemen HTML
+            document.getElementById("days").innerText = days < 10 ? "0" + days : days;
+            document.getElementById("hours").innerText = hours < 10 ? "0" + hours : hours;
+            document.getElementById("minutes").innerText = minutes < 10 ? "0" + minutes : minutes;
+
+            // Jika waktu sudah lewat
+            if (distance < 0) {
+                clearInterval(countdownFunction);
+                document.getElementById("countdown").innerHTML = "<p class='text-brand-gold font-serif italic text-xl'>Hari Bahagia Telah Tiba!</p>";
             }
+        }, 1000);
+    </script>
 
-            // --- LIGHTBOX LOGIC ---
-            function openLightbox(index) {
-                currentIndex = index;
-                updateLightbox();
-                const modal = document.getElementById('lightbox');
-                modal.classList.remove('hidden');
-                modal.classList.add('flex');
-                document.body.style.overflow = 'hidden'; // Lock scroll
+    <script>
+        // Mekanis Story Baca Selengkapnya
+        function toggleStories() {
+            const extraStories = document.getElementById('extra-stories');
+            const btn = document.getElementById('btn-read-more');
+
+            if (extraStories.classList.contains('hidden')) {
+                // Tampilkan Cerita
+                extraStories.classList.remove('hidden');
+                extraStories.classList.add('animate-fade-in-up'); // Gunakan animasi yang sudah ada
+                btn.innerText = 'Sembunyikan Cerita';
+            } else {
+                // Sembunyikan Cerita
+                extraStories.classList.add('hidden');
+                btn.innerText = 'Baca Selengkapnya';
+
+                // Scroll kembali ke atas section story agar tidak bingung
+                // document.getElementById('story').scrollIntoView({ behavior: 'smooth' });
             }
+        }
+    </script>
 
-            function closeLightbox() {
-                const modal = document.getElementById('lightbox');
-                modal.classList.add('hidden');
-                modal.classList.remove('flex');
-                document.body.style.overflow = 'auto'; // Unlock scroll
-            }
+    <script>
+        // Mekanis PopUp Gallery
+        // --- CONFIGURATION ---
 
-            function updateLightbox() {
-                const imgElement = document.getElementById('lightbox-img');
-                document.getElementById('current-count').innerText = currentIndex + 1;
-                document.getElementById('total-count').innerText = images.length;
-                imgElement.style.opacity = '0';
-                setTimeout(() => {
-                    imgElement.src = images[currentIndex];
-                    imgElement.style.opacity = '1';
-                }, 200);
-            }
+        const youtubeID = "YOUR_VIDEO_ID"; // Ganti dengan ID video Youtube (misal: dQw4w9WgXcQ). Kosongkan "" jika tidak ada video.
+        const images = Array.from(document.querySelectorAll('.gallery-img')).map(img => img.src);
+        let currentIndex = 0;
 
-            function nextImg() {
-                currentIndex = (currentIndex + 1) % images.length;
-                updateLightbox();
-            }
+        // --- VIDEO LOGIC ---
+        if (youtubeID && youtubeID.trim() !== "") {
+            document.getElementById('video-container').classList.remove('hidden');
+            document.getElementById('youtube-iframe').src = `https://www.youtube.com/embed/${youtubeID}`;
+        }
 
-            function prevImg() {
-                currentIndex = (currentIndex - 1 + images.length) % images.length;
-                updateLightbox();
-            }
+        // --- LIGHTBOX LOGIC ---
+        function openLightbox(index) {
+            currentIndex = index;
+            updateLightbox();
+            const modal = document.getElementById('lightbox');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            document.body.style.overflow = 'hidden'; // Lock scroll
+        }
 
-            // --- SWIPE LOGIC FOR MOBILE ---
-            let touchStartX = 0;
-            let touchEndX = 0;
+        function closeLightbox() {
+            const modal = document.getElementById('lightbox');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+            document.body.style.overflow = 'auto'; // Unlock scroll
+        }
 
-            document.getElementById('lightbox').addEventListener('touchstart', e => {
-                touchStartX = e.changedTouches[0].screenX;
-            });
+        function updateLightbox() {
+            const imgElement = document.getElementById('lightbox-img');
+            document.getElementById('current-count').innerText = currentIndex + 1;
+            document.getElementById('total-count').innerText = images.length;
+            imgElement.style.opacity = '0';
+            setTimeout(() => {
+                imgElement.src = images[currentIndex];
+                imgElement.style.opacity = '1';
+            }, 200);
+        }
 
-            document.getElementById('lightbox').addEventListener('touchend', e => {
-                touchEndX = e.changedTouches[0].screenX;
-                handleSwipe();
-            });
+        function nextImg() {
+            currentIndex = (currentIndex + 1) % images.length;
+            updateLightbox();
+        }
 
-            function handleSwipe() {
-                const threshold = 50;
-                if (touchEndX < touchStartX - threshold) nextImg(); // Swipe Kiri
-                if (touchEndX > touchStartX + threshold) prevImg(); // Swipe Kanan
-            }
+        function prevImg() {
+            currentIndex = (currentIndex - 1 + images.length) % images.length;
+            updateLightbox();
+        }
 
-            // Shortcut Keyboard
-            document.addEventListener('keydown', (e) => {
-                if (document.getElementById('lightbox').classList.contains('hidden')) return;
-                if (e.key === "ArrowRight") nextImg();
-                if (e.key === "ArrowLeft") prevImg();
-                if (e.key === "Escape") closeLightbox();
-            });
-        </script>
+        // --- SWIPE LOGIC FOR MOBILE ---
+        let touchStartX = 0;
+        let touchEndX = 0;
 
-        <script>
-            // Mekanis Ucapan dan Doa 
-            // Simulasi Data Ucapan (Ganti dengan data real dari database/API)
-            const allWishes = [
-                { nama: "Muhammad Fauzan", pesan: "Selamat menempuh hidup baru Romeo & Juliet! Semoga cinta kalian abadi selamanya.", waktu: "2 Jam yang lalu" },
-                { nama: "Jati Nugroho", pesan: "Lancar-lancar sampai hari H ya! Doa terbaik untuk kalian berdua.", waktu: "5 Menit yang lalu" },
-                { nama: "Budi Santoso", pesan: "Sakinah Mawaddah Warahmah. Turut berbahagia atas bersatunya kalian.", waktu: "1 Hari yang lalu" },
-                { nama: "Lestari Putri", pesan: "Selamat ya kalian berdua! Cantik dan ganteng banget di foto prewednya.", waktu: "2 Hari yang lalu" },
-                { nama: "Andi Wijaya", pesan: "Semoga menjadi keluarga yang harmonis dan penuh berkah.", waktu: "3 Hari yang lalu" }
-            ];
+        document.getElementById('lightbox').addEventListener('touchstart', e => {
+            touchStartX = e.changedTouches[0].screenX;
+        });
 
-            let displayedCount = 0;
-            const initialShow = 3; // Menampilkan 3 ucapan di awal
-            const loadStep = 5;    // Menambah 5 ucapan tiap klik 'Load More'
+        document.getElementById('lightbox').addEventListener('touchend', e => {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        });
 
-            function renderWishes() {
-                const container = document.getElementById('wishes-container');
-                const btnLoadMore = document.getElementById('btn-load-more');
-                
-                // Bersihkan placeholder/loading jika ada pada pemanggilan pertama
-                if (displayedCount === 0) container.innerHTML = '';
+        function handleSwipe() {
+            const threshold = 50;
+            if (touchEndX < touchStartX - threshold) nextImg(); // Swipe Kiri
+            if (touchEndX > touchStartX + threshold) prevImg(); // Swipe Kanan
+        }
 
-                // Tentukan batas data yang akan ditarik
-                let nextLimit = (displayedCount === 0) ? initialShow : displayedCount + loadStep;
-                const wishesToDisplay = allWishes.slice(displayedCount, nextLimit);
-                
-                wishesToDisplay.forEach(wish => {
-                    const card = document.createElement('div');
-                    // Styling kartu agar kontras di latar gelap (Text White & Gold)
-                    card.className = 'wish-card bg-white/5 p-6 rounded-[1.5rem] border border-white/10 animate-fade-in-up transition-all duration-500 hover:bg-white/10 hover:border-brand-gold/30';
-                    
-                    card.innerHTML = `
+        // Shortcut Keyboard
+        document.addEventListener('keydown', (e) => {
+            if (document.getElementById('lightbox').classList.contains('hidden')) return;
+            if (e.key === "ArrowRight") nextImg();
+            if (e.key === "ArrowLeft") prevImg();
+            if (e.key === "Escape") closeLightbox();
+        });
+    </script>
+
+    <script>
+        // Mekanis Ucapan dan Doa 
+        // Simulasi Data Ucapan (Ganti dengan data real dari database/API)
+        const allWishes = [
+            { nama: "Muhammad Fauzan", pesan: "Selamat menempuh hidup baru Romeo & Juliet! Semoga cinta kalian abadi selamanya.", waktu: "2 Jam yang lalu" },
+            { nama: "Jati Nugroho", pesan: "Lancar-lancar sampai hari H ya! Doa terbaik untuk kalian berdua.", waktu: "5 Menit yang lalu" },
+            { nama: "Budi Santoso", pesan: "Sakinah Mawaddah Warahmah. Turut berbahagia atas bersatunya kalian.", waktu: "1 Hari yang lalu" },
+            { nama: "Lestari Putri", pesan: "Selamat ya kalian berdua! Cantik dan ganteng banget di foto prewednya.", waktu: "2 Hari yang lalu" },
+            { nama: "Andi Wijaya", pesan: "Semoga menjadi keluarga yang harmonis dan penuh berkah.", waktu: "3 Hari yang lalu" }
+        ];
+
+        let displayedCount = 0;
+        const initialShow = 3; // Menampilkan 3 ucapan di awal
+        const loadStep = 5;    // Menambah 5 ucapan tiap klik 'Load More'
+
+        function renderWishes() {
+            const container = document.getElementById('wishes-container');
+            const btnLoadMore = document.getElementById('btn-load-more');
+
+            // Bersihkan placeholder/loading jika ada pada pemanggilan pertama
+            if (displayedCount === 0) container.innerHTML = '';
+
+            // Tentukan batas data yang akan ditarik
+            let nextLimit = (displayedCount === 0) ? initialShow : displayedCount + loadStep;
+            const wishesToDisplay = allWishes.slice(displayedCount, nextLimit);
+
+            wishesToDisplay.forEach(wish => {
+                const card = document.createElement('div');
+                // Styling kartu agar kontras di latar gelap (Text White & Gold)
+                card.className = 'wish-card bg-white/5 p-6 rounded-[1.5rem] border border-white/10 animate-fade-in-up transition-all duration-500 hover:bg-white/10 hover:border-brand-gold/30';
+
+                card.innerHTML = `
                         <div class="flex flex-col md:flex-row md:items-center justify-between mb-4 gap-2">
                             <div class="flex items-center gap-3">
                                 <div class="w-8 h-8 rounded-full bg-brand-gold/20 flex items-center justify-center border border-brand-gold/30">
@@ -1362,25 +2247,51 @@
                             </p>
                         </div>
                     `;
-                    container.appendChild(card);
-                });
-
-                displayedCount = Math.min(nextLimit, allWishes.length);
-
-                // Sembunyikan tombol jika semua data sudah keluar
-                if (displayedCount >= allWishes.length) {
-                    btnLoadMore.style.display = 'none';
-                }
-            }
-
-            // Eksekusi saat DOM siap
-            document.addEventListener('DOMContentLoaded', () => {
-                renderWishes();
+                container.appendChild(card);
             });
 
-            function loadMoreWishes() {
-                renderWishes();
+            displayedCount = Math.min(nextLimit, allWishes.length);
+
+            // Sembunyikan tombol jika semua data sudah keluar
+            if (displayedCount >= allWishes.length) {
+                btnLoadMore.style.display = 'none';
             }
-        </script>
+        }
+
+        // Eksekusi saat DOM siap
+        document.addEventListener('DOMContentLoaded', () => {
+            renderWishes();
+        });
+
+        function loadMoreWishes() {
+            renderWishes();
+        }
+    </script>
+
+    <script>
+        // Mekanis Live Streaming (Switch Platform & Lightbox Gallery sudah di script terpisah)
+        function switchPlatform(id, title, desc, iconClass, link) {
+            const display = document.getElementById('streaming-display');
+
+            // Animasi transisi keluar
+            display.style.opacity = '0';
+            display.style.transform = 'scale(0.98) translateY(10px)';
+            display.style.filter = 'blur(10px)';
+
+            setTimeout(() => {
+                // Update konten
+                document.getElementById('platform-title').innerText = title;
+                document.getElementById('platform-desc').innerText = desc;
+                document.getElementById('platform-icon').className = iconClass + ' text-4xl text-brand-gold';
+                document.getElementById('platform-link').href = link;
+
+                // Animasi transisi masuk
+                display.style.opacity = '1';
+                display.style.transform = 'scale(1) translateY(0)';
+                display.style.filter = 'blur(0)';
+            }, 400);
+        }
+    </script>
 </body>
+
 </html>
