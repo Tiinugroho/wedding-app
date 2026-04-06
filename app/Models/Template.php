@@ -11,8 +11,8 @@ class Template extends Model
 
     protected $fillable = [
         'category_id',
+        'package_id', // Ganti price menjadi package_id
         'name',
-        'price',
         'view_path',
         'thumbnail',
         'required_fields',
@@ -29,5 +29,11 @@ class Template extends Model
     public function category()
     {
         return $this->belongsTo(Category::class);
+    }
+
+    // Relasi: Template dikelompokkan ke dalam satu Paket (Harga & Fitur)
+    public function package()
+    {
+        return $this->belongsTo(Package::class);
     }
 }

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Template;
 use App\Models\Category;
+use App\Models\Package; // Pastikan Model Package di-import
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -12,15 +13,18 @@ class TemplateController extends Controller
 {
     public function index()
     {
-        // Mengambil template beserta relasi kategori
-        $templates = Template::with('category')->latest()->get();
+        // Load relasi category dan package sekaligus untuk performa (Eager Loading)
+        $templates = Template::with(['category', 'package'])
+            ->latest()
+            ->get();
         return view('admin.templates.index', compact('templates'));
     }
 
     public function create()
     {
         $categories = Category::all();
-        return view('admin.templates.create', compact('categories'));
+        $packages = Package::all(); // Ambil semua data paket
+        return view('admin.templates.create', compact('categories', 'packages'));
     }
 
     public function store(Request $request)
@@ -28,27 +32,25 @@ class TemplateController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'category_id' => 'required|exists:categories,id',
-            'view_path' => 'required|string|max:255', // Contoh: themes.modern.index
+            'package_id' => 'required|exists:packages,id', // Validasi Paket pengganti Price
+            'view_path' => 'required|string|max:255',
             'thumbnail' => 'required|image|mimes:jpeg,png,jpg|max:5048',
             'gallery_limit' => 'required|integer|min:0',
         ]);
 
         $data = $request->except(['thumbnail', 'has_video', 'has_love_story', 'gallery_limit']);
-        
-        // 1. Upload Thumbnail
+
         if ($request->hasFile('thumbnail')) {
             $data['thumbnail'] = $request->file('thumbnail')->store('thumbnails', 'public');
         }
 
-        // 2. Susun JSON required_fields dengan cerdas dari input terpisah
+        // Ini adalah kapasitas DESAIN template, bukan batasan paket.
         $data['required_fields'] = [
-            'has_video' => $request->has('has_video') ? true : false,
-            'has_love_story' => $request->has('has_love_story') ? true : false,
+            'has_video' => $request->has('has_video'),
+            'has_love_story' => $request->has('has_love_story'),
             'gallery_limit' => (int) $request->gallery_limit,
         ];
 
-        // 3. Set harga default ke 0 (karena harga diatur di Paket)
-        $data['price'] = $request->price ?? 0;
         $data['is_active'] = $request->is_active ?? 1;
 
         Template::create($data);
@@ -59,7 +61,8 @@ class TemplateController extends Controller
     public function edit(Template $template)
     {
         $categories = Category::all();
-        return view('admin.templates.edit', compact('template', 'categories'));
+        $packages = Package::all(); // Ambil semua data paket
+        return view('admin.templates.edit', compact('template', 'categories', 'packages'));
     }
 
     public function update(Request $request, Template $template)
@@ -67,14 +70,14 @@ class TemplateController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'category_id' => 'required|exists:categories,id',
+            'package_id' => 'required|exists:packages,id', // Validasi Paket
             'view_path' => 'required|string|max:255',
             'thumbnail' => 'nullable|image|mimes:jpeg,png,jpg|max:5048',
             'gallery_limit' => 'required|integer|min:0',
         ]);
 
         $data = $request->except(['thumbnail', 'has_video', 'has_love_story', 'gallery_limit']);
-        
-        // 1. Upload Thumbnail baru jika ada, dan hapus yang lama
+
         if ($request->hasFile('thumbnail')) {
             if ($template->thumbnail && Storage::disk('public')->exists($template->thumbnail)) {
                 Storage::disk('public')->delete($template->thumbnail);
@@ -82,14 +85,12 @@ class TemplateController extends Controller
             $data['thumbnail'] = $request->file('thumbnail')->store('thumbnails', 'public');
         }
 
-        // 2. Update JSON required_fields
         $data['required_fields'] = [
-            'has_video' => $request->has('has_video') ? true : false,
-            'has_love_story' => $request->has('has_love_story') ? true : false,
+            'has_video' => $request->has('has_video'),
+            'has_love_story' => $request->has('has_love_story'),
             'gallery_limit' => (int) $request->gallery_limit,
         ];
 
-        $data['price'] = $request->price ?? 0;
         $data['is_active'] = $request->is_active ?? 1;
 
         $template->update($data);
@@ -99,7 +100,6 @@ class TemplateController extends Controller
 
     public function destroy(Template $template)
     {
-        // Hapus file gambar dari storage
         if ($template->thumbnail && Storage::disk('public')->exists($template->thumbnail)) {
             Storage::disk('public')->delete($template->thumbnail);
         }

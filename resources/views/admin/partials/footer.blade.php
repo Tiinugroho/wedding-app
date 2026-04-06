@@ -1,11 +1,4 @@
-<footer class="pc-footer">
-    <div class="footer-wrapper container-fluid">
-        <div class="row">
-            <div class="col-sm-6 my-1">
-                <p class="m-0">
-                    &copy; {{ date('Y') }} RuangRestu. Crafted by Team <a href="https://codedthemes.com/" target="_blank">RuangRestu.</a>
-                </p>
-            </div>
-        </div>
-    </div>
+<footer class="hidden lg:block mt-16 pt-8 border-t border-slate-100 text-center text-slate-400 text-sm">
+    &copy; {{ date('Y') }} RuangRestu. Crafted by Team <a href="https://codedthemes.com/" target="_blank">RuangRestu.
+        • Bagian dari DangDang Studio</a>
 </footer>

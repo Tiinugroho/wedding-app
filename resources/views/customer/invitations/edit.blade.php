@@ -60,15 +60,14 @@
     @endif
 
     <form action="{{ route('customer.invitations.update', $invitation->id) }}" method="POST" enctype="multipart/form-data"
-        onsubmit="document.getElementById('loading-overlay').classList.replace('hidden', 'flex');">
+        id="invitationForm" onsubmit="document.getElementById('loading-overlay').classList.replace('hidden', 'flex');">
         @csrf
         @method('PUT')
 
-        <div class="grid grid-cols-1 xl:grid-cols-12 gap-8">
+        <div class="grid grid-cols-1 xl:grid-cols-12 gap-8 pb-24 xl:pb-0">
             <div class="xl:col-span-8 space-y-8">
 
-                {{-- PENGATURAN COVER & QUOTES --}}
-                {{-- PENGATURAN COVER & QUOTES --}}
+                {{-- 1. PENGATURAN COVER & QUOTES --}}
                 <div class="bg-white p-6 md:p-8 rounded-[2.5rem] border border-slate-100 shadow-sm">
                     <h4
                         class="text-xl font-bold text-slate-800 mb-6 flex items-center gap-3 pb-4 border-b border-slate-100">
@@ -116,14 +115,13 @@
                             (Opsional)</label>
                         <textarea name="quotes" rows="3"
                             class="w-full py-3 px-4 bg-slate-50 border border-slate-200 rounded-xl focus:ring-rOrange"
-                            placeholder="Contoh: Dan di antara tanda-tanda kekuasaan-Nya ialah Dia menciptakan untukmu isteri-isteri dari jenismu sendiri...">{{ old('quotes', $content['quotes'] ?? '') }}</textarea>
+                            placeholder="Contoh: Dan di antara tanda-tanda kekuasaan-Nya ialah Dia menciptakan untukmu isteri-isteri...">{{ old('quotes', $content['quotes'] ?? '') }}</textarea>
                     </div>
 
-                    {{-- PERBAIKAN: Input Foto Cover (Poin 2) --}}
                     <div class="mt-6 border-t border-slate-100 pt-6">
                         <label class="block text-sm font-bold text-slate-700 mb-2">Foto Cover Undangan (Opsional)</label>
-                        <p class="text-xs text-slate-500 mb-3">Jika dikosongkan, sistem akan otomatis mengambil foto pertama
-                            dari Album Galeri.</p>
+                        <p class="text-xs text-slate-500 mb-3">Jika dikosongkan, sistem otomatis mengambil foto pertama dari
+                            Galeri.</p>
                         <div class="flex items-center gap-4">
                             @if (!empty($content['cover_image']))
                                 <img src="{{ asset('storage/' . $content['cover_image']) }}"
@@ -135,7 +133,7 @@
                     </div>
                 </div>
 
-                {{-- DATA MEMPELAI PRIA --}}
+                {{-- 2. DATA MEMPELAI PRIA --}}
                 <div class="bg-white p-6 md:p-8 rounded-[2.5rem] border border-slate-100 shadow-sm">
                     <h4
                         class="text-xl font-bold text-slate-800 mb-6 flex items-center gap-3 pb-4 border-b border-slate-100">
@@ -201,7 +199,7 @@
                     </div>
                 </div>
 
-                {{-- DATA MEMPELAI WANITA --}}
+                {{-- 3. DATA MEMPELAI WANITA --}}
                 <div class="bg-white p-6 md:p-8 rounded-[2.5rem] border border-slate-100 shadow-sm">
                     <h4
                         class="text-xl font-bold text-slate-800 mb-6 flex items-center gap-3 pb-4 border-b border-slate-100">
@@ -267,7 +265,7 @@
                     </div>
                 </div>
 
-                {{-- TURUT MENGUNDANG + TOGGLE --}}
+                {{-- 4. TURUT MENGUNDANG + TOGGLE --}}
                 <div
                     class="bg-white p-6 md:p-8 rounded-[2.5rem] border border-slate-100 shadow-sm relative overflow-hidden">
                     <div
@@ -283,32 +281,13 @@
                             </div>
                             Turut Mengundang
                         </h4>
-
-                        <label class="relative inline-flex items-center cursor-pointer group">
+                        <label class="inline-flex items-center cursor-pointer shrink-0 group">
                             <span
                                 class="mr-3 text-sm font-bold text-slate-500 group-hover:text-slate-700 transition-colors">Tampilkan</span>
-
                             <input type="checkbox" name="is_turut_mengundang_active" value="1" class="sr-only peer"
                                 {{ $content['is_turut_mengundang_active'] ?? true ? 'checked' : '' }}>
-
                             <div
-                                class="relative w-11 h-6 bg-slate-200 rounded-full peer 
-                            peer-checked:bg-rOrange 
-                            peer-focus:ring-4 peer-focus:ring-orange-100 
-                            transition-all duration-300
-                            after:content-[''] 
-                            after:absolute 
-                            after:top-[2px] 
-                            after:left-[2px] 
-                            after:bg-white 
-                            after:border-gray-300 
-                            after:border 
-                            after:rounded-full 
-                            after:h-5 
-                            after:w-5 
-                            after:transition-all 
-                            peer-checked:after:translate-x-full 
-                            peer-checked:after:border-white">
+                                class="relative w-11 h-6 bg-slate-200 rounded-full peer peer-checked:bg-rOrange peer-focus:ring-4 peer-focus:ring-orange-100 transition-all duration-300 after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-full peer-checked:after:border-white">
                             </div>
                         </label>
                     </div>
@@ -316,12 +295,10 @@
                     <div
                         class="transition-opacity duration-300 {{ !($content['is_turut_mengundang_active'] ?? true) ? 'opacity-40 pointer-events-none' : '' }}">
                         @php
-                            // Ubah array jadi string dengan enter (jika data sebelumnya array)
                             $tmStr = is_array($content['turut_mengundang'] ?? null)
                                 ? implode("\n", $content['turut_mengundang'])
                                 : $content['turut_mengundang'] ?? '';
                         @endphp
-
                         <div class="grid grid-cols-1 gap-6">
                             <div>
                                 <label class="block text-sm font-bold text-slate-700 mb-2">Daftar Turut Mengundang</label>
@@ -335,7 +312,7 @@
                     </div>
                 </div>
 
-                {{-- WAKTU & LOKASI ACARA + TOGGLE --}}
+                {{-- 5. WAKTU & LOKASI ACARA + TOGGLE --}}
                 <div
                     class="bg-white p-6 md:p-8 rounded-[2.5rem] border border-slate-100 shadow-sm relative overflow-hidden">
                     <div
@@ -351,26 +328,24 @@
                             </div>
                             Waktu & Lokasi Acara
                         </h4>
-
                         <div class="flex items-center gap-4">
                             <button type="button" onclick="addEventRow()"
                                 class="px-4 py-2 bg-slate-900 text-white text-xs font-bold rounded-xl hover:bg-slate-800 transition shadow-sm">+
                                 Tambah Resepsi</button>
-                            <label class="relative inline-flex items-center cursor-pointer shrink-0">
+                            <label class="inline-flex items-center cursor-pointer shrink-0">
                                 <span class="mr-3 text-sm font-bold text-slate-500 hidden sm:block">Tampilkan</span>
                                 <input type="checkbox" name="is_event_active" value="1" class="sr-only peer"
                                     {{ $content['is_event_active'] ?? true ? 'checked' : '' }}>
                                 <div
-                                    class="w-11 h-6 bg-slate-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] sm:after:left-[auto] sm:after:right-[24px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-rOrange">
+                                    class="relative w-11 h-6 bg-slate-200 rounded-full peer peer-checked:bg-rOrange peer-focus:ring-4 peer-focus:ring-orange-100 transition-all duration-300 after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-full peer-checked:after:border-white">
                                 </div>
                             </label>
                         </div>
                     </div>
 
                     <div
-                        class="space-y-6 transition-opacity duration-300 {{ empty($content['is_event_active']) && isset($content['is_event_active']) ? 'opacity-40 pointer-events-none' : '' }}">
-
-                        {{-- 1. AKAD NIKAH (STATIS - TIDAK BISA DIHAPUS) --}}
+                        class="space-y-6 transition-opacity duration-300 {{ !($content['is_event_active'] ?? true) ? 'opacity-40 pointer-events-none' : '' }}">
+                        {{-- AKAD NIKAH (STATIS) --}}
                         <div class="p-5 bg-orange-50/50 rounded-2xl border border-orange-100 relative">
                             <h5 class="font-bold text-orange-600 mb-4">Akad Nikah / Pemberkatan</h5>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -380,7 +355,6 @@
                                         value="{{ old('akad_date', $content['akad_date'] ?? '') }}"
                                         class="w-full py-2.5 px-4 bg-white border border-slate-200 rounded-xl focus:ring-rOrange">
                                 </div>
-
                                 <div>
                                     <label class="block text-xs font-bold text-slate-600 mb-1">Waktu Acara (Mulai -
                                         Selesai)</label>
@@ -389,43 +363,43 @@
                                         <input type="time" name="akad_time"
                                             value="{{ old('akad_time', $safeAkadTime) }}"
                                             class="w-full py-2.5 px-4 bg-white border border-slate-200 rounded-xl focus:ring-rOrange">
-
                                         <span class="text-slate-400 font-bold">-</span>
-
                                         @php $safeAkadTimeEnd = !empty($content['akad_time_end']) ? substr(trim($content['akad_time_end']), 0, 5) : ''; @endphp
                                         <input type="time" name="akad_time_end"
                                             value="{{ old('akad_time_end', $safeAkadTimeEnd) }}"
                                             class="w-full py-2.5 px-4 bg-white border border-slate-200 rounded-xl focus:ring-rOrange">
                                     </div>
                                 </div>
-
-                                <div class="md:col-span-2"><label class="block text-xs font-bold text-slate-600 mb-1">Nama
-                                        Tempat/Gedung</label><input type="text" name="akad_location"
+                                <div class="md:col-span-2">
+                                    <label class="block text-xs font-bold text-slate-600 mb-1">Nama Tempat/Gedung</label>
+                                    <input type="text" name="akad_location"
                                         value="{{ old('akad_location', $content['akad_location'] ?? '') }}"
                                         class="w-full py-2.5 px-4 bg-white border border-slate-200 rounded-xl focus:ring-rOrange"
-                                        placeholder="Contoh: Masjid Raya Pekanbaru"></div>
-                                <div class="md:col-span-2"><label
-                                        class="block text-xs font-bold text-slate-600 mb-1">Alamat Lengkap</label>
+                                        placeholder="Contoh: Masjid Raya Pekanbaru">
+                                </div>
+                                <div class="md:col-span-2">
+                                    <label class="block text-xs font-bold text-slate-600 mb-1">Alamat Lengkap</label>
                                     <textarea name="akad_address" rows="2"
                                         class="w-full py-2.5 px-4 bg-white border border-slate-200 rounded-xl focus:ring-rOrange"
                                         placeholder="Contoh: Jl. Senapelan No. 128, Riau">{{ old('akad_address', $content['akad_address'] ?? '') }}</textarea>
                                 </div>
-                                <div class="md:col-span-2"><label class="block text-xs font-bold text-slate-600 mb-1">Link
-                                        Google Maps</label><input type="url" name="akad_map"
+                                <div class="md:col-span-2">
+                                    <label class="block text-xs font-bold text-slate-600 mb-1">Link Google Maps</label>
+                                    <input type="url" name="akad_map"
                                         value="{{ old('akad_map', $content['akad_map'] ?? '') }}"
                                         class="w-full py-2.5 px-4 bg-white border border-slate-200 rounded-xl focus:ring-rOrange"
-                                        placeholder="https://maps.google.com/..."></div>
+                                        placeholder="https://maps.google.com/...">
+                                </div>
                             </div>
                         </div>
 
-                        {{-- 2. RESEPSI DAN LAINNYA (DINAMIS - BISA DITAMBAH/HAPUS) --}}
+                        {{-- RESEPSI DINAMIS --}}
                         <div id="event-wrapper" class="space-y-6">
                             @php
                                 $eventsData =
                                     !empty($content['events']) && is_array($content['events'])
                                         ? $content['events']
                                         : [];
-
                                 if (empty($eventsData) && !empty($content['resepsi_location'])) {
                                     $eventsData[] = [
                                         'title' => 'Resepsi Pernikahan',
@@ -437,7 +411,6 @@
                                         'map' => $content['resepsi_map'] ?? '',
                                     ];
                                 }
-
                                 if (empty($eventsData)) {
                                     $eventsData[] = [
                                         'title' => 'Resepsi Pernikahan',
@@ -458,13 +431,11 @@
                                         ? substr(trim($event['time_end']), 0, 5)
                                         : '';
                                 @endphp
-
                                 <div class="p-5 bg-blue-50/50 rounded-2xl border border-blue-100 relative event-item">
                                     @if ($key > 0)
                                         <button type="button" onclick="this.closest('.event-item').remove()"
                                             class="absolute top-4 right-4 text-red-500 hover:text-white bg-red-50 hover:bg-red-500 font-bold text-xs px-3 py-1.5 rounded-lg shadow-sm transition-colors">Hapus</button>
                                     @endif
-
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
                                         <div class="md:col-span-2">
                                             <label class="block text-xs font-bold text-slate-600 mb-1">Nama Acara</label>
@@ -479,10 +450,8 @@
                                                 value="{{ $event['date'] ?? '' }}"
                                                 class="w-full py-2.5 px-4 bg-white border border-slate-200 rounded-xl focus:ring-rOrange">
                                         </div>
-
                                         <div>
-                                            <label class="block text-xs font-bold text-slate-600 mb-1">Waktu Acara (Mulai -
-                                                Selesai)</label>
+                                            <label class="block text-xs font-bold text-slate-600 mb-1">Waktu Acara</label>
                                             <div class="flex items-center gap-2">
                                                 <input type="time" name="events[{{ $key }}][time]"
                                                     value="{{ $safeEventTime }}"
@@ -493,27 +462,30 @@
                                                     class="w-full py-2.5 px-4 bg-white border border-slate-200 rounded-xl focus:ring-rOrange">
                                             </div>
                                         </div>
-
-                                        <div class="md:col-span-2"><label
-                                                class="block text-xs font-bold text-slate-600 mb-1">Nama
-                                                Tempat/Gedung</label><input type="text"
-                                                name="events[{{ $key }}][location]"
+                                        <div class="md:col-span-2">
+                                            <label class="block text-xs font-bold text-slate-600 mb-1">Nama
+                                                Tempat/Gedung</label>
+                                            <input type="text" name="events[{{ $key }}][location]"
                                                 value="{{ $event['location'] ?? '' }}"
                                                 class="w-full py-2.5 px-4 bg-white border border-slate-200 rounded-xl focus:ring-rOrange"
-                                                placeholder="Contoh: Grand Ballroom Hotel"></div>
-                                        <div class="md:col-span-2"><label
-                                                class="block text-xs font-bold text-slate-600 mb-1">Alamat Lengkap</label>
+                                                placeholder="Contoh: Grand Ballroom Hotel">
+                                        </div>
+                                        <div class="md:col-span-2">
+                                            <label class="block text-xs font-bold text-slate-600 mb-1">Alamat
+                                                Lengkap</label>
                                             <textarea name="events[{{ $key }}][address]" rows="2"
                                                 class="w-full py-2.5 px-4 bg-white border border-slate-200 rounded-xl focus:ring-rOrange"
                                                 placeholder="Contoh: Pekanbaru, Riau">{{ $event['address'] ?? '' }}</textarea>
                                         </div>
-                                        <div class="md:col-span-2"><label
-                                                class="block text-xs font-bold text-slate-600 mb-1">Link Google Maps
+                                        <div class="md:col-span-2">
+                                            <label class="block text-xs font-bold text-slate-600 mb-1">Link Google Maps
                                                 (Opsional)
-                                            </label><input type="url" name="events[{{ $key }}][map]"
+                                            </label>
+                                            <input type="url" name="events[{{ $key }}][map]"
                                                 value="{{ $event['map'] ?? '' }}"
                                                 class="w-full py-2.5 px-4 bg-white border border-slate-200 rounded-xl focus:ring-rOrange"
-                                                placeholder="https://maps.google.com/..."></div>
+                                                placeholder="https://maps.google.com/...">
+                                        </div>
                                     </div>
                                 </div>
                             @endforeach
@@ -521,7 +493,7 @@
                     </div>
                 </div>
 
-                {{-- INFO TAMBAHAN (DRESSCODE & PROKES) + TOGGLE --}}
+                {{-- 6. INFO TAMBAHAN (DRESSCODE & PROKES) + TOGGLE --}}
                 <div
                     class="bg-white p-6 md:p-8 rounded-[2.5rem] border border-slate-100 shadow-sm relative overflow-hidden">
                     <div
@@ -536,24 +508,22 @@
                             </div>
                             Guest Info & Prokes
                         </h4>
-
-                        <label class="relative inline-flex items-center cursor-pointer shrink-0">
+                        <label class="inline-flex items-center cursor-pointer shrink-0">
                             <span class="mr-3 text-sm font-bold text-slate-500 hidden sm:block">Tampilkan</span>
                             <input type="checkbox" name="is_guest_info_active" value="1" class="sr-only peer"
                                 {{ $content['is_guest_info_active'] ?? true ? 'checked' : '' }}>
                             <div
-                                class="w-11 h-6 bg-slate-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] sm:after:left-[auto] sm:after:right-[24px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-rOrange">
+                                class="relative w-11 h-6 bg-slate-200 rounded-full peer peer-checked:bg-rOrange peer-focus:ring-4 peer-focus:ring-orange-100 transition-all duration-300 after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-full peer-checked:after:border-white">
                             </div>
                         </label>
                     </div>
 
                     <div
-                        class="space-y-6 transition-opacity duration-300 {{ empty($content['is_guest_info_active']) && isset($content['is_guest_info_active']) ? 'opacity-40 pointer-events-none' : '' }}">
+                        class="space-y-6 transition-opacity duration-300 {{ !($content['is_guest_info_active'] ?? true) ? 'opacity-40 pointer-events-none' : '' }}">
                         <div class="p-5 border border-slate-100 rounded-2xl bg-slate-50">
                             <label class="flex items-center gap-3 cursor-pointer mb-3">
-                                {{-- PERBAIKAN: Menggunakan isset() untuk mengecek apakah data baru, jika baru = default checked --}}
                                 <input type="checkbox" name="enable_dresscode" value="1"
-                                    {{ !isset($content['enable_dresscode']) || !empty($content['enable_dresscode']) ? 'checked' : '' }}
+                                    {{ $content['enable_dresscode'] ?? true ? 'checked' : '' }}
                                     class="w-5 h-5 text-rOrange rounded border-slate-300 focus:ring-rOrange">
                                 <span class="font-bold text-slate-700">Aktifkan Informasi Dresscode</span>
                             </label>
@@ -565,9 +535,8 @@
 
                         <div class="p-5 border border-slate-100 rounded-2xl bg-slate-50">
                             <label class="flex items-center gap-3 cursor-pointer">
-                                {{-- PERBAIKAN: Menggunakan isset() untuk mengecek apakah data baru, jika baru = default checked --}}
                                 <input type="checkbox" name="enable_health_protocol" value="1"
-                                    {{ !isset($content['enable_health_protocol']) || !empty($content['enable_health_protocol']) ? 'checked' : '' }}
+                                    {{ $content['enable_health_protocol'] ?? true ? 'checked' : '' }}
                                     class="w-5 h-5 text-rOrange rounded border-slate-300 focus:ring-rOrange">
                                 <span class="font-bold text-slate-700">Aktifkan Tampilan Protokol Kesehatan</span>
                             </label>
@@ -575,9 +544,10 @@
                     </div>
                 </div>
 
+                {{-- MUSIC SELECTOR --}}
                 @include('customer.invitations.partials.music_selector')
 
-                {{-- CERITA CINTA + TOGGLE --}}
+                {{-- 7. CERITA CINTA + TOGGLE --}}
                 <div
                     class="bg-white p-6 md:p-8 rounded-[2.5rem] border border-slate-100 shadow-sm relative overflow-hidden">
                     <div
@@ -593,17 +563,16 @@
                             </div>
                             Cerita Cinta
                         </h4>
-
                         <div class="flex items-center gap-4">
                             <button type="button" onclick="addLoveStoryRow()"
                                 class="px-4 py-2 bg-slate-900 text-white text-xs font-bold rounded-xl hover:bg-slate-800 transition shadow-sm">+
                                 Tambah</button>
-                            <label class="relative inline-flex items-center cursor-pointer shrink-0">
+                            <label class="inline-flex items-center cursor-pointer shrink-0">
                                 <span class="mr-3 text-sm font-bold text-slate-500 hidden sm:block">Tampilkan</span>
                                 <input type="checkbox" name="is_story_active" value="1" class="sr-only peer"
                                     {{ $content['is_story_active'] ?? true ? 'checked' : '' }}>
                                 <div
-                                    class="w-11 h-6 bg-slate-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] sm:after:left-[auto] sm:after:right-[24px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-rOrange">
+                                    class="relative w-11 h-6 bg-slate-200 rounded-full peer peer-checked:bg-rOrange peer-focus:ring-4 peer-focus:ring-orange-100 transition-all duration-300 after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-full peer-checked:after:border-white">
                                 </div>
                             </label>
                         </div>
@@ -621,7 +590,7 @@
                     @endif
 
                     <div id="love-story-wrapper"
-                        class="space-y-6 transition-opacity duration-300 {{ empty($packageLogic['has_love_story']) || !$packageLogic['has_love_story'] || (empty($content['is_story_active']) && isset($content['is_story_active'])) ? 'opacity-30 pointer-events-none' : '' }}">
+                        class="space-y-6 transition-opacity duration-300 {{ empty($packageLogic['has_love_story']) || !$packageLogic['has_love_story'] || !($content['is_story_active'] ?? true) ? 'opacity-30 pointer-events-none' : '' }}">
                         @if (!empty($content['love_stories']) && is_array($content['love_stories']))
                             @foreach ($content['love_stories'] as $key => $story)
                                 <div
@@ -681,8 +650,6 @@
                             @endforeach
                         @else
                             <div class="relative p-6 border-2 border-slate-100 rounded-[2rem] bg-slate-50 love-story-item">
-                                <button type="button" onclick="this.closest('.love-story-item').remove()"
-                                    class="absolute top-5 right-5 text-red-500 hover:text-white bg-red-50 hover:bg-red-500 font-bold text-xs px-3 py-1.5 rounded-lg transition-colors">Hapus</button>
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mt-2">
                                     <div><label
                                             class="block text-xs font-bold text-slate-600 mb-1">Tahun/Waktu</label><input
@@ -712,7 +679,7 @@
                     </div>
                 </div>
 
-                {{-- GALERI & YOUTUBE + TOGGLE --}}
+                {{-- 8. GALERI & YOUTUBE + TOGGLE --}}
                 <div
                     class="bg-white p-6 md:p-8 rounded-[2.5rem] border border-slate-100 shadow-sm relative overflow-hidden">
                     <div
@@ -728,22 +695,21 @@
                             </div>
                             Galeri Foto & Video
                         </h4>
-                        <label class="relative inline-flex items-center cursor-pointer shrink-0">
+                        <label class="inline-flex items-center cursor-pointer shrink-0">
                             <span class="mr-3 text-sm font-bold text-slate-500 hidden sm:block">Tampilkan</span>
                             <input type="checkbox" name="is_gallery_active" value="1" class="sr-only peer"
                                 {{ $content['is_gallery_active'] ?? true ? 'checked' : '' }}>
                             <div
-                                class="w-11 h-6 bg-slate-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] sm:after:left-[auto] sm:after:right-[24px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-rOrange">
+                                class="relative w-11 h-6 bg-slate-200 rounded-full peer peer-checked:bg-rOrange peer-focus:ring-4 peer-focus:ring-orange-100 transition-all duration-300 after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-full peer-checked:after:border-white">
                             </div>
                         </label>
                     </div>
 
                     <div
-                        class="transition-opacity duration-300 {{ empty($content['is_gallery_active']) && isset($content['is_gallery_active']) ? 'opacity-40 pointer-events-none' : '' }}">
+                        class="transition-opacity duration-300 {{ !($content['is_gallery_active'] ?? true) ? 'opacity-40 pointer-events-none' : '' }}">
                         <p class="font-bold text-slate-700 text-sm mb-3">Foto Album
                             ({{ $invitation->galleries->where('type', 'photo')->count() }} /
-                            {{ $packageLogic['gallery_limit'] ?? 5 }})
-                        </p>
+                            {{ $packageLogic['gallery_limit'] ?? 5 }})</p>
                         <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
                             @foreach ($invitation->galleries->where('type', 'photo') as $img)
                                 <div
@@ -819,7 +785,7 @@
                     </div>
                 </div>
 
-                {{-- KADO DIGITAL + TOGGLE --}}
+                {{-- 9. KADO DIGITAL + TOGGLE --}}
                 <div
                     class="bg-white p-6 md:p-8 rounded-[2.5rem] border border-slate-100 shadow-sm relative overflow-hidden">
                     <div
@@ -839,12 +805,12 @@
                             <button type="button" onclick="addBankRow()"
                                 class="px-4 py-2 bg-slate-900 text-white text-xs font-bold rounded-xl hover:bg-slate-800 transition shadow-sm">+
                                 Rekening</button>
-                            <label class="relative inline-flex items-center cursor-pointer shrink-0">
+                            <label class="inline-flex items-center cursor-pointer shrink-0">
                                 <span class="mr-3 text-sm font-bold text-slate-500 hidden sm:block">Tampilkan</span>
                                 <input type="checkbox" name="is_gift_active" value="1" class="sr-only peer"
                                     {{ $content['is_gift_active'] ?? true ? 'checked' : '' }}>
                                 <div
-                                    class="w-11 h-6 bg-slate-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] sm:after:left-[auto] sm:after:right-[24px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-rOrange">
+                                    class="relative w-11 h-6 bg-slate-200 rounded-full peer peer-checked:bg-rOrange peer-focus:ring-4 peer-focus:ring-orange-100 transition-all duration-300 after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-full peer-checked:after:border-white">
                                 </div>
                             </label>
                         </div>
@@ -861,7 +827,7 @@
                     @endif
 
                     <div id="bank-wrapper"
-                        class="space-y-4 transition-opacity duration-300 {{ empty($packageLogic['has_digital_gift']) || !$packageLogic['has_digital_gift'] || (empty($content['is_gift_active']) && isset($content['is_gift_active'])) ? 'opacity-30 pointer-events-none' : '' }}">
+                        class="space-y-4 transition-opacity duration-300 {{ empty($packageLogic['has_digital_gift']) || !$packageLogic['has_digital_gift'] || !($content['is_gift_active'] ?? true) ? 'opacity-30 pointer-events-none' : '' }}">
                         @if (!empty($content['banks']) && is_array($content['banks']))
                             @foreach ($content['banks'] as $key => $bank)
                                 <div class="relative p-5 border border-slate-200 rounded-2xl bg-slate-50 bank-item">
@@ -877,8 +843,7 @@
                                                 @foreach ($masterBanks as $mb)
                                                     <option value="{{ $mb->name }}"
                                                         {{ ($bank['name'] ?? '') == $mb->name ? 'selected' : '' }}>
-                                                        {{ $mb->name }}
-                                                    </option>
+                                                        {{ $mb->name }}</option>
                                                 @endforeach
                                             </select>
                                         </div>
@@ -927,7 +892,7 @@
                     </div>
                 </div>
 
-                {{-- RSVP & UCAPAN --}}
+                {{-- 10. RSVP & UCAPAN --}}
                 <div class="bg-white p-6 md:p-8 rounded-[2.5rem] border border-slate-100 shadow-sm">
                     <h4
                         class="text-xl font-bold text-slate-800 mb-6 flex items-center gap-3 pb-4 border-b border-slate-100">
@@ -954,78 +919,83 @@
                     </div>
                 </div>
 
-                {{-- GANTI TEMA / TEMPLATE --}}
+                {{-- 11. GANTI TEMA / TEMPLATE DENGAN FILTER & CARD KECIL --}}
                 <div class="bg-white p-6 md:p-8 rounded-[2.5rem] border border-slate-100 shadow-sm">
                     <h4
-                        class="text-xl font-bold text-slate-800 mb-6 flex items-center gap-3 pb-4 border-b border-slate-100">
-                        <div
-                            class="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-500 flex items-center justify-center shrink-0">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01">
-                                </path>
-                            </svg>
+                        class="text-xl font-bold text-slate-800 mb-6 flex flex-col md:flex-row md:items-center gap-3 pb-4 border-b border-slate-100 justify-between">
+                        <div class="flex items-center gap-3">
+                            <div
+                                class="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-500 flex items-center justify-center shrink-0">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01">
+                                    </path>
+                                </svg>
+                            </div>
+                            Ganti Desain Tema
                         </div>
-                        Ganti Desain Tema
                     </h4>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {{-- FILTER KATEGORI --}}
+                    @php
+                        $categories = collect($templates)->map(fn($t) => $t->category->name ?? 'Umum')->unique();
+                    @endphp
+                    <div class="flex flex-wrap gap-2 mb-6" id="template-filters">
+                        <button type="button"
+                            class="filter-btn px-4 py-2 rounded-full bg-slate-900 text-white text-xs font-bold transition shadow-md"
+                            data-filter="all">Semua</button>
+                        @foreach ($categories as $cat)
+                            <button type="button"
+                                class="filter-btn px-4 py-2 rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200 text-xs font-bold transition"
+                                data-filter="{{ $cat }}">{{ $cat }}</button>
+                        @endforeach
+                    </div>
+
+                    {{-- GRID TEMA DIPERKECIL --}}
+                    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4" id="template-grid">
                         @foreach ($templates as $template)
-                            <label class="cursor-pointer relative group">
+                            <label class="cursor-pointer relative group template-card"
+                                data-category="{{ $template->category->name ?? 'Umum' }}">
                                 <input type="radio" name="template_id" value="{{ $template->id }}"
                                     class="peer sr-only"
                                     {{ old('template_id', $invitation->template_id) == $template->id ? 'checked' : '' }}>
-
                                 <div
-                                    class="h-full border-2 border-slate-100 rounded-3xl overflow-hidden hover:border-rOrange/50 transition peer-checked:border-rOrange peer-checked:shadow-lg peer-checked:shadow-rOrange/10">
-                                    <div class="relative h-56 bg-slate-200 overflow-hidden">
+                                    class="h-full border-2 border-slate-100 rounded-2xl overflow-hidden hover:border-rOrange/50 transition peer-checked:border-rOrange peer-checked:shadow-lg peer-checked:shadow-rOrange/10">
+                                    <div class="relative h-36 bg-slate-200 overflow-hidden">
                                         <div
                                             class="absolute inset-0 w-full h-full transition-transform duration-700 group-hover:scale-110">
                                             <div
                                                 class="absolute inset-0 w-full h-full pointer-events-none overflow-hidden bg-stone-900">
                                                 <iframe
                                                     src="{{ asset('preview/' . $template->view_path . '/index.html') }}?thumbnail=1"
-                                                    class="absolute top-0 left-0 w-[400%] h-[400%] origin-top-left scale-[0.25] border-0"
-                                                    scrolling="no" tabindex="-1">
-                                                </iframe>
+                                                    class="absolute top-0 left-0 w-[500%] h-[500%] origin-top-left scale-[0.20] border-0"
+                                                    scrolling="no" tabindex="-1"></iframe>
                                             </div>
                                         </div>
-
                                         <div
-                                            class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition duration-300 flex items-center justify-center z-10">
+                                            class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition duration-300 flex items-center justify-center z-10">
                                             <button type="button"
-                                                class="preview-btn bg-white text-slate-800 px-5 py-2.5 rounded-full font-bold text-xs hover:bg-rOrange hover:text-white transition transform translate-y-4 group-hover:translate-y-0"
+                                                class="preview-btn bg-white text-slate-800 px-4 py-2 rounded-full font-bold text-[10px] hover:bg-rOrange hover:text-white transition transform translate-y-4 group-hover:translate-y-0"
                                                 data-title="{{ $template->name }}"
                                                 data-path="{{ asset('preview/' . $template->view_path . '/index.html') }}"
                                                 data-category="{{ $template->category->name ?? 'Umum' }}">
-                                                <svg class="w-4 h-4 inline-block mr-1 mb-0.5" fill="none"
-                                                    stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z">
-                                                    </path>
-                                                </svg>
-                                                Preview Full
+                                                Preview
                                             </button>
                                         </div>
-
                                         <div
-                                            class="absolute top-4 right-4 w-7 h-7 rounded-full bg-rOrange text-white flex items-center justify-center opacity-0 peer-checked:opacity-100 transition shadow-md z-10">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor"
+                                            class="absolute top-2 right-2 w-6 h-6 rounded-full bg-rOrange text-white flex items-center justify-center opacity-0 peer-checked:opacity-100 transition shadow-md z-10">
+                                            <svg class="w-3 h-3" fill="none" stroke="currentColor"
                                                 viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
                                                     d="M5 13l4 4L19 7"></path>
                                             </svg>
                                         </div>
                                     </div>
-
-                                    <div class="p-5 bg-white peer-checked:bg-rOrange/5 transition">
-                                        <h5 class="font-bold text-slate-800 mb-1 text-lg">{{ $template->name }}</h5>
+                                    <div class="p-3 bg-white peer-checked:bg-rOrange/5 transition">
+                                        <h5 class="font-bold text-slate-800 mb-0.5 text-xs truncate">{{ $template->name }}
+                                        </h5>
                                         <span
-                                            class="text-[10px] font-bold bg-slate-100 text-slate-500 px-2 py-1 rounded border border-slate-200 uppercase tracking-tighter">
-                                            {{ $template->category->name ?? 'Umum' }}
-                                        </span>
+                                            class="text-[9px] font-bold bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded border border-slate-200 uppercase">{{ $template->category->name ?? 'Umum' }}</span>
                                     </div>
                                 </div>
                             </label>
@@ -1033,14 +1003,31 @@
                     </div>
                 </div>
 
+                {{-- MOBILE NORMAL SAVE BUTTON (Bukan Fixed Bottom) --}}
+                <div
+                    class="xl:hidden block mt-8 text-center bg-white p-6 rounded-[2.5rem] border border-slate-100 shadow-sm">
+                    <h4 class="font-extrabold text-xl mb-2 text-slate-800">Selesai Mengedit?</h4>
+                    <p class="text-xs text-slate-400 mb-6 leading-relaxed">Pastikan semua data telah diisi dengan benar
+                        sebelum dipublikasikan.</p>
+                    <button type="button" onclick="openSaveDrawer()"
+                        class="w-full py-4 bg-slate-900 hover:bg-slate-800 text-white rounded-xl font-bold flex justify-center items-center gap-2 transition shadow-md">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4">
+                            </path>
+                        </svg>
+                        <span>Simpan Perubahan</span>
+                    </button>
+                </div>
             </div>
 
-            <div class="xl:col-span-4">
+            {{-- DESKTOP SIDEBAR SAVE BUTTON --}}
+            <div class="hidden xl:block xl:col-span-4">
                 <div class="sticky top-10 bg-slate-900 text-white p-8 rounded-[2.5rem] shadow-xl text-center">
                     <h4 class="font-extrabold text-2xl mb-2">Simpan Perubahan</h4>
                     <p class="text-sm text-slate-400 mb-8 leading-relaxed">Pastikan semua data sudah benar sebelum
                         disimpan.</p>
-                    <button type="submit"
+                    <button type="button" onclick="openSaveDrawer()"
                         class="w-full py-4 bg-gradient-to-r from-rRed to-rOrange rounded-2xl font-bold text-white hover:scale-105 transition shadow-lg flex justify-center items-center gap-2">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -1050,6 +1037,45 @@
                         <span>Simpan Data Undangan</span>
                     </button>
                 </div>
+            </div>
+        </div>
+
+        {{-- DRAWER KONFIRMASI SIMPAN (Bergeser Kanan ke Kiri) --}}
+        <div id="save-drawer-overlay"
+            class="fixed inset-0 bg-slate-900/50 z-[100] hidden opacity-0 transition-opacity duration-300 backdrop-blur-sm"
+            onclick="closeSaveDrawer()"></div>
+        <div id="save-drawer"
+            class="fixed top-0 right-0 w-80 max-w-full h-full bg-white z-[110] shadow-2xl transform translate-x-full transition-transform duration-300 ease-in-out flex flex-col">
+            <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+                <h3 class="font-extrabold text-lg text-slate-800">Konfirmasi</h3>
+                <button type="button" onclick="closeSaveDrawer()"
+                    class="w-8 h-8 flex items-center justify-center rounded-full bg-white border border-slate-200 text-slate-400 hover:text-red-500 hover:bg-red-50 transition">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                        </path>
+                    </svg>
+                </button>
+            </div>
+            <div class="p-6 flex-1 overflow-y-auto flex flex-col justify-center">
+                <div
+                    class="w-20 h-20 bg-orange-50 text-rOrange rounded-full flex items-center justify-center mb-6 mx-auto border-[6px] border-orange-100/50">
+                    <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4">
+                        </path>
+                    </svg>
+                </div>
+                <h4 class="text-center font-extrabold text-2xl mb-3 text-slate-800">Simpan Data?</h4>
+                <p class="text-center text-sm text-slate-500 mb-8 leading-relaxed">Data yang disimpan akan langsung
+                    di-update pada halaman undangan publik Anda. Pastikan tidak ada data yang terlewat.</p>
+                <button type="submit"
+                    class="w-full py-4 bg-gradient-to-r from-rRed to-rOrange rounded-xl font-bold text-white hover:scale-[1.02] transition shadow-lg shadow-rOrange/30">
+                    Ya, Simpan Sekarang
+                </button>
+                <button type="button" onclick="closeSaveDrawer()"
+                    class="w-full py-4 mt-3 bg-slate-100 rounded-xl font-bold text-slate-600 hover:bg-slate-200 transition">
+                    Batal, Periksa Lagi
+                </button>
             </div>
         </div>
     </form>
@@ -1071,7 +1097,7 @@
                             class="text-slate-700">{{ $currentPackageName }}</strong></p>
                 </div>
                 <button type="button" id="closeUpgradeBtn"
-                    class="w-10 h-10 rounded-full bg-white border text-slate-500 flex items-center justify-center">
+                    class="w-10 h-10 rounded-full bg-white border text-slate-500 flex items-center justify-center hover:bg-red-50 hover:text-red-500">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
                         </path>
@@ -1079,9 +1105,9 @@
                 </button>
             </div>
             <div class="p-8">
-                @if ($upgradePackages->isEmpty())
+                @if (isset($upgradePackages) && $upgradePackages->isEmpty())
                     <p class="text-center text-slate-500">Anda sudah menggunakan paket tertinggi.</p>
-                @else
+                @elseif(isset($upgradePackages))
                     <div class="space-y-4">
                         @foreach ($upgradePackages as $pkg)
                             @php $selisihHarga = $pkg->price - $currentPackagePrice; @endphp
@@ -1089,8 +1115,7 @@
                                 <div>
                                     <h5 class="font-extrabold text-lg">{{ $pkg->name }}</h5>
                                     <p class="text-2xl font-extrabold text-rOrange">Rp
-                                        {{ number_format($selisihHarga, 0, ',', '.') }}
-                                    </p>
+                                        {{ number_format($selisihHarga, 0, ',', '.') }}</p>
                                 </div>
                                 <button type="button" class="px-6 py-2 bg-slate-900 text-white rounded-xl">Pilih</button>
                             </div>
@@ -1128,9 +1153,7 @@
                     memilihnya.</p>
                 <button type="button"
                     class="px-8 py-3.5 bg-slate-900 text-white rounded-xl font-bold text-sm hover:bg-slate-800 w-full transition"
-                    id="footerCloseBtn">
-                    Tutup Preview
-                </button>
+                    id="footerCloseBtn">Tutup Preview</button>
             </div>
         </div>
     </div>
@@ -1138,19 +1161,40 @@
 
 @push('scripts')
     <script>
+        // LACI/DRAWER KONFIRMASI SIMPAN
+        function openSaveDrawer() {
+            const overlay = document.getElementById('save-drawer-overlay');
+            const drawer = document.getElementById('save-drawer');
+
+            overlay.classList.remove('hidden');
+            void overlay.offsetWidth; // Trigger reflow
+            overlay.classList.remove('opacity-0');
+            drawer.classList.remove('translate-x-full');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeSaveDrawer() {
+            const overlay = document.getElementById('save-drawer-overlay');
+            const drawer = document.getElementById('save-drawer');
+
+            drawer.classList.add('translate-x-full');
+            overlay.classList.add('opacity-0');
+            setTimeout(() => overlay.classList.add('hidden'), 300);
+            document.body.style.overflow = 'auto';
+        }
+
+        // FUNGSI INPUT BARIS DINAMIS
         function addEventRow() {
             const id = Date.now();
             const html = `
                 <div class="p-5 bg-blue-50/50 rounded-2xl border border-blue-100 relative event-item mt-4 animate-fade-in">
                     <button type="button" onclick="this.closest('.event-item').remove()" class="absolute top-4 right-4 text-red-500 hover:text-white bg-red-50 hover:bg-red-500 font-bold text-xs px-3 py-1.5 rounded-lg shadow-sm transition-colors">Hapus</button>
-                    
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
                         <div class="md:col-span-2">
                             <label class="block text-xs font-bold text-slate-600 mb-1">Nama Acara</label>
                             <input type="text" name="events[${id}][title]" class="w-full py-2.5 px-4 bg-white border border-slate-200 rounded-xl focus:ring-rOrange" placeholder="Contoh: Resepsi Tambahan">
                         </div>
                         <div><label class="block text-xs font-bold text-slate-600 mb-1">Tanggal</label><input type="date" name="events[${id}][date]" class="w-full py-2.5 px-4 bg-white border border-slate-200 rounded-xl focus:ring-rOrange"></div>
-                        
                         <div>
                             <label class="block text-xs font-bold text-slate-600 mb-1">Waktu Acara (Mulai - Selesai)</label>
                             <div class="flex items-center gap-2">
@@ -1159,7 +1203,6 @@
                                 <input type="time" name="events[${id}][time_end]" class="w-full py-2.5 px-4 bg-white border border-slate-200 rounded-xl focus:ring-rOrange">
                             </div>
                         </div>
-                        
                         <div class="md:col-span-2"><label class="block text-xs font-bold text-slate-600 mb-1">Nama Tempat/Gedung</label><input type="text" name="events[${id}][location]" class="w-full py-2.5 px-4 bg-white border border-slate-200 rounded-xl focus:ring-rOrange" placeholder="Contoh: Gedung Serbaguna"></div>
                         <div class="md:col-span-2"><label class="block text-xs font-bold text-slate-600 mb-1">Alamat Lengkap</label><textarea name="events[${id}][address]" rows="2" class="w-full py-2.5 px-4 bg-white border border-slate-200 rounded-xl focus:ring-rOrange"></textarea></div>
                         <div class="md:col-span-2"><label class="block text-xs font-bold text-slate-600 mb-1">Link Google Maps (Opsional)</label><input type="url" name="events[${id}][map]" class="w-full py-2.5 px-4 bg-white border border-slate-200 rounded-xl focus:ring-rOrange" placeholder="https://maps.google.com/..."></div>
@@ -1198,9 +1241,9 @@
             document.getElementById('love-story-wrapper').insertAdjacentHTML('beforeend', html);
         }
 
-        const bankOptions = `{!! $masterBanks->map(function ($b) {
-                return '<option value="' . $b->name . '">' . $b->name . '</option>';
-            })->implode('') !!}`;
+        const bankOptions = `{!! isset($masterBanks)
+            ? $masterBanks->map(fn($b) => '<option value="' . $b->name . '">' . $b->name . '</option>')->implode('')
+            : '' !!}`;
 
         function addBankRow() {
             const id = Date.now();
@@ -1227,14 +1270,10 @@
             const html = `
                 <div class="flex items-center gap-2 youtube-item mt-3">
                     <div class="flex-1 flex items-center bg-slate-50 border border-slate-200 rounded-xl overflow-hidden focus-within:ring-1 focus-within:ring-rOrange focus-within:border-rOrange transition">
-                        <span class="pl-4 pr-2 text-slate-400">
-                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"></path></svg>
-                        </span>
+                        <span class="pl-4 pr-2 text-slate-400"><svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"></path></svg></span>
                         <input type="url" name="youtube_links[]" class="w-full py-3 px-2 bg-transparent border-0 focus:ring-0 text-sm" placeholder="https://www.youtube.com/watch?v=...">
                     </div>
-                    <button type="button" onclick="this.closest('.youtube-item').remove()" class="w-12 h-12 flex items-center justify-center bg-red-50 text-red-500 rounded-xl hover:bg-red-500 hover:text-white transition shrink-0">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                    </button>
+                    <button type="button" onclick="this.closest('.youtube-item').remove()" class="w-12 h-12 flex items-center justify-center bg-red-50 text-red-500 rounded-xl hover:bg-red-500 hover:text-white transition shrink-0"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
                 </div>
             `;
             document.getElementById('youtube-wrapper').insertAdjacentHTML('beforeend', html);
@@ -1268,13 +1307,11 @@
         }
 
         document.addEventListener('DOMContentLoaded', function() {
-            // Interaksi Toggle Switch
+            // TOGGLE SWITCH (ON/OFF FIELD)
             const toggles = document.querySelectorAll('input[type="checkbox"][name^="is_"]');
             toggles.forEach(toggle => {
                 toggle.addEventListener('change', function() {
-                    // Cari wrapper terdekat yang memiliki efek transisi
                     const wrapper = this.closest('.bg-white').querySelector('.transition-opacity');
-
                     if (wrapper) {
                         if (this.checked) {
                             wrapper.classList.remove('opacity-40', 'pointer-events-none');
@@ -1285,22 +1322,53 @@
                 });
             });
 
-            // Modal Upgrade Logic
+            // FILTER KATEGORI TEMA
+            const filterBtns = document.querySelectorAll('.filter-btn');
+            const templateCards = document.querySelectorAll('.template-card');
+
+            filterBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    filterBtns.forEach(b => {
+                        b.classList.remove('bg-slate-900', 'text-white', 'shadow-md');
+                        b.classList.add('bg-slate-100', 'text-slate-600');
+                    });
+                    btn.classList.remove('bg-slate-100', 'text-slate-600');
+                    btn.classList.add('bg-slate-900', 'text-white', 'shadow-md');
+
+                    const filterCat = btn.getAttribute('data-filter');
+
+                    templateCards.forEach(card => {
+                        if (filterCat === 'all' || card.getAttribute('data-category') ===
+                            filterCat) {
+                            card.style.display = 'block';
+                            card.style.animation = 'none';
+                            card.offsetHeight; /* trigger reflow */
+                            card.style.animation = 'slide-up-soft 0.4s ease forwards';
+                        } else {
+                            card.style.display = 'none';
+                        }
+                    });
+                });
+            });
+
+            // MODAL UPGRADE
             const upgradeModal = document.getElementById('upgradeModal');
             const openUpgradeBtns = document.querySelectorAll('.btn-open-upgrade');
             const closeUpgradeBtn = document.getElementById('closeUpgradeBtn');
 
-            openUpgradeBtns.forEach(btn => btn.addEventListener('click', () => {
-                upgradeModal.classList.remove('hidden');
-                setTimeout(() => upgradeModal.classList.remove('opacity-0'), 20);
-            }));
+            if (openUpgradeBtns.length > 0) {
+                openUpgradeBtns.forEach(btn => btn.addEventListener('click', () => {
+                    upgradeModal.classList.remove('hidden');
+                    setTimeout(() => upgradeModal.classList.remove('opacity-0'), 20);
+                }));
 
-            closeUpgradeBtn.addEventListener('click', () => {
-                upgradeModal.classList.add('opacity-0');
-                setTimeout(() => upgradeModal.classList.add('hidden'), 300);
-            });
+                closeUpgradeBtn.addEventListener('click', () => {
+                    upgradeModal.classList.add('opacity-0');
+                    setTimeout(() => upgradeModal.classList.add('hidden'), 300);
+                });
+            }
 
-            // Modal Preview Tema Logic
+            // MODAL PREVIEW TEMA IFRAME
             const modal = document.getElementById('themeModal');
             const modalContent = document.getElementById('modalContent');
             const modalTitle = document.getElementById('modalTitle');

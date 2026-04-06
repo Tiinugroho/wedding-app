@@ -1,8 +1,7 @@
 <header class="pc-header">
-    <div class="m-header d-flex justify-content-center align-items-center text-center me-auto">
-        <a href="{{ route('admin.dashboard') }}" class="b-brand">
-            <h4 class="text-white">RuangRestu</h4>
-            {{-- <img src="{{ asset('adm/assets/images/logo-white.svg') }}" alt="logo image" class="logo-lg" /> --}}
+    <div class="m-header">
+        <a href="{{ route('admin.dashboard') }}" class="b-brand text-primary">
+            <img src="{{ asset('adm/assets/images/logo-white.svg') }}" alt="logo image" class="logo-lg" />
         </a>
     </div>
     <div class="header-wrapper"> <div class="me-auto pc-mob-drp">
@@ -56,7 +55,7 @@
                             <div class="profile-notification-scroll position-relative" style="max-height: calc(100vh - 225px)">
                                 <ul class="list-group list-group-flush w-100">
                                     <li class="list-group-item">
-                                        <a href="{{ route('admin.profile.edit') }}" class="dropdown-item">
+                                        <a href="{{ route('profile.edit') }}" class="dropdown-item">
                                             <span class="d-flex align-items-center">
                                                 <i class="ph ph-user-circle"></i>
                                                 <span>Edit profile</span>
@@ -82,4 +81,5 @@
             </ul>
         </div>
     </div>
+
 </header>

@@ -24,9 +24,15 @@ class Package extends Model
         'features' => 'array',
         'is_active' => 'boolean',
     ];
+    
     public function orders()
     {
         return $this->hasMany(Order::class);
     }
 
+    // Relasi: Satu Paket memiliki banyak Template
+    public function templates()
+    {
+        return $this->hasMany(Template::class);
+    }
 }

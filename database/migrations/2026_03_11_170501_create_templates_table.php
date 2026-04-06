@@ -10,12 +10,17 @@ return new class extends Migration
     {
         Schema::create('templates', function (Blueprint $table) {
             $table->id();
+            // Relasi ke Kategori
             $table->foreignId('category_id')->constrained()->cascadeOnDelete();
+            // Relasi ke Paket (Harga mengikuti paket ini)
+            $table->foreignId('package_id')->constrained()->cascadeOnDelete(); 
+            
             $table->string('name');
-            $table->bigInteger('price');
             $table->string('view_path');
             $table->string('thumbnail')->nullable();
-            $table->json('required_fields'); // Konfigurasi dinamis
+            
+            // Konfigurasi dinamis (Bisa diisi null jika semua fitur sepenuhnya ikut paket)
+            $table->json('required_fields')->nullable(); 
             $table->boolean('is_active')->default(true);
             $table->timestamps();
         });

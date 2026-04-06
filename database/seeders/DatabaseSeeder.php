@@ -53,42 +53,12 @@ class DatabaseSeeder extends Seeder
         ]);
 
         // =========================================================
-        // 4. SEEDER TEMPLATE DINAMIS
-        // =========================================================
-        Template::create([
-            'category_id' => $catModern->id,
-            'name' => 'Luxury Gold',
-            'price' => 0, // Harga template gratis (termasuk paket)
-            'view_path' => 't1',
-            'thumbnail' => null,
-            'is_active' => true,
-            'required_fields' => [
-                'has_video' => true,
-                'has_love_story' => true,
-                'gallery_limit' => 10,
-            ],
-        ]);
-
-        Template::create([
-            'category_id' => $catMinimalist->id,
-            'name' => 'Clean White',
-            'price' => 0,
-            'view_path' => 't2',
-            'thumbnail' => null,
-            'is_active' => true,
-            'required_fields' => [
-                'has_video' => false,
-                'has_love_story' => false,
-                'gallery_limit' => 10,
-            ],
-        ]);
-
-        // =========================================================
-        // 5. SEEDER PAKET HARGA (Berbasis Masa Aktif, SEMUA FITUR TERBUKA)
+        // 4. SEEDER PAKET HARGA (Berbasis Masa Aktif, SEMUA FITUR TERBUKA)
+        // (Dipindah ke atas agar ID-nya bisa dipakai oleh Template)
         // =========================================================
 
-        // --- PAKET 1: SILVER (1 BULAN) ---
-        Package::create([
+        // --- PAKET 1: PREMIUM (1 BULAN) ---
+        $pkgPremium = Package::create([
             'name' => 'PREMIUM',
             'price' => 89000,
             'description' => 'Paket hemat dengan semua fitur premium terbuka, masa aktif 1 Bulan.',
@@ -105,6 +75,37 @@ class DatabaseSeeder extends Seeder
                     'has_video' => true,
                     'active_days' => 30, // Masa aktif dalam hari
                 ],
+            ],
+        ]);
+
+        // =========================================================
+        // 5. SEEDER TEMPLATE DINAMIS
+        // =========================================================
+        Template::create([
+            'category_id' => $catModern->id,
+            'package_id' => $pkgPremium->id, // Menggunakan package_id pengganti price
+            'name' => 'Luxury Gold',
+            'view_path' => 't1',
+            'thumbnail' => null,
+            'is_active' => true,
+            'required_fields' => [
+                'has_video' => true,
+                'has_love_story' => true,
+                'gallery_limit' => 10,
+            ],
+        ]);
+
+        Template::create([
+            'category_id' => $catMinimalist->id,
+            'package_id' => $pkgPremium->id, // Menggunakan package_id pengganti price
+            'name' => 'Clean White',
+            'view_path' => 't2',
+            'thumbnail' => null,
+            'is_active' => true,
+            'required_fields' => [
+                'has_video' => false,
+                'has_love_story' => false,
+                'gallery_limit' => 10,
             ],
         ]);
 
