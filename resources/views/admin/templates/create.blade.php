@@ -57,7 +57,7 @@
 
                 <div class="mb-5">
                     <label class="block text-slate-700 font-bold mb-2 ml-1 text-sm">Upload Thumbnail <span class="text-rRed">*</span></label>
-                    <input type="file" name="thumbnail" accept="image/*" class="w-full bg-slate-50 border border-slate-200 text-slate-800 text-sm rounded-2xl focus:ring-2 focus:ring-rOrange block p-3.5 transition outline-none file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-rOrange file:text-white hover:file:bg-rRed" required>
+                    <input type="file" name="thumbnail" accept="image/*" class="w-full bg-slate-50 border border-slate-200 text-slate-800 text-sm rounded-2xl focus:ring-2 focus:ring-rOrange block p-3.5 transition outline-none file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-rOrange file:text-white hover:file:bg-rRed">
                     @error('thumbnail') <p class="text-red-500 text-xs mt-2 ml-1">{{ $message }}</p> @enderror
                 </div>
             </div>
