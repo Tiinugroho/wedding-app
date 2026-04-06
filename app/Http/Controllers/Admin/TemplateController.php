@@ -34,7 +34,7 @@ class TemplateController extends Controller
             'category_id' => 'required|exists:categories,id',
             'package_id' => 'required|exists:packages,id', // Validasi Paket pengganti Price
             'view_path' => 'required|string|max:255',
-            'thumbnail' => 'required|image|mimes:jpeg,png,jpg|max:5048',
+            'thumbnail' => 'nullable|image|mimes:jpeg,png,jpg|max:5048',
             'gallery_limit' => 'required|integer|min:0',
         ]);
 
