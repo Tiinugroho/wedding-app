@@ -13,56 +13,33 @@
             outline: none;
             background-color: #f8fafc;
         }
+        
+        .dataTables_wrapper .dataTables_length select { margin-left: 0.5rem; margin-right: 0.5rem; padding-right: 2rem; }
+
         .dataTables_wrapper .dataTables_filter input:focus {
             border-color: #FF8B5A;
             box-shadow: 0 0 0 2px rgba(255, 139, 90, 0.2);
             background-color: #ffffff;
         }
 
+        .dataTables_wrapper .dataTables_filter label { display: flex; align-items: center; gap: 0.5rem; }
+
         /* --- STYLING TOMBOL PREV, NEXT & PAGINATION --- */
-        .dataTables_wrapper .dataTables_paginate {
-            display: flex;
-            align-items: center;
-            gap: 0.25rem;
-        }
+        .dataTables_wrapper .dataTables_paginate { display: flex; align-items: center; gap: 0.25rem; }
         
         .dataTables_wrapper .dataTables_paginate .paginate_button {
-            padding: 0.5rem 1rem !important;
-            border-radius: 0.75rem;
-            border: 1px solid #e2e8f0;
-            background: #ffffff;
-            color: #64748b !important;
-            font-weight: 600;
-            font-size: 0.875rem;
-            cursor: pointer;
-            transition: all 0.2s ease-in-out;
+            padding: 0.5rem 1rem !important; border-radius: 0.75rem; border: 1px solid #e2e8f0; background: #ffffff; color: #64748b !important; font-weight: 600; font-size: 0.875rem; cursor: pointer; transition: all 0.2s ease-in-out;
         }
+        .dataTables_wrapper .dataTables_paginate .paginate_button:hover:not(.disabled) { background: #f8fafc; border-color: #FF8B5A; color: #FF8B5A !important; }
+        .dataTables_wrapper .dataTables_paginate .paginate_button.current { background: linear-gradient(to right, #FF5A5A, #FF8B5A) !important; border-color: transparent; color: #ffffff !important; box-shadow: 0 4px 6px -1px rgba(255, 90, 90, 0.2); }
+        .dataTables_wrapper .dataTables_paginate .paginate_button.disabled { opacity: 0.4; cursor: not-allowed; background: #f1f5f9; }
 
-        /* Hover Effect (Jika tombol aktif) */
-        .dataTables_wrapper .dataTables_paginate .paginate_button:hover:not(.disabled) {
-            background: #f8fafc;
-            border-color: #FF8B5A;
-            color: #FF8B5A !important;
-        }
-
-        /* Active Page (Halaman yang sedang dibuka) */
-        .dataTables_wrapper .dataTables_paginate .paginate_button.current,
-        .dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
-            background: linear-gradient(to right, #FF5A5A, #FF8B5A) !important;
-            border-color: transparent;
-            color: #ffffff !important;
-            box-shadow: 0 4px 6px -1px rgba(255, 90, 90, 0.2);
-        }
-
-        /* Disabled State (Jika tidak ada halaman prev/next) */
-        .dataTables_wrapper .dataTables_paginate .paginate_button.disabled,
-        .dataTables_wrapper .dataTables_paginate .paginate_button.disabled:hover {
-            opacity: 0.4;
-            cursor: not-allowed;
-            background: #f1f5f9;
-            border-color: #e2e8f0;
-            color: #94a3b8 !important;
-            box-shadow: none;
+        /* PERBAIKAN: Memastikan teks data kosong di tengah */
+        .dataTables_empty {
+            text-align: center !important;
+            padding: 2.5rem !important;
+            color: #94a3b8;
+            font-weight: 500;
         }
     </style>
 @endpush
@@ -70,13 +47,11 @@
 @section('content')
     <header class="flex flex-row justify-between items-center mb-10">
         <div class="flex items-center gap-4">
-            <button type="button" onclick="toggleSidebar()"
-                class="lg:hidden bg-white p-2.5 rounded-xl border border-slate-100 shadow-sm text-slate-600 focus:outline-none focus:ring-2 focus:ring-rOrange transition group">
+            <button type="button" onclick="toggleSidebar()" class="lg:hidden bg-white p-2.5 rounded-xl border border-slate-100 shadow-sm text-slate-600 focus:outline-none focus:ring-2 focus:ring-rOrange transition group">
                 <svg class="w-6 h-6 group-hover:text-rOrange transition" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
                 </svg>
             </button>
-            
             <div>
                 <h2 class="text-2xl md:text-3xl font-extrabold text-slate-800">Beranda Admin</h2>
                 <p class="text-slate-400 text-sm md:text-base mt-1">Halo {{ Auth::user()->name }}, selamat datang di panel kontrol!</p>
@@ -125,7 +100,6 @@
             <h3 class="text-xl md:text-2xl font-extrabold text-slate-800">Pesanan Terbaru</h3>
         </div>
 
-        {{-- Tabel dengan ID DataTables --}}
         <div class="bg-white rounded-[2.5rem] border border-slate-100 shadow-sm overflow-hidden">
             <div class="overflow-x-auto">
                 <table id="recentOrdersTable" class="w-full text-left border-collapse">
@@ -139,7 +113,8 @@
                         </tr>
                     </thead>
                     <tbody class="text-sm">
-                        @forelse ($recentOrders as $order)
+                        {{-- PERBAIKAN: Gunakan foreach biasa tanpa empty --}}
+                        @foreach ($recentOrders as $order)
                             <tr class="border-b border-slate-50 hover:bg-slate-50/50 transition duration-200">
                                 <td class="p-6">
                                     <div class="font-bold text-slate-800">{{ $order->user->name ?? 'Pengguna Dihapus' }}</div>
@@ -170,8 +145,7 @@
                                     {{ $order->created_at->format('d M Y') }}
                                 </td>
                             </tr>
-                        @empty
-                            @endforelse
+                        @endforeach
                     </tbody>
                 </table>
             </div>
@@ -189,11 +163,13 @@
             $('#recentOrdersTable').DataTable({
                 responsive: true,
                 language: {
-                    url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/id.json' // Mengubah teks ke Bahasa Indonesia
+                    // Gunakan HTTPS agar tidak kena blokir CORS
+                    url: 'https://cdn.datatables.net/plug-ins/1.13.7/i18n/id.json',
+                    // Ubah teks kosong bawaan DataTables
+                    emptyTable: "Belum ada pesanan terbaru saat ini."
                 },
-                // Struktur DOM (Search & Pagination diposisikan agar rapi dengan padding Tailwind)
                 "dom": '<"flex flex-col md:flex-row justify-between items-center p-6 border-b border-slate-100 gap-4"lf>rt<"flex flex-col md:flex-row justify-between items-center p-6 border-t border-slate-100 gap-4"ip>',
-                "pageLength": 5, // Default jumlah baris yang ditampilkan
+                "pageLength": 5, 
                 "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "Semua"]]
             });
         });

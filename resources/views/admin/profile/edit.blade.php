@@ -1,275 +1,208 @@
 @extends('admin.partials.app')
-@section('title', 'Profile')
+@section('title', 'Profil Admin')
 
 @push('styles')
+    {{-- Library Cropper.js untuk potong foto --}}
     <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet">
     <style>
-        .avatar-wrapper {
-            position: relative;
-            display: inline-block;
-        }
-
-        .avatar-preview-img {
-            width: 150px;
-            height: 150px;
-            object-fit: cover;
-            border-radius: 50%;
-            border: 3px solid #dee2e6;
-        }
-
-        .btn-edit-avatar {
-            position: absolute;
-            bottom: 5px;
-            right: 5px;
-            border-radius: 50%;
-            width: 35px;
-            height: 35px;
-            padding: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        #cropper-image {
-            max-width: 100%;
-            display: block;
-        }
+        .avatar-wrapper { position: relative; display: inline-block; }
+        .avatar-preview-img { width: 140px; height: 140px; object-fit: cover; border-radius: 50%; border: 4px solid white; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
+        .btn-edit-avatar { position: absolute; bottom: 5px; right: 5px; border-radius: 50%; width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; z-index: 10; border: 3px solid white; }
+        
+        /* Memastikan area cropper berbentuk lingkaran dan tidak nempel ke pinggir modal */
+        .cropper-view-box, .cropper-face { border-radius: 50%; }
+        .img-container { width: 100%; max-height: 450px; }
+        #cropper-image { display: block; max-width: 100%; }
     </style>
 @endpush
 
 @section('content')
-    <div class="pc-container">
-        <div class="pc-content">
-            <div class="row">
+    <header class="flex flex-row items-center mb-10 gap-4">
+        <button type="button" onclick="toggleSidebar()" class="lg:hidden bg-white p-2.5 rounded-xl border border-slate-100 shadow-sm text-slate-600 focus:outline-none focus:ring-2 focus:ring-rOrange transition group">
+            <svg class="w-6 h-6 group-hover:text-rOrange transition" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+        </button>
+        <div>
+            <h2 class="text-2xl md:text-3xl font-extrabold text-slate-800">Pengaturan Profil</h2>
+            <p class="text-slate-400 text-sm md:text-base mt-1">Kelola data diri, foto profil, dan keamanan akun Anda.</p>
+        </div>
+    </header>
 
-                <div class="col-md-6 mb-4">
-                    <div class="card h-100">
-                        <div class="card-header">
-                            <h5>Profile Information</h5>
-                            <p class="text-muted text-sm mb-0">Update your account's profile information, email address, and
-                                avatar.</p>
+    @if (session('status') === 'profile-updated' || session('status') === 'password-updated')
+        <div class="bg-green-50 border border-green-200 text-green-700 px-6 py-4 rounded-2xl mb-8 flex items-center gap-3 font-medium shadow-sm">
+            <svg class="w-6 h-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            Perubahan berhasil disimpan!
+        </div>
+    @endif
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        {{-- SEKSI KIRI: INFO PROFIL --}}
+        <div class="lg:col-span-7 space-y-8">
+            <div class="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm">
+                
+                {{-- Form Kirim Ulang Verifikasi Email --}}
+                <form id="send-verification" method="post" action="{{ route('admin.verification.send') }}">
+                    @csrf
+                </form>
+
+                <form method="post" action="{{ route('admin.profile.update') }}">
+                    @csrf @method('patch')
+                    <input type="hidden" name="avatar_base64" class="avatar_base64_input">
+
+                    <div class="flex flex-col items-center sm:flex-row gap-8 pb-8 mb-8 border-b border-slate-100">
+                        <div class="avatar-wrapper">
+                            @php
+                                $avatar = auth()->user()->avatar;
+                                $avatarUrl = $avatar ? (filter_var($avatar, FILTER_VALIDATE_URL) ? $avatar : asset('storage/'.$avatar)) : 'https://ui-avatars.com/api/?name='.urlencode(auth()->user()->name).'&background=random&color=fff';
+                            @endphp
+                            <img src="{{ $avatarUrl }}" class="avatar-preview-img avatar-preview-element" alt="Avatar Admin">
+                            
+                            <label class="btn-edit-avatar bg-slate-900 text-white cursor-pointer hover:bg-rOrange hover:scale-110 transition shadow-lg">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                </svg>
+                                <input type="file" class="avatar-upload-input hidden" accept="image/*">
+                            </label>
                         </div>
-                        <div class="card-body">
-
-                            <form id="send-verification" method="post" action="{{ route('admin.verification.send') }}">
-                                @csrf
-                            </form>
-
-                            <form method="post" action="{{ route('admin.profile.update') }}" enctype="multipart/form-data">
-                                @csrf
-                                @method('patch')
-
-                                <input type="hidden" name="avatar_base64" id="avatar_base64">
-
-                                <div class="text-center mb-4">
-                                    @php
-                                        $userAvatar = Auth::user()->avatar ?? null;
-                                        if ($userAvatar) {
-                                            $avatarUrl = filter_var($userAvatar, FILTER_VALIDATE_URL)
-                                                ? $userAvatar
-                                                : asset('storage/' . $userAvatar);
-                                        } else {
-                                            $avatarUrl = asset('adm/assets/images/user/avatar-2.jpg');
-                                        }
-                                    @endphp
-
-                                    <div class="avatar-wrapper">
-                                        <img src="{{ $avatarUrl }}" id="avatar-preview"
-                                            class="avatar-preview-img shadow-sm" alt="User Avatar">
-                                        <label for="avatar-upload" class="btn btn-primary btn-edit-avatar shadow"
-                                            title="Change Avatar" style="cursor: pointer;">
-                                            <i class="ph ph-camera"></i>
-                                        </label>
-                                        <input type="file" id="avatar-upload" class="d-none"
-                                            accept="image/png, image/jpeg, image/jpg">
-                                    </div>
-                                </div>
-
-                                <div class="mb-3">
-                                    <label for="name" class="form-label">Name</label>
-                                    <input type="text" class="form-control @error('name') is-invalid @enderror"
-                                        id="name" name="name" value="{{ old('name', $user->name) }}" required
-                                        autofocus autocomplete="name">
-                                    @error('name')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                </div>
-
-                                <div class="mb-3">
-                                    <label for="email" class="form-label">Email</label>
-                                    <input type="email" class="form-control @error('email') is-invalid @enderror"
-                                        id="email" name="email" value="{{ old('email', $user->email) }}" required
-                                        autocomplete="username">
-                                    @error('email')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-
-                                    @if ($user instanceof \Illuminate\Contracts\Auth\MustVerifyEmail && !$user->hasVerifiedEmail())
-                                        <div class="mt-2">
-                                            <p class="text-sm text-warning mb-1">
-                                                Your email address is unverified.
-                                                <button form="send-verification"
-                                                    class="btn btn-link p-0 m-0 align-baseline text-decoration-none">
-                                                    Click here to re-send the verification email.
-                                                </button>
-                                            </p>
-                                            @if (session('status') === 'verification-link-sent')
-                                                <p class="font-medium text-sm text-success">
-                                                    A new verification link has been sent to your email address.
-                                                </p>
-                                            @endif
-                                        </div>
-                                    @endif
-                                </div>
-
-                                <div class="d-flex align-items-center gap-3 mt-4">
-                                    <button type="submit" class="btn btn-primary">Save Changes</button>
-
-                                    @if (session('status') === 'profile-updated')
-                                        <span class="text-success fw-bold">Saved!</span>
-                                    @endif
-                                </div>
-                            </form>
+                        <div class="text-center sm:text-left">
+                            <h4 class="text-lg font-bold text-slate-800">Foto Profil Admin</h4>
+                            <p class="text-sm text-slate-400 mt-1 max-w-[200px]">Klik ikon kamera untuk menyesuaikan foto profil.</p>
                         </div>
                     </div>
-                </div>
 
-                <div class="col-md-6 mb-4">
-                    <div class="card h-100">
-                        <div class="card-header">
-                            <h5>Update Password</h5>
-                            <p class="text-muted text-sm mb-0">Ensure your account is using a long, random password to stay
-                                secure.</p>
+                    <div class="space-y-5">
+                        <div>
+                            <label class="block text-sm font-bold text-slate-700 mb-2">Nama Lengkap</label>
+                            <input type="text" name="name" value="{{ old('name', $user->name) }}" required class="w-full py-3.5 px-5 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-rOrange/20 focus:border-rOrange transition outline-none @error('name') border-red-500 @enderror">
+                            @error('name') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                         </div>
-                        <div class="card-body">
-                            <form method="post" action="{{ route('admin.password.update') }}">
-                                @csrf
-                                @method('put')
 
-                                <div class="mb-3">
-                                    <label for="current_password" class="form-label">Current Password</label>
-                                    <input type="password"
-                                        class="form-control @error('current_password', 'updatePassword') is-invalid @enderror"
-                                        id="current_password" name="current_password" autocomplete="current-password">
-                                    @error('current_password', 'updatePassword')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                </div>
+                        <div>
+                            <label class="block text-sm font-bold text-slate-700 mb-2">Alamat Email</label>
+                            <input type="email" name="email" value="{{ old('email', $user->email) }}" required class="w-full py-3.5 px-5 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-rOrange/20 focus:border-rOrange transition outline-none @error('email') border-red-500 @enderror">
+                            @error('email') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
 
-                                <div class="mb-3">
-                                    <label for="password" class="form-label">New Password</label>
-                                    <input type="password"
-                                        class="form-control @error('password', 'updatePassword') is-invalid @enderror"
-                                        id="password" name="password" autocomplete="new-password">
-                                    @error('password', 'updatePassword')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                </div>
-
-                                <div class="mb-3">
-                                    <label for="password_confirmation" class="form-label">Confirm Password</label>
-                                    <input type="password"
-                                        class="form-control @error('password_confirmation', 'updatePassword') is-invalid @enderror"
-                                        id="password_confirmation" name="password_confirmation" autocomplete="new-password">
-                                    @error('password_confirmation', 'updatePassword')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                </div>
-
-                                <div class="d-flex align-items-center gap-3 mt-4">
-                                    <button type="submit" class="btn btn-primary">Update Password</button>
-
-                                    @if (session('status') === 'password-updated')
-                                        <span class="text-success fw-bold">Saved!</span>
+                            @if ($user instanceof \Illuminate\Contracts\Auth\MustVerifyEmail && !$user->hasVerifiedEmail())
+                                <div class="mt-3 bg-amber-50 p-4 rounded-xl border border-amber-100">
+                                    <p class="text-sm text-amber-700 mb-1">Alamat email Anda belum diverifikasi.</p>
+                                    <button form="send-verification" class="text-sm font-bold text-amber-600 hover:text-amber-800 hover:underline">
+                                        Klik di sini untuk mengirim ulang email verifikasi.
+                                    </button>
+                                    @if (session('status') === 'verification-link-sent')
+                                        <p class="font-bold text-sm text-green-600 mt-2">Tautan verifikasi baru telah dikirim ke alamat email Anda.</p>
                                     @endif
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-md-12">
-                    <div class="card border border-danger">
-                        <div class="card-header bg-light-danger">
-                            <h5 class="text-danger">Delete Account</h5>
-                            <p class="text-muted text-sm mb-0">Once your account is deleted, all of its resources and data
-                                will be permanently deleted.</p>
-                        </div>
-                        <div class="card-body">
-
-                            @if ($errors->userDeletion->isNotEmpty())
-                                <div class="alert alert-danger">
-                                    Failed to delete account: {{ $errors->userDeletion->first('password') }}
                                 </div>
                             @endif
-
-                            <button type="button" class="btn btn-danger" data-bs-toggle="modal"
-                                data-bs-target="#deleteAccountModal">
-                                Delete Account
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-        </div>
-    </div>
-
-    <div class="modal fade" id="deleteAccountModal" tabindex="-1" aria-labelledby="deleteAccountModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <form method="post" action="{{ route('admin.profile.destroy') }}">
-                    @csrf
-                    @method('delete')
-
-                    <div class="modal-header bg-danger text-white">
-                        <h5 class="modal-title" id="deleteAccountModalLabel">Are you sure you want to delete your account?
-                        </h5>
-                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
-                            aria-label="Close"></button>
-                    </div>
-
-                    <div class="modal-body">
-                        <p class="text-sm text-muted">
-                            Once your account is deleted, all of its resources and data will be permanently deleted. Please
-                            enter your password to confirm you would like to permanently delete your account.
-                        </p>
-
-                        <div class="mb-3 mt-4">
-                            <label for="password_delete" class="form-label sr-only">Password</label>
-                            <input type="password" class="form-control" id="password_delete" name="password"
-                                placeholder="Enter your password to confirm" required>
                         </div>
                     </div>
 
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn btn-danger">Delete Account</button>
-                    </div>
+                    <button type="submit" class="mt-8 w-full sm:w-auto px-10 py-4 bg-slate-900 text-white rounded-2xl font-bold hover:bg-slate-800 transition shadow-xl">
+                        Simpan Profil
+                    </button>
                 </form>
             </div>
         </div>
-    </div>
 
-    <div class="modal fade" id="cropModal" tabindex="-1" aria-labelledby="cropModalLabel" aria-hidden="true"
-        data-bs-backdrop="static">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="cropModalLabel">Crop Profile Picture</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body p-0">
-                    <div class="img-container p-3" style="max-height: 400px; overflow: hidden; text-align: center;">
-                        <img id="cropper-image" src="" style="max-width: 100%;">
+        {{-- SEKSI KANAN: PASSWORD & DELETE ACCOUNT --}}
+        <div class="lg:col-span-5 space-y-8">
+            
+            {{-- Update Password Card --}}
+            <div class="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm">
+                <h3 class="text-xl font-bold text-slate-800 mb-6 flex items-center gap-3 pb-4 border-b border-slate-100">
+                    <div class="w-10 h-10 rounded-xl bg-orange-50 text-orange-500 flex items-center justify-center">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
                     </div>
+                    Ubah Password
+                </h3>
+
+                <form method="post" action="{{ route('admin.password.update') }}" class="space-y-4">
+                    @csrf @method('put')
+                    
+                    <div>
+                        <input type="password" name="current_password" placeholder="Sandi Saat Ini" class="w-full py-3.5 px-5 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-rOrange/20 focus:border-rOrange outline-none">
+                        @error('current_password', 'updatePassword') <p class="text-red-500 text-xs mt-1 ml-1">{{ $message }}</p> @enderror
+                    </div>
+
+                    <div>
+                        <input type="password" name="password" placeholder="Sandi Baru" class="w-full py-3.5 px-5 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-rOrange/20 focus:border-rOrange outline-none">
+                        @error('password', 'updatePassword') <p class="text-red-500 text-xs mt-1 ml-1">{{ $message }}</p> @enderror
+                    </div>
+
+                    <div>
+                        <input type="password" name="password_confirmation" placeholder="Konfirmasi Sandi" class="w-full py-3.5 px-5 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-rOrange/20 focus:border-rOrange outline-none">
+                        @error('password_confirmation', 'updatePassword') <p class="text-red-500 text-xs mt-1 ml-1">{{ $message }}</p> @enderror
+                    </div>
+                    
+                    <button type="submit" class="w-full py-4 mt-2 bg-orange-50 text-rOrange border border-orange-100 rounded-2xl font-bold hover:bg-rOrange hover:text-white transition shadow-sm">
+                        Update Password
+                    </button>
+                </form>
+            </div>
+
+            {{-- Delete Account Card --}}
+            <div class="bg-red-50 p-8 rounded-[2.5rem] border border-red-100 shadow-sm relative overflow-hidden">
+                <div class="absolute -right-6 -bottom-6 opacity-10">
+                    <svg class="w-32 h-32 text-red-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary" id="crop-btn">Crop & Save</button>
+                <div class="relative z-10">
+                    <h3 class="text-xl font-bold text-red-600 mb-2">Hapus Akun</h3>
+                    <p class="text-red-500 text-sm mb-6 leading-relaxed">Setelah dihapus, semua data akan hilang secara permanen dan tidak dapat dikembalikan.</p>
+                    
+                    @if ($errors->userDeletion->isNotEmpty())
+                        <div class="bg-red-100 text-red-700 px-4 py-3 rounded-xl mb-4 text-sm font-medium border border-red-200">
+                            Gagal menghapus: {{ $errors->userDeletion->first('password') }}
+                        </div>
+                    @endif
+
+                    <button type="button" onclick="openDeleteModal()" class="px-6 py-3 bg-red-600 text-white rounded-xl font-bold hover:bg-red-700 transition shadow-lg shadow-red-500/30">
+                        Hapus Akun Permanen
+                    </button>
                 </div>
             </div>
+        </div>
+    </div>
+
+    {{-- MODAL CROP FOTO (TAILWIND) --}}
+    <div id="cropModal" class="fixed inset-0 z-[110] hidden bg-slate-900/90 backdrop-blur-md flex items-center justify-center p-4 transition-all duration-300">
+        <div class="bg-white rounded-[2.5rem] w-full max-w-xl overflow-hidden shadow-2xl transform transition-all">
+            <div class="p-6 border-b border-slate-100 text-center">
+                <h3 class="text-xl font-bold text-slate-800">Sesuaikan Foto</h3>
+            </div>
+            
+            <div class="p-8 bg-slate-50 flex justify-center items-center">
+                <div class="img-container"> 
+                    <img id="cropper-image" src="">
+                </div>
+            </div>
+
+            <div class="p-6 border-t border-slate-100 flex gap-4">
+                <button type="button" onclick="closeManualModal()" class="flex-1 py-4 bg-slate-100 text-slate-600 rounded-2xl font-bold hover:bg-slate-200 transition">Batal</button>
+                <button type="button" id="crop-btn" class="flex-1 py-4 bg-slate-900 text-white rounded-2xl font-bold hover:bg-slate-800 transition">Terapkan</button>
+            </div>
+        </div>
+    </div>
+
+    {{-- MODAL DELETE ACCOUNT (TAILWIND) --}}
+    <div id="deleteAccountModal" class="fixed inset-0 z-[110] hidden bg-slate-900/90 backdrop-blur-md flex items-center justify-center p-4 transition-all duration-300">
+        <div class="bg-white rounded-[2.5rem] w-full max-w-md overflow-hidden shadow-2xl transform transition-all">
+            <form method="post" action="{{ route('admin.profile.destroy') }}">
+                @csrf @method('delete')
+                
+                <div class="p-8 text-center">
+                    <div class="w-16 h-16 bg-red-100 text-red-500 rounded-full flex items-center justify-center mx-auto mb-5">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                    </div>
+                    <h3 class="text-2xl font-extrabold text-slate-800 mb-2">Hapus Akun Anda?</h3>
+                    <p class="text-slate-500 text-sm mb-6 leading-relaxed">Masukkan kata sandi Anda untuk mengonfirmasi bahwa Anda ingin menghapus akun ini secara permanen.</p>
+                    
+                    <input type="password" name="password" placeholder="Kata Sandi Anda" required class="w-full py-3.5 px-5 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition outline-none text-center">
+                </div>
+
+                <div class="p-6 border-t border-slate-100 flex gap-4 bg-slate-50">
+                    <button type="button" onclick="closeDeleteModal()" class="flex-1 py-4 bg-white border border-slate-200 text-slate-600 rounded-2xl font-bold hover:bg-slate-100 transition">Batal</button>
+                    <button type="submit" class="flex-1 py-4 bg-red-600 text-white rounded-2xl font-bold hover:bg-red-700 transition shadow-lg shadow-red-500/30">Hapus Akun</button>
+                </div>
+            </form>
         </div>
     </div>
 @endsection
@@ -277,65 +210,74 @@
 @push('scripts')
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
     <script>
+        // === LOGIKA CROPPER ===
         let cropper;
-        const avatarUpload = document.getElementById('avatar-upload');
+        const cropModal = document.getElementById('cropModal');
         const cropperImage = document.getElementById('cropper-image');
-        const cropModal = new bootstrap.Modal(document.getElementById('cropModal'));
 
-        // 1. Saat file dipilih, tampilkan di modal Cropper
-        avatarUpload.addEventListener('change', function(e) {
-            const files = e.target.files;
-            if (files && files.length > 0) {
-                const file = files[0];
-                const reader = new FileReader();
+        function openManualModal() {
+            cropModal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
 
-                reader.onload = function(event) {
-                    cropperImage.src = event.target.result;
-                    cropModal.show();
-                };
-                reader.readAsDataURL(file);
-            }
-        });
+        function closeManualModal() {
+            cropModal.classList.add('hidden');
+            document.body.style.overflow = '';
+            if (cropper) { cropper.destroy(); cropper = null; }
+        }
 
-        // 2. Inisialisasi Cropper saat modal terbuka
-        document.getElementById('cropModal').addEventListener('shown.bs.modal', function() {
-            cropper = new Cropper(cropperImage, {
-                aspectRatio: 1, // Memaksa kotak 1:1
-                viewMode: 1, // Gambar tidak bisa digeser keluar kotak
-                autoCropArea: 1,
-                responsive: true,
+        document.querySelectorAll('.avatar-upload-input').forEach(input => {
+            input.addEventListener('change', function(e) {
+                if (e.target.files.length > 0) {
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                        cropperImage.src = event.target.result;
+                        openManualModal();
+                        setTimeout(() => {
+                            if (cropper) cropper.destroy();
+                            cropper = new Cropper(cropperImage, {
+                                aspectRatio: 1, viewMode: 1, dragMode: 'move', autoCropArea: 0.8, responsive: true,
+                                restore: false, guides: true, center: true, highlight: false, cropBoxMovable: true, cropBoxResizable: true, toggleDragModeOnDblclick: false,
+                            });
+                        }, 200);
+                    };
+                    reader.readAsDataURL(e.target.files[0]);
+                }
             });
         });
 
-        // 3. Hancurkan Cropper saat modal ditutup agar tidak error saat pilih foto lain
-        document.getElementById('cropModal').addEventListener('hidden.bs.modal', function() {
-            if (cropper) {
-                cropper.destroy();
-                cropper = null;
-            }
-            avatarUpload.value = ''; // Reset input file
-        });
-
-        // 4. Saat tombol "Crop & Save" diklik
         document.getElementById('crop-btn').addEventListener('click', function() {
             if (cropper) {
-                // Ambil area yang dicrop menjadi format base64
-                const canvas = cropper.getCroppedCanvas({
-                    width: 400, // Resolusi ideal
-                    height: 400,
-                });
-
-                const base64Image = canvas.toDataURL('image/jpeg');
-
-                // Ganti preview gambar di halaman
-                document.getElementById('avatar-preview').src = base64Image;
-
-                // Masukkan data base64 ke input hidden form
-                document.getElementById('avatar_base64').value = base64Image;
-
-                // Tutup modal
-                cropModal.hide();
+                const canvas = cropper.getCroppedCanvas({ width: 500, height: 500, imageSmoothingQuality: 'high' });
+                const base64 = canvas.toDataURL('image/jpeg');
+                
+                document.querySelectorAll('.avatar-preview-element').forEach(img => img.src = base64);
+                document.querySelectorAll('.avatar_base64_input').forEach(input => input.value = base64);
+                closeManualModal();
             }
+        });
+
+        // Tutup modal crop jika klik di luar box
+        cropModal.addEventListener('click', function(e) {
+            if (e.target === cropModal) closeManualModal();
+        });
+
+        // === LOGIKA MODAL DELETE ACCOUNT ===
+        const deleteModal = document.getElementById('deleteAccountModal');
+        
+        function openDeleteModal() {
+            deleteModal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeDeleteModal() {
+            deleteModal.classList.add('hidden');
+            document.body.style.overflow = '';
+        }
+
+        // Tutup modal delete jika klik di luar box
+        deleteModal.addEventListener('click', function(e) {
+            if (e.target === deleteModal) closeDeleteModal();
         });
     </script>
 @endpush

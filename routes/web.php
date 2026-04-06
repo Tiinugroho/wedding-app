@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\DashboardController as AdminDashboard;
 use App\Http\Controllers\Admin\MusicController;
 use App\Http\Controllers\Admin\PackageController;
 use App\Http\Controllers\Admin\TemplateController;
+use App\Http\Controllers\Auth\EmailVerificationNotificationController;
 use App\Http\Controllers\Auth\GoogleController;
 use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\Client\CheckoutController;
@@ -55,6 +56,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
             Route::put('/password', [PasswordController::class, 'update'])->name('password.update');
             Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+            Route::post('/email/verification-notification', [EmailVerificationNotificationController::class, 'store'])
+                ->middleware('throttle:6,1')
+                ->name('verification.send');
         });
 
     // ==========================================
@@ -96,6 +100,3 @@ Route::post('/{slug}/rsvp', [FrontController::class, 'storeRsvp'])->name('rsvp.s
 
 // Rute untuk menampilkan halaman undangan untuk dibagikan (Publik)
 Route::get('/{slug}', [FrontController::class, 'showInvitation'])->name('invitation.show');
-
-// DI LUAR GRUP MIDDLEWARE (Bebas Login, karena ini dipanggil oleh server Midtrans)
-Route::post('/midtrans/callback', [CheckoutController::class, 'callback'])->name('midtrans.callback');
