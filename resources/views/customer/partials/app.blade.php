@@ -119,6 +119,18 @@
     @include('customer.partials.mobile_nav')
 
 
+    <script>
+        // Script untuk membuka/menutup Sidebar Offcanvas di Mobile
+        function toggleSidebar() {
+            const sidebar = document.getElementById('admin-sidebar');
+            const backdrop = document.getElementById('sidebar-backdrop');
+
+            // Toggle class translate untuk sidebar
+            sidebar.classList.toggle('-translate-x-full');
+            // Toggle class hidden untuk backdrop
+            backdrop.classList.toggle('hidden');
+        }
+    </script>
     @stack('scripts')
 
 </body>

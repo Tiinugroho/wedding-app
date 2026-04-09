@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Midtrans\Config;
 use Midtrans\Snap;
+use Midtrans\Transaction;
 
 class CheckoutController extends Controller
 {
@@ -235,56 +236,77 @@ class CheckoutController extends Controller
     }
 
     // 🔥 FUNGSI BARU: MENERIMA SUKSES LANGSUNG DARI BROWSER (LOCALHOST FRIENDLY) 🔥
+    // 🔥 FUNGSI FRONTEND CALLBACK (SUDAH DIAMANKAN DARI HACKER) 🔥
     public function frontendCallback(Request $request)
     {
-        // 1. Tangkap hasil dari Javascript Midtrans
         $result = $request->all();
-        
         $orderId = $result['order_id'] ?? null;
-        $transactionStatus = $result['transaction_status'] ?? null;
-        $paymentType = $result['payment_type'] ?? 'unknown'; // Ini menangkap metode pembayaran (qris, bank_transfer, dll)
+        $paymentType = $result['payment_type'] ?? 'unknown'; 
         
-        // 2. Pastikan transaksi benar-benar sukses di layar
-        if (!$orderId || !in_array($transactionStatus, ['capture', 'settlement'])) {
-            return response()->json(['success' => false, 'message' => 'Transaksi belum selesai']);
+        if (!$orderId) {
+            return response()->json(['success' => false, 'message' => 'Order ID tidak ditemukan']);
         }
 
-        // 3. Cari Order berdasarkan ID yang dibayar
-        $order = Order::where('order_number', $orderId)->first();
-        
-        if ($order && $order->status === 'pending') {
-            
-            // A. Update status Order jadi success
-            $order->update([
-                'status' => 'success',
-                'reference' => $result['transaction_id'] ?? null
-            ]);
-            
-            // B. 🔥 SIMPAN JENIS METODE PEMBAYARAN KE TABEL PAYMENTS 🔥
-            Payment::create([
-                'order_id'       => $order->id,
-                'transaction_id' => $result['transaction_id'] ?? null,
-                'payment_type'   => $paymentType,
-                'payload'        => json_encode($result)
-            ]);
+        // ==========================================================
+        // 🔒 SISTEM KEAMANAN: DOUBLE CHECK KE SERVER MIDTRANS
+        // Jangan percaya Javascript! Kita cek langsung ke Midtrans API
+        // ==========================================================
+        Config::$serverKey = config('midtrans.server_key');
+        Config::$isProduction = config('midtrans.is_production');
 
-            // C. Proses Aktivasi (Sama persis seperti webhook)
-            if ($order->package_id != null) {
-                $invitation = Invitation::find($order->invitation_id);
-                if ($invitation) {
-                    $invitation->update([
-                        'status'     => 'active',
-                        'expires_at' => now()->addYear() 
+        try {
+            // Tanya Midtrans status aslinya apa
+            $midtransStatus = Transaction::status($orderId);
+
+            // Pastikan Midtrans menjawab 'capture' atau 'settlement' (LUNAS)
+            if ($midtransStatus && in_array($midtransStatus->transaction_status, ['capture', 'settlement'])) {
+                
+                $order = Order::where('order_number', $orderId)->first();
+                
+                // Cek apakah order masih pending (mencegah update 2x kalau webhook sudah jalan duluan)
+                if ($order && $order->status === 'pending') {
+                    
+                    // A. Update status Order jadi success
+                    $order->update([
+                        'status' => 'success',
+                        'reference' => $midtransStatus->transaction_id ?? ($result['transaction_id'] ?? null)
                     ]);
-                }
-            } else {
-                $baseTagihan = $order->amount - 1500; 
-                $tambahBerapa = ($baseTagihan == 25000) ? 100 : 500;
-                $addon = InvitationAddon::firstOrCreate(['invitation_id' => $order->invitation_id]);
-                $addon->increment('extra_quota', $tambahBerapa);
-            }
-        }
+                    
+                    // B. Simpan ke tabel payments
+                    Payment::create([
+                        'order_id'       => $order->id,
+                        'transaction_id' => $midtransStatus->transaction_id ?? ($result['transaction_id'] ?? null),
+                        'payment_type'   => $paymentType,
+                        'payload'        => json_encode($midtransStatus) // Simpan payload asli dari server
+                    ]);
 
-        return response()->json(['success' => true]);
+                    // C. Proses Aktivasi
+                    if ($order->package_id != null) {
+                        $invitation = Invitation::find($order->invitation_id);
+                        if ($invitation) {
+                            $invitation->update([
+                                'status'     => 'active',
+                                'expires_at' => now()->addYear() 
+                            ]);
+                        }
+                    } else {
+                        $baseTagihan = $order->amount - 1500; 
+                        $tambahBerapa = ($baseTagihan == 25000) ? 100 : 500;
+                        $addon = InvitationAddon::firstOrCreate(['invitation_id' => $order->invitation_id]);
+                        $addon->increment('extra_quota', $tambahBerapa);
+                    }
+                }
+                
+                return response()->json(['success' => true]);
+
+            } else {
+                // Hacker ketahuan bohong!
+                return response()->json(['success' => false, 'message' => 'Penipuan terdeteksi. Status di Midtrans belum lunas.']);
+            }
+
+        } catch (\Exception $e) {
+            // Error jika Order ID ngawur / tidak terdaftar di Midtrans
+            return response()->json(['success' => false, 'message' => 'Transaksi tidak valid.']);
+        }
     }
 }
