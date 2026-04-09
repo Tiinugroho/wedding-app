@@ -1,7 +1,6 @@
 <?php
 
 return [
-
     /*
     |--------------------------------------------------------------------------
     | Third Party Services
@@ -41,4 +40,8 @@ return [
         'redirect' => env('GOOGLE_REDIRECT_URL'),
     ],
 
+    // config/services.php
+    'wa_engine' => [
+        'url' => env('WA_ENGINE_URL', 'http://127.0.0.1:3000'),
+    ],
 ];

@@ -151,7 +151,7 @@ class InvitationController extends Controller
             'groom_photo' => 'nullable|image|mimes:jpg,jpeg,png|max:5048',
             'bride_photo' => 'nullable|image|mimes:jpg,jpeg,png|max:5048',
 
-'turut_mengundang' => 'nullable|string',
+            'turut_mengundang' => 'nullable|string',
 
             // Validasi Akad Statis
             'akad_date' => 'nullable|date',
@@ -229,7 +229,9 @@ class InvitationController extends Controller
         $oldLoveStories = $oldContent['love_stories'] ?? [];
 
         foreach ($inputLoveStories as $index => $story) {
-            if (empty($story['title']) && empty($story['description'])) continue;
+            if (empty($story['title']) && empty($story['description'])) {
+                continue;
+            }
             $imagePath = $oldLoveStories[$index]['image'] ?? null;
             if ($request->hasFile("love_stories.{$index}.image")) {
                 if ($imagePath && Storage::disk('public')->exists($imagePath)) {
@@ -253,11 +255,13 @@ class InvitationController extends Controller
         }
 
         $processTurutMengundang = function ($text) {
-        if (empty($text)) return [];
-        $text = str_replace(["\r\n", "\r", "\n"], ',', $text);
-        $arr = explode(',', $text);
-        return array_values(array_filter(array_map('trim', $arr)));
-    };
+            if (empty($text)) {
+                return [];
+            }
+            $text = str_replace(["\r\n", "\r", "\n"], ',', $text);
+            $arr = explode(',', $text);
+            return array_values(array_filter(array_map('trim', $arr)));
+        };
 
         // Kumpulkan Data
         $contentData = [
@@ -287,7 +291,7 @@ class InvitationController extends Controller
             'bride_father' => $request->bride_father,
             'bride_mother' => $request->bride_mother,
             'bride_ig' => $request->bride_ig,
-'turut_mengundang' => $processTurutMengundang($request->turut_mengundang),
+            'turut_mengundang' => $processTurutMengundang($request->turut_mengundang),
 
             // Akad Statis
             'akad_date' => $request->akad_date,
@@ -307,15 +311,15 @@ class InvitationController extends Controller
             'love_stories' => $loveStoriesData,
             'cover_image' => $coverImagePath,
 
-            'banks' => collect($request->banks)->filter(function ($bank) {
-                return !empty($bank['name']) && !empty($bank['account_number']);
-            })->values()->toArray(),
+            'banks' => collect($request->banks)
+                ->filter(function ($bank) {
+                    return !empty($bank['name']) && !empty($bank['account_number']);
+                })
+                ->values()
+                ->toArray(),
         ];
 
-        InvitationDetail::updateOrCreate(
-            ['invitation_id' => $invitation->id],
-            ['content' => json_encode($contentData)]
-        );
+        InvitationDetail::updateOrCreate(['invitation_id' => $invitation->id], ['content' => json_encode($contentData)]);
 
         return redirect()->back()->with('success', 'Semua perubahan data berhasil disimpan!');
     }
@@ -410,5 +414,30 @@ class InvitationController extends Controller
             'available' => !$exists, // true jika belum dipakai, false jika sudah dipakai
             'slug' => $slug,
         ]);
+    }
+
+    public function show($slug, Request $request)
+    {
+        $invitation = Invitation::where('slug', $slug)->firstOrFail();
+
+        // 🔥 CEK STATUS PEMBAYARAN 🔥
+        if ($invitation->status !== 'active') {
+            // Jika yang mengakses BUKAN pemilik undangan, blokir!
+            if (Auth::id() !== $invitation->user_id) {
+                return response()->view(
+                    'errors.unpaid_invitation',
+                    [
+                        'message' => 'Maaf, undangan ini belum diaktifkan oleh pemilik acara.',
+                    ],
+                    403,
+                );
+            }
+
+            // Jika yang mengakses adalah pemiliknya, berikan flash message preview
+            session()->flash('warning', 'Ini adalah Mode Preview. Tamu tidak bisa melihat undangan ini sampai Anda melakukan pembayaran.');
+        }
+
+        // Logika menampilkan template undangan Anda...
+        return view('templates.' . $invitation->template->view_path, compact('invitation'));
     }
 }

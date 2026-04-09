@@ -11,26 +11,29 @@ use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\Client\CheckoutController;
 use App\Http\Controllers\Client\DashboardController as CustomerDashboard;
 use App\Http\Controllers\Client\InvitationController;
+use App\Http\Controllers\Client\WhatsappController;
 use App\Http\Controllers\FrontController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomeController::class, 'index'])->name('welcome');
-Route::get('/katalog-tema', [HomeController::class, 'katalog'])->name('katalog'); // RUTE BARU
+Route::get('/katalog-tema', [HomeController::class, 'katalog'])->name('katalog');
 
 // ==========================================
-// GOOGLE AUTH (Taruh di atas agar tidak bentrok dengan slug)
+// GOOGLE AUTH
 // ==========================================
 Route::get('/auth/google/redirect', [GoogleController::class, 'redirect'])->name('google.login');
 Route::get('/auth/google/callback', [GoogleController::class, 'callback']);
 Route::get('/check-slug', [InvitationController::class, 'checkSlug'])->name('check.slug');
+
+// 🔥 MIDTRANS CALLBACK (WEBHOOK) 🔥
+// Wajib diletakkan di LUAR middleware auth, karena yang mengakses ini adalah server Midtrans secara otomatis.
+Route::post('/midtrans/callback', [CheckoutController::class, 'callback'])->name('midtrans.callback');
+
 // Grup besar: Harus Login & Email Verified
 Route::middleware(['auth', 'verified'])->group(function () {
-
-    // ==========================================
     // TRAFFIC CONTROLLER (PENGATUR ARAH OTOMATIS)
-    // ==========================================
     Route::get('/dashboard', function () {
         if (auth()->user()->role === 'admin') {
             return redirect()->route('admin.dashboard');
@@ -81,10 +84,26 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::put('/password', [PasswordController::class, 'update'])->name('password.update');
             Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-            // Di dalam Grup Middleware Customer:
-            Route::post('/checkout/{invitation_id}', [CheckoutController::class, 'process'])->name('customer.checkout');
+            // 🔥 ROUTE CHECKOUT MIDTRANS 🔥
+            Route::get('/checkout/{invitation_id}', [CheckoutController::class, 'process'])->name('checkout.process');
+            Route::post('/checkout/get-snap-token', [CheckoutController::class, 'getSnapToken'])->name('checkout.token');
 
-            // DIHAPUS: Route showInvitation tidak boleh ada di sini karena ini area rahasia (wajib login)
+            // Route WA Blast
+            Route::get('/blast/{invitation_id}', [WhatsappController::class, 'index'])->name('blast.index');
+            Route::post('/blast/import/{invitation_id}', [WhatsappController::class, 'importExcel'])->name('blast.import');
+            Route::post('/blast/manual/{invitation_id}', [WhatsappController::class, 'storeGuest'])->name('blast.manual');
+            Route::get('/blast/template-excel', [WhatsappController::class, 'downloadTemplate'])->name('blast.template');
+            Route::delete('/blast/guest/{id}', [WhatsappController::class, 'destroyGuest'])->name('blast.deleteGuest');
+            Route::post('/blast/start', [WhatsappController::class, 'startSession'])->name('blast.start');
+            Route::post('/blast/send/{invitation_id}', [WhatsappController::class, 'blast'])->name('blast.send');
+            Route::post('/wa/logout', [WhatsappController::class, 'logoutSession'])->name('blast.logout');
+
+            // 🔥 ROUTE CHECKOUT MIDTRANS 🔥
+            Route::get('/checkout/{invitation_id}', [CheckoutController::class, 'process'])->name('checkout.process');
+            Route::post('/checkout/get-snap-token', [CheckoutController::class, 'getSnapToken'])->name('checkout.token');
+
+            // ---> TAMBAHKAN BARIS INI:
+            Route::post('/checkout/success', [CheckoutController::class, 'frontendCallback'])->name('checkout.success');
         });
 });
 
@@ -94,9 +113,5 @@ require __DIR__ . '/auth.php';
 // RUTE UNDANGAN DIGITAL (GUEST VIEW & RSVP)
 // PERINGATAN: Rute wildcard seperti '/{slug}' WAJIB selalu berada di baris paling bawah!
 // ====================================================================
-
-// Rute untuk menangani submit form RSVP dari tamu
 Route::post('/{slug}/rsvp', [FrontController::class, 'storeRsvp'])->name('rsvp.store');
-
-// Rute untuk menampilkan halaman undangan untuk dibagikan (Publik)
 Route::get('/{slug}', [FrontController::class, 'showInvitation'])->name('invitation.show');

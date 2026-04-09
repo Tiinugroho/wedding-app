@@ -24,7 +24,7 @@
             Undangan Saya
         </a>
 
-        <a href="#"
+        {{-- <a href="{{ route('customer.blast.index') }}"
             class="nav-item flex items-center gap-4 px-5 py-4 rounded-2xl transition group {{ request()->routeIs('customer.blast.*') ? 'active' : 'text-slate-400 font-semibold hover:bg-slate-100 hover:text-slate-600' }}">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -32,7 +32,7 @@
                 </path>
             </svg>
             Blast WhatsApp
-        </a>
+        </a> --}}
 
         <a href="{{ route('customer.profile.edit') }}"
             class="nav-item flex items-center gap-4 px-5 py-4 rounded-2xl transition group {{ request()->routeIs('customer.profile.*') ? 'active' : 'text-slate-400 font-semibold hover:bg-slate-100 hover:text-slate-600' }}">

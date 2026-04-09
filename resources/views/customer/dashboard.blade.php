@@ -4,6 +4,22 @@
 @push('styles')
     <script type="text/javascript" src="https://app.sandbox.midtrans.com/snap/snap.js"
         data-client-key="{{ config('midtrans.client_key') }}"></script>
+    <style>
+        /* Animasi untuk Modal Pop-up */
+        @keyframes shake-warning {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(-10deg); }
+            75% { transform: rotate(10deg); }
+        }
+        @keyframes zoom-in-bounce {
+            0% { transform: scale(0.5); opacity: 0; }
+            70% { transform: scale(1.1); opacity: 1; }
+            100% { transform: scale(1); }
+        }
+        .animate-warning {
+            animation: zoom-in-bounce 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275), shake-warning 2s infinite ease-in-out 0.5s;
+        }
+    </style>
 @endpush
 
 @section('content')
@@ -13,6 +29,23 @@
             <p class="text-slate-400 text-sm md:text-base mt-1">Halo {{ Auth::user()->name }}, selamat datang kembali!</p>
         </div>
     </header>
+
+    {{-- 🔥 TRIGGER POP-UP UNTUK SESSION LARAVEL 🔥 --}}
+    @if (session('success'))
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                showUniversalAlert('success', 'Berhasil!', "{{ session('success') }}");
+            });
+        </script>
+    @endif
+
+    @if (session('error'))
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                showUniversalAlert('error', 'Gagal!', "{{ session('error') }}");
+            });
+        </script>
+    @endif
 
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-5 md:gap-8 mb-12">
         <div class="dashboard-card bg-white p-6 md:p-8 rounded-[2.5rem] border border-slate-100 shadow-sm relative overflow-hidden group">
@@ -120,7 +153,7 @@
 
                         <div class="flex items-center gap-2 mb-6">
                             @if ($invitation->status != 'active')
-                                <button type="button" onclick="payNow('{{ $invitation->id }}')"
+                                <button type="button" onclick="payNow(this, '{{ $invitation->id }}')"
                                     class="w-full flex items-center justify-center py-3 bg-gradient-to-r from-rRed to-rOrange text-white rounded-2xl font-bold text-sm hover:scale-[1.02] transition shadow-lg shadow-rOrange/30">
                                     Aktifkan & Bayar
                                 </button>
@@ -132,8 +165,8 @@
 
                     <div class="grid grid-cols-2 gap-3">
                         @if($isLocked)
-                            {{-- TOMBOL TERKUNCI JIKA LEWAT 7 HARI --}}
-                            <button type="button" onclick="alert('Waktu uji coba (Trial) 7 hari telah habis. Silakan Aktifkan & Bayar untuk membuka kunci dan mengedit data kembali.')"
+                            {{-- TOMBOL TERKUNCI MENGGUNAKAN UNIVERSAL MODAL --}}
+                            <button type="button" onclick="showUniversalAlert('warning', 'Terkunci', 'Waktu uji coba (Trial) 7 hari telah habis.\n\nSilakan klik Aktifkan & Bayar untuk membuka kunci dan mengedit data kembali.')"
                                 class="flex items-center justify-center py-3 bg-slate-200 text-slate-400 rounded-2xl font-bold text-sm cursor-not-allowed">
                                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
                                 Terkunci
@@ -149,6 +182,10 @@
                         <a href="{{ url('/' . $invitation->slug) }}" target="_blank"
                             class="flex items-center justify-center py-3 bg-rRed text-white rounded-2xl font-bold text-sm hover:bg-rRed/90 transition shadow-lg shadow-rRed/20">
                             Live Preview
+                        </a>
+                        <a href="{{ route('customer.blast.index', $invitation->id) }}"
+                            class="flex items-center justify-center py-3 bg-rOrange text-white rounded-2xl font-bold text-sm hover:bg-rOrange/90 transition shadow-lg shadow-rOrange/20">
+                            Buka Halaman WA Blast
                         </a>
                     </div>
                 </div>
@@ -167,10 +204,94 @@
 
         </div>
     </section>
+
+    {{-- ========================================================= --}}
+    {{-- 🔥 UNIVERSAL ALERT MODAL (UNTUK SUCCESS, ERROR, WARNING) 🔥 --}}
+    {{-- ========================================================= --}}
+    <div id="universal-modal" class="fixed inset-0 z-[10000] flex items-center justify-center opacity-0 pointer-events-none transition-all duration-300">
+        <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm transition-all" onclick="closeUniversalModal()"></div>
+        <div class="relative bg-white/95 backdrop-blur-xl p-8 md:p-10 rounded-[2.5rem] shadow-2xl border-2 border-white text-center max-w-sm w-full mx-4 transform scale-95 transition-all duration-300" id="universal-modal-box">
+            <div class="relative w-24 h-24 mx-auto mb-6">
+                <div id="um-ping" class="absolute inset-0 rounded-full animate-ping opacity-25"></div>
+                <div id="um-icon-bg" class="relative w-24 h-24 rounded-full flex items-center justify-center border-4 border-white shadow-inner animate-warning">
+                    <svg id="um-icon" class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"></svg>
+                </div>
+            </div>
+            <h3 id="um-title" class="text-2xl font-extrabold text-slate-800 mb-3"></h3>
+            <p id="um-message" class="text-slate-500 text-sm mb-8 leading-relaxed px-2 whitespace-pre-line"></p>
+            <div class="flex flex-col gap-3">
+                <button type="button" id="um-btn" onclick="closeUniversalModal()" class="w-full text-white px-6 py-4 rounded-2xl font-bold shadow-lg hover:-translate-y-0.5 transition-all active:scale-95">Tutup Layar</button>
+            </div>
+        </div>
+    </div>
 @endsection
 
 @push('scripts')
     <script>
+        // =========================================================
+        // 🔥 LOGIKA FUNGSI UNIVERSAL ALERT MODAL 🔥
+        // =========================================================
+        let universalModalCallback = null;
+
+        function showUniversalAlert(type, title, message, callback = null) {
+            const modal = document.getElementById('universal-modal');
+            const box = document.getElementById('universal-modal-box');
+            const ping = document.getElementById('um-ping');
+            const iconBg = document.getElementById('um-icon-bg');
+            const icon = document.getElementById('um-icon');
+            const titleEl = document.getElementById('um-title');
+            const msgEl = document.getElementById('um-message');
+            const btn = document.getElementById('um-btn');
+
+            universalModalCallback = callback;
+
+            // Bersihkan sisa class sebelumnya
+            ping.className = "absolute inset-0 rounded-full animate-ping opacity-25";
+            iconBg.className = "relative w-24 h-24 rounded-full flex items-center justify-center border-4 border-white shadow-inner animate-warning";
+            btn.className = "w-full text-white px-6 py-4 rounded-2xl font-bold shadow-lg hover:-translate-y-0.5 transition-all active:scale-95";
+
+            // Atur Warna & Ikon berdasarkan 'type'
+            if (type === 'success') {
+                ping.classList.add('bg-emerald-100');
+                iconBg.classList.add('bg-emerald-50', 'text-emerald-500');
+                btn.classList.add('bg-gradient-to-r', 'from-emerald-500', 'to-teal-600', 'shadow-emerald-500/30');
+                icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path>';
+            } else if (type === 'error') {
+                ping.classList.add('bg-red-100');
+                iconBg.classList.add('bg-red-50', 'text-red-500');
+                btn.classList.add('bg-gradient-to-r', 'from-red-500', 'to-rose-600', 'shadow-red-500/30');
+                icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path>';
+            } else { // warning
+                ping.classList.add('bg-amber-100');
+                iconBg.classList.add('bg-amber-50', 'text-amber-500');
+                btn.classList.add('bg-gradient-to-r', 'from-amber-500', 'to-orange-600', 'shadow-amber-500/30');
+                icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>';
+            }
+
+            titleEl.innerText = title;
+            msgEl.innerText = message;
+
+            // Munculkan Modal
+            modal.classList.remove('opacity-0', 'pointer-events-none');
+            setTimeout(() => { box.classList.remove('scale-95'); box.classList.add('scale-100'); }, 10);
+        }
+
+        function closeUniversalModal() {
+            const modal = document.getElementById('universal-modal');
+            const box = document.getElementById('universal-modal-box');
+            box.classList.remove('scale-100'); box.classList.add('scale-95');
+            modal.classList.add('opacity-0', 'pointer-events-none');
+
+            // Jalankan callback (misal: refresh halaman) jika ada, setelah animasi tutup selesai
+            if (universalModalCallback) {
+                setTimeout(universalModalCallback, 300);
+                universalModalCallback = null;
+            }
+        }
+
+        // =========================================================
+        // 🔥 LOGIKA LIVE PREVIEW URL (Dari form ke tab baru) 🔥
+        // =========================================================
         document.addEventListener('DOMContentLoaded', function() {
             const previewBtn = document.getElementById('btn-live-preview');
             const mainForm = document.querySelector('form[action*="invitations"]'); 
@@ -195,42 +316,87 @@
                 });
             }
         });
-    </script>
 
-    <script>
-        function payNow(invitationId) {
-            fetch(`/customer/checkout/${invitationId}`, {
+        // =========================================================
+        // 🔥 LOGIKA MIDTRANS PEMBAYARAN AJAX 🔥
+        // =========================================================
+        function payNow(btnElement, invitationId) {
+            const originalText = btnElement.innerText;
+            btnElement.innerText = 'Memproses...';
+            btnElement.disabled = true;
+
+            // Memanggil endpoint baru yang sudah kita buat sebelumnya di CheckoutController
+            fetch('/customer/checkout/get-snap-token', {
                     method: 'POST',
                     headers: {
+                        'Content-Type': 'application/json',
                         'X-CSRF-TOKEN': '{{ csrf_token() }}',
                         'Accept': 'application/json'
-                    }
+                    },
+                    // Karena ini aktivasi dari dashboard, kita kirimkan 'package_premium'
+                    body: JSON.stringify({ type: 'package_premium', invitation_id: invitationId })
                 })
                 .then(response => response.json())
                 .then(data => {
+                    btnElement.innerText = originalText;
+                    btnElement.disabled = false;
+
                     if (data.snap_token) {
                         snap.pay(data.snap_token, {
                             onSuccess: function(result) {
-                                alert("Pembayaran Berhasil! Undangan Anda telah aktif.");
-                                window.location.reload();
-                            },
+                            // Ubah teks tombol jadi Loading
+                            if(typeof btnElement !== 'undefined') btnElement.innerText = 'Menyimpan...';
+
+                            // Tembak data sukses ke server lokal (beserta jenis pembayarannya)
+                            fetch('/customer/checkout/success', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                                },
+                                body: JSON.stringify(result)
+                            })
+                            .then(res => res.json())
+                            .then(data => {
+                                if(data.success) {
+                                    // Rapikan nama metode (contoh: "bank_transfer" jadi "BANK TRANSFER")
+                                    let metode = result.payment_type.replace(/_/g, ' ').toUpperCase();
+                                    
+                                    showUniversalAlert(
+                                        'success', 
+                                        'Pembayaran Berhasil!', 
+                                        'Transaksi sukses menggunakan metode:\n' + metode, 
+                                        () => window.location.reload()
+                                    );
+                                } else {
+                                    showUniversalAlert('warning', 'Menunggu', 'Pembayaran sedang diproses oleh bank.');
+                                }
+                            })
+                            .catch(err => {
+                                showUniversalAlert('error', 'Terjadi Kesalahan', 'Gagal menyimpan status ke database lokal.');
+                            });
+                        },
                             onPending: function(result) {
-                                alert("Menunggu pembayaran Anda.");
+                                showUniversalAlert('warning', 'Menunggu Pembayaran', 'Silakan selesaikan pembayaran Anda di panduan Midtrans yang diberikan.');
                             },
                             onError: function(result) {
-                                alert("Pembayaran gagal!");
+                                showUniversalAlert('error', 'Pembayaran Gagal!', 'Proses pembayaran Anda mengalami kegagalan.');
                             },
                             onClose: function() {
-                                alert('Anda menutup pop-up tanpa menyelesaikan pembayaran');
+                                console.log('Pop-up Midtrans ditutup sebelum dibayar');
                             }
                         });
+                    } else if (data.error) {
+                        showUniversalAlert('error', 'Terjadi Kesalahan', data.error);
                     } else {
-                        alert('Gagal mendapatkan token pembayaran');
+                        showUniversalAlert('error', 'Gagal', 'Gagal mendapatkan token pembayaran dari server.');
                     }
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    alert('Terjadi kesalahan sistem.');
+                    showUniversalAlert('error', 'Koneksi Terputus', 'Gagal menghubungi server sistem pembayaran.');
+                    btnElement.innerText = originalText;
+                    btnElement.disabled = false;
                 });
         }
     </script>

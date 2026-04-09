@@ -91,6 +91,7 @@
                     @if($invitation->status == 'active')
                     <button onclick="navigator.clipboard.writeText('{{ url('/' . $invitation->slug) }}'); alert('Link berhasil disalin!')" class="flex-1 py-3 bg-white border border-slate-200 text-slate-600 rounded-xl text-xs font-bold hover:bg-slate-50 transition">Copy Link</button>
                     <a href="{{ url('/' . $invitation->slug) }}" target="_blank" class="flex-1 py-3 text-center bg-white border border-slate-200 text-slate-600 rounded-xl text-xs font-bold hover:bg-slate-50 transition">Lihat Live</a>
+                    <a href="{{ route('customer.blast.index', $invitation->id) }}" class="flex-1 py-3 text-center bg-white border border-slate-200 text-slate-600 rounded-xl text-xs font-bold hover:bg-slate-50 transition">WA Blast</a>
                     @elseif($invitation->status == 'unpaid')
                     <a href="#" class="flex-1 py-3 text-center bg-rYellow/10 border border-rYellow/30 text-rOrange rounded-xl text-xs font-bold hover:bg-rYellow/20 transition">Kelola Data</a>
                     @endif

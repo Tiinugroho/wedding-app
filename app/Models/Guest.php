@@ -15,6 +15,8 @@ class Guest extends Model
         'is_present' => 'boolean',
     ];
 
+    protected $fillable = ['invitation_id', 'name', 'phone_number', 'slug_name', 'is_present', 'is_blasted', 'blasted_at'];
+
     public function invitation()
     {
         return $this->belongsTo(Invitation::class);
