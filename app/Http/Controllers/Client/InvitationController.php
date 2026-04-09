@@ -21,7 +21,6 @@ class InvitationController extends Controller
     public function index()
     {
         // Mengambil semua undangan milik klien yang sedang login
-        // Beserta relasi template dan detailnya agar efisien
         $invitations = Invitation::with(['template', 'details'])
             ->where('user_id', Auth::id())
             ->latest()
@@ -30,9 +29,6 @@ class InvitationController extends Controller
         return view('customer.invitations.index', compact('invitations'));
     }
 
-    /**
-     * Menampilkan halaman form pembuatan undangan baru
-     */
     public function create()
     {
         $packages = Package::where('is_active', true)->orderBy('price', 'asc')->get();
@@ -41,12 +37,8 @@ class InvitationController extends Controller
         return view('customer.invitations.create', compact('packages', 'templates'));
     }
 
-    /**
-     * Menyimpan data awal undangan ke database
-     */
     public function store(Request $request)
     {
-        // 1. Validasi Input
         $request->validate(
             [
                 'slug' => 'required|string|alpha_dash|max:255|unique:invitations,slug',
@@ -59,21 +51,18 @@ class InvitationController extends Controller
             ],
         );
 
-        // 2. Buat Undangan Induk (Status: Draft)
         $invitation = Invitation::create([
             'user_id' => Auth::id(),
             'template_id' => $request->template_id,
             'slug' => strtolower($request->slug),
-            'status' => 'draft', // Dibuat draft dulu sampai dia bayar / melengkapi data
+            'status' => 'draft',
         ]);
 
-        // 3. Buatkan juga baris kosong di tabel invitation_details agar tidak error saat di-edit
         InvitationDetail::create([
             'invitation_id' => $invitation->id,
             'content' => json_encode([]),
         ]);
 
-        // 4. Catat juga pesanan (Order) jika Anda ingin mengintegrasikan dengan pembayaran nanti
         Order::create([
             'order_number' => 'INV-' . time() . strtoupper(Str::random(5)),
             'user_id' => Auth::id(),
@@ -83,13 +72,9 @@ class InvitationController extends Controller
             'status' => 'pending',
         ]);
 
-        // 5. Arahkan langsung ke halaman Edit untuk isi data mempelai
         return redirect()->route('customer.invitations.edit', $invitation->id)->with('success', 'Langkah 1 Selesai! Silakan lengkapi data acara dan mempelai Anda.');
     }
 
-    /**
-     * Menampilkan halaman form pengisian data (Edit Undangan)
-     */
     public function edit($id)
     {
         $invitation = Invitation::with(['details', 'template', 'music', 'orders.package'])
@@ -97,11 +82,8 @@ class InvitationController extends Controller
             ->findOrFail($id);
 
         $musics = Music::orderBy('category')->orderBy('title')->get();
-        // TAMBAHAN: Ambil data template agar klien bisa ganti tema
         $templates = Template::where('is_active', true)->get();
-
         $content = json_decode($invitation->details->content ?? '{}', true);
-
         $masterBanks = Bank::where('is_active', true)->orderBy('name', 'asc')->get();
 
         $currentOrder = $invitation->orders->last();
@@ -118,18 +100,15 @@ class InvitationController extends Controller
 
         $upgradePackages = Package::where('is_active', true)->where('price', '>', $currentPackagePrice)->orderBy('price', 'asc')->get();
 
-        // TAMBAHKAN $templates ke compact
         return view('customer.invitations.edit', compact('invitation', 'templates', 'musics', 'content', 'packageLogic', 'currentPackageName', 'currentPackagePrice', 'upgradePackages', 'masterBanks'));
     }
 
-    /**
-     * Menyimpan pembaruan data mempelai, acara, dan musik
-     */
     public function update(Request $request, $id)
     {
         $invitation = Invitation::where('user_id', Auth::id())->findOrFail($id);
         $oldContent = json_decode($invitation->details->content ?? '{}', true);
 
+        // 🔥 VALIDASI SEMUA INPUT TERMASUK FITUR BARU 🔥
         $request->validate([
             'template_id' => 'required|exists:templates,id',
             'couple_order' => 'required|in:groom_first,bride_first',
@@ -153,19 +132,24 @@ class InvitationController extends Controller
 
             'turut_mengundang' => 'nullable|string',
 
-            // Validasi Akad Statis
             'akad_date' => 'nullable|date',
             'akad_time' => 'nullable|string',
             'akad_location' => 'nullable|string',
             'akad_address' => 'nullable|string',
             'akad_map' => 'nullable|url',
 
-            // Validasi Resepsi Dinamis
             'events' => 'nullable|array',
 
             'enable_dresscode' => 'nullable|boolean',
             'dresscode' => 'nullable|string',
+
+            // VALIDASI ADAB, PROTOKOL, LIVESTREAM, & QR
             'enable_health_protocol' => 'nullable|boolean',
+            'enable_adab_walimah' => 'nullable|boolean',
+            'enable_qr_attendance' => 'nullable|boolean',
+            'is_livestream_active' => 'nullable|boolean',
+            'live_stream_platform' => 'nullable|string|in:youtube,tiktok,zoom,instagram',
+            'live_stream_link' => 'nullable|url',
 
             'youtube_links' => 'nullable|array',
             'youtube_links.*' => 'nullable|url',
@@ -177,7 +161,6 @@ class InvitationController extends Controller
             'cover_image' => 'nullable|image|mimes:jpg,jpeg,png|max:5048',
         ]);
 
-        // 2. Di bawah proses foto mempelai, tambahkan pemrosesan Cover & Galeri:
         $coverImagePath = $oldContent['cover_image'] ?? null;
         if ($request->hasFile('cover_image')) {
             if ($coverImagePath && Storage::disk('public')->exists($coverImagePath)) {
@@ -186,7 +169,6 @@ class InvitationController extends Controller
             $coverImagePath = $request->file('cover_image')->store('covers/' . $invitation->id, 'public');
         }
 
-        // PROSES SIMPAN GALERI MEKANIS (Poin 6)
         if ($request->hasFile('gallery_files')) {
             foreach ($request->file('gallery_files') as $file) {
                 $path = $file->store('galleries/' . $invitation->id, 'public');
@@ -202,7 +184,6 @@ class InvitationController extends Controller
             $invitation->update(['template_id' => $request->template_id]);
         }
 
-        // Proses Foto
         $groomPhotoPath = $oldContent['groom_photo'] ?? null;
         if ($request->hasFile('groom_photo')) {
             if ($groomPhotoPath && Storage::disk('public')->exists($groomPhotoPath)) {
@@ -223,7 +204,6 @@ class InvitationController extends Controller
             $invitation->update(['music_id' => $request->music_id]);
         }
 
-        // Proses Love Story
         $loveStoriesData = [];
         $inputLoveStories = $request->love_stories ?? [];
         $oldLoveStories = $oldContent['love_stories'] ?? [];
@@ -263,21 +243,22 @@ class InvitationController extends Controller
             return array_values(array_filter(array_map('trim', $arr)));
         };
 
-        // Kumpulkan Data
+        // 🔥 KUMPULKAN DATA KESELURUHAN 🔥
         $contentData = [
             'couple_order' => $request->couple_order,
             'cover_greeting' => $request->cover_greeting ?? 'Kepada Yth.',
             'quotes' => $request->quotes,
 
-            // Toggles
+            // Toggles Umum
             'is_turut_mengundang_active' => $request->has('is_turut_mengundang_active'),
             'is_event_active' => $request->has('is_event_active'),
             'is_story_active' => $request->has('is_story_active'),
             'is_gallery_active' => $request->has('is_gallery_active'),
             'is_gift_active' => $request->has('is_gift_active'),
-            'is_wishes_active' => $request->has('is_wishes_active'), // ini untuk hasil ucapannya
+            'is_wishes_active' => $request->has('is_wishes_active'),
             'is_guest_info_active' => $request->has('is_guest_info_active'),
 
+            // Data Mempelai
             'groom_photo' => $groomPhotoPath,
             'bride_photo' => $bridePhotoPath,
             'groom_name' => $request->groom_name,
@@ -305,7 +286,14 @@ class InvitationController extends Controller
 
             'enable_dresscode' => $request->has('enable_dresscode'),
             'dresscode' => $request->dresscode,
+
+            // 🔥 DATA WALIMAH & PREMIUM 🔥
             'enable_health_protocol' => $request->has('enable_health_protocol'),
+            'enable_adab_walimah' => $request->has('enable_adab_walimah'),
+            'is_livestream_active' => $request->has('is_livestream_active'),
+            'live_stream_platform' => $request->live_stream_platform,
+            'live_stream_link' => $request->live_stream_link,
+            'enable_qr_attendance' => $request->has('enable_qr_attendance'),
 
             'youtube_links' => array_values(array_filter($request->youtube_links ?? [])),
             'love_stories' => $loveStoriesData,
@@ -330,30 +318,24 @@ class InvitationController extends Controller
             ->where('user_id', auth()->id())
             ->findOrFail($id);
 
-        // 1. Ambil Limit dari Paket
         $currentOrder = $invitation->orders->last();
         $features = is_string($currentOrder->package->features) ? json_decode($currentOrder->package->features, true) : $currentOrder->package->features;
         $maxPhotos = $features['logic']['gallery_limit'] ?? 5;
 
-        // 2. Hitung jumlah foto yang sudah diupload
         $currentPhotoCount = Gallery::where('invitation_id', $invitation->id)->where('type', 'photo')->count();
 
-        // 3. Validasi
         $request->validate([
-            'files.*' => 'required|image|mimes:jpg,jpeg,png|max:2048', // Max 2MB per foto
+            'files.*' => 'required|image|mimes:jpg,jpeg,png|max:2048',
         ]);
 
         if ($request->hasFile('files')) {
             $files = $request->file('files');
-
-            // Cek apakah upload baru akan melebihi batas
             if ($currentPhotoCount + count($files) > $maxPhotos) {
                 return back()->with('error', "Gagal! Batas maksimal paket Anda adalah $maxPhotos foto. Saat ini sudah ada $currentPhotoCount foto.");
             }
 
             foreach ($files as $file) {
                 $path = $file->store('galleries/' . $invitation->id, 'public');
-
                 Gallery::create([
                     'invitation_id' => $invitation->id,
                     'file_path' => $path,
@@ -367,12 +349,10 @@ class InvitationController extends Controller
 
     public function destroy(Invitation $invitation)
     {
-        // Pastikan hanya pemilik yang bisa menghapus
         if ($invitation->user_id !== auth()->id()) {
             abort(403);
         }
 
-        // Hapus semua foto galeri fisik sebelum hapus data database
         foreach ($invitation->galleries as $gallery) {
             if (Storage::disk('public')->exists($gallery->file_path)) {
                 Storage::disk('public')->delete($gallery->file_path);
@@ -384,12 +364,8 @@ class InvitationController extends Controller
         return redirect()->route('customer.invitations.index')->with('success', 'Undangan berhasil dihapus permanen.');
     }
 
-    /**
-     * Menghapus hanya satu foto di galeri (Fungsi Manual)
-     */
     public function deleteGallery($id)
     {
-        // Cari galeri yang terhubung dengan undangan milik user ini
         $gallery = Gallery::whereHas('invitation', function ($q) {
             $q->where('user_id', auth()->id());
         })->findOrFail($id);
@@ -406,12 +382,10 @@ class InvitationController extends Controller
     public function checkSlug(Request $request)
     {
         $slug = Str::slug($request->query('slug'));
-
-        // Cek apakah slug sudah ada di database invitations
         $exists = Invitation::where('slug', $slug)->exists();
 
         return response()->json([
-            'available' => !$exists, // true jika belum dipakai, false jika sudah dipakai
+            'available' => !$exists,
             'slug' => $slug,
         ]);
     }
@@ -420,24 +394,13 @@ class InvitationController extends Controller
     {
         $invitation = Invitation::where('slug', $slug)->firstOrFail();
 
-        // 🔥 CEK STATUS PEMBAYARAN 🔥
         if ($invitation->status !== 'active') {
-            // Jika yang mengakses BUKAN pemilik undangan, blokir!
             if (Auth::id() !== $invitation->user_id) {
-                return response()->view(
-                    'errors.unpaid_invitation',
-                    [
-                        'message' => 'Maaf, undangan ini belum diaktifkan oleh pemilik acara.',
-                    ],
-                    403,
-                );
+                return response()->view('errors.unpaid_invitation', ['message' => 'Maaf, undangan ini belum diaktifkan oleh pemilik acara.'], 403);
             }
-
-            // Jika yang mengakses adalah pemiliknya, berikan flash message preview
             session()->flash('warning', 'Ini adalah Mode Preview. Tamu tidak bisa melihat undangan ini sampai Anda melakukan pembayaran.');
         }
 
-        // Logika menampilkan template undangan Anda...
         return view('templates.' . $invitation->template->view_path, compact('invitation'));
     }
 }
