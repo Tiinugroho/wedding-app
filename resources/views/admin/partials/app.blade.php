@@ -104,7 +104,7 @@
 
     <div class="w-full flex min-h-screen">
 
-        @include('admin.partials.sidebar')
+        @include('customer.partials.sidebar')
 
 
         <main class="flex-1 w-full p-6 md:p-10 lg:p-12 pb-32 lg:pb-12 h-screen overflow-y-auto overflow-x-hidden">
@@ -114,23 +114,11 @@
         </main>
 
     </div>
-    {{-- @include('admin.partials.footer') --}}
+    {{-- @include('customer.partials.footer') --}}
 
-    {{-- @include('admin.partials.mobile_nav') --}}
+    @include('customer.partials.mobile_nav')
 
 
-    <script>
-    // Script untuk membuka/menutup Sidebar Offcanvas di Mobile
-    function toggleSidebar() {
-        const sidebar = document.getElementById('admin-sidebar');
-        const backdrop = document.getElementById('sidebar-backdrop');
-        
-        // Toggle class translate untuk sidebar
-        sidebar.classList.toggle('-translate-x-full');
-        // Toggle class hidden untuk backdrop
-        backdrop.classList.toggle('hidden');
-    }
-</script>
     @stack('scripts')
 
 </body>
