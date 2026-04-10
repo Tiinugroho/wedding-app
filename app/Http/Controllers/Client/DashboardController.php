@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Controller;
 use App\Models\Invitation;
+use App\Models\Attendance; // 🔥 Wajib di-import untuk menghitung total check-in
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -19,26 +20,25 @@ class DashboardController extends Controller
             ->latest()
             ->get();
 
-        // HITUNG STATISTIK KUMULATIF
-        // 1. Total Pengunjung (Asumsi ada kolom views di tabel invitations)
-        $totalViews = $invitations->sum('views'); 
+        // 🔥 HITUNG STATISTIK GLOBAL KLIEN 🔥
 
-        // 2. Total RSVP (Menghitung jumlah baris di relasi rsvps)
+        // 1. Total Undangan yang dibuat
+        $totalInvitations = $invitations->count(); 
+
+        // 2. Total Tamu Hadir (Check-In via Scanner QR)
+        $invitationIds = $invitations->pluck('id');
+        $totalCheckIn = Attendance::whereIn('invitation_id', $invitationIds)->count();
+
+        // 3. Total RSVP (Konfirmasi Kehadiran & Buku Tamu)
         $totalRsvp = $invitations->sum(function($invitation) {
             return $invitation->rsvps->count();
         });
 
-        // 3. Total Ucapan (Jika ucapan disimpan di tabel rsvps atau tabel khusus wishes)
-        // Di sini saya contohkan menghitung dari rsvps yang ada pesannya
-        $totalWishes = $invitations->sum(function($invitation) {
-            return $invitation->rsvps->whereNotNull('message')->count();
-        });
-
         return view('customer.dashboard', compact(
             'invitations', 
-            'totalViews', 
-            'totalRsvp', 
-            'totalWishes'
+            'totalInvitations', 
+            'totalCheckIn', 
+            'totalRsvp'
         ));
     }
 }

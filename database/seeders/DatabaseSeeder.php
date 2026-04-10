@@ -125,17 +125,17 @@ class DatabaseSeeder extends Seeder
             ]),
         ]);
 
-        // 6. SEEDER BANK / E-WALLET
+        // 6. SEEDER BANK / E-WALLET (Ganti dengan link PNG ini agar dijamin muncul 100%)
         Bank::insert([
-            ['name' => 'BCA', 'logo' => 'https://upload.wikimedia.org/wikipedia/commons/5/5c/Bank_Central_Asia.svg', 'is_active' => true],
-            ['name' => 'Mandiri', 'logo' => 'https://upload.wikimedia.org/wikipedia/commons/a/ad/Bank_Mandiri_logo_2016.svg', 'is_active' => true],
-            ['name' => 'BNI', 'logo' => 'https://upload.wikimedia.org/wikipedia/id/5/55/BNI_logo.svg', 'is_active' => true],
-            ['name' => 'BRI', 'logo' => 'https://upload.wikimedia.org/wikipedia/commons/9/9e/BRI_2020.svg', 'is_active' => true],
+            ['name' => 'BCA', 'logo' => 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5c/Bank_Central_Asia.svg/1024px-Bank_Central_Asia.svg.png', 'is_active' => true],
+            ['name' => 'Mandiri', 'logo' => 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/ad/Bank_Mandiri_logo_2016.svg/1024px-Bank_Mandiri_logo_2016.svg.png', 'is_active' => true],
+            ['name' => 'BNI', 'logo' => 'https://upload.wikimedia.org/wikipedia/id/thumb/5/55/BNI_logo.svg/1024px-BNI_logo.svg.png', 'is_active' => true],
+            ['name' => 'BRI', 'logo' => 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9e/BRI_2020.svg/1024px-BRI_2020.svg.png', 'is_active' => true],
             ['name' => 'BSI', 'logo' => 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a0/Bank_Syariah_Indonesia.svg/1024px-Bank_Syariah_Indonesia.svg.png', 'is_active' => true],
-            ['name' => 'DANA', 'logo' => 'https://upload.wikimedia.org/wikipedia/commons/7/72/Logo_dana_blue.svg', 'is_active' => true],
-            ['name' => 'OVO', 'logo' => 'https://upload.wikimedia.org/wikipedia/commons/e/e1/Logo_OVO.svg', 'is_active' => true],
-            ['name' => 'GoPay', 'logo' => 'https://upload.wikimedia.org/wikipedia/commons/8/86/Gopay_logo.svg', 'is_active' => true],
-            ['name' => 'ShopeePay', 'logo' => 'https://upload.wikimedia.org/wikipedia/commons/f/fe/ShopeePay_Logo.png', 'is_active' => true],
+            ['name' => 'DANA', 'logo' => 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/72/Logo_dana_blue.svg/1024px-Logo_dana_blue.svg.png', 'is_active' => true],
+            ['name' => 'OVO', 'logo' => 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/eb/Logo_ovo_purple.svg/1024px-Logo_ovo_purple.svg.png', 'is_active' => true],
+            ['name' => 'GoPay', 'logo' => 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/86/Gopay_logo.svg/1024px-Gopay_logo.svg.png', 'is_active' => true],
+            ['name' => 'ShopeePay', 'logo' => 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f7/ShopeePay_Logo.svg/1024px-ShopeePay_Logo.svg.png', 'is_active' => true],
         ]);
     }
 }

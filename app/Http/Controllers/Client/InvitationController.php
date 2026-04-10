@@ -159,6 +159,11 @@ class InvitationController extends Controller
             'banks' => 'nullable|array',
             'gallery_files.*' => 'nullable|image|mimes:jpg,jpeg,png|max:5048',
             'cover_image' => 'nullable|image|mimes:jpg,jpeg,png|max:5048',
+
+            'alamat_kado' => 'nullable|string',
+            'gifts' => 'nullable|array',
+            'gifts.*.item_name' => 'nullable|string',
+            'gifts.*.description' => 'nullable|string',
         ]);
 
         $coverImagePath = $oldContent['cover_image'] ?? null;
@@ -294,6 +299,12 @@ class InvitationController extends Controller
             'live_stream_platform' => $request->live_stream_platform,
             'live_stream_link' => $request->live_stream_link,
             'enable_qr_attendance' => $request->has('enable_qr_attendance'),
+
+            // BUKAN 'alamat_kado' => 'nullable|string', tapi ambil dari request:
+            'alamat_kado' => $request->alamat_kado,
+
+            // Pastikan dia disimpan sebagai array yang benar
+            'gifts' => is_array($request->gifts) ? array_values($request->gifts) : [],
 
             'youtube_links' => array_values(array_filter($request->youtube_links ?? [])),
             'love_stories' => $loveStoriesData,

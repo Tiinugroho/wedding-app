@@ -58,17 +58,57 @@
             </div>
         </a>
 
-        <form method="POST" action="{{ route('logout') }}">
+        <form id="logout-form" method="POST" action="{{ route('logout') }}" class="hidden">
             @csrf
-            <button type="submit"
-                class="w-full flex items-center gap-4 px-5 py-4 rounded-2xl font-bold text-slate-400 hover:text-rRed hover:bg-rRed/5 transition">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1">
-                    </path>
-                </svg>
-                Logout
-            </button>
         </form>
+
+        <button type="button" onclick="openLogoutModal()"
+            class="w-full flex items-center gap-4 px-5 py-4 rounded-2xl font-bold text-slate-400 hover:text-rRed hover:bg-rRed/5 transition group">
+            <svg class="w-6 h-6 group-hover:-translate-x-1 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1">
+                </path>
+            </svg>
+            Logout
+        </button>
     </div>
 </aside>
+
+{{-- MODAL KONFIRMASI LOGOUT --}}
+<div id="logout-modal" class="fixed inset-0 z-[9999] flex items-center justify-center opacity-0 pointer-events-none transition-all duration-300">
+    <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm transition-all" onclick="closeLogoutModal()"></div>
+    <div class="relative bg-white/95 backdrop-blur-xl p-8 md:p-10 rounded-[2.5rem] shadow-2xl border-2 border-white text-center max-w-sm w-full mx-4 transform scale-95 transition-all duration-300" id="logout-modal-box">
+        <div class="w-20 h-20 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-6">
+            <svg class="w-10 h-10 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+            </svg>
+        </div>
+        <h3 class="text-2xl font-extrabold text-slate-800 mb-2">Akhiri Sesi?</h3>
+        <p class="text-slate-500 text-sm mb-8 leading-relaxed">Apakah Anda yakin ingin keluar dari RuangRestu saat ini?</p>
+        <div class="flex flex-col gap-3">
+            <button type="button" onclick="document.getElementById('logout-form').submit()" class="w-full bg-gradient-to-r from-red-500 to-rose-600 text-white px-6 py-4 rounded-2xl font-bold shadow-lg shadow-red-500/30 hover:-translate-y-0.5 transition-all active:scale-95">Ya, Keluar</button>
+            <button type="button" onclick="closeLogoutModal()" class="w-full bg-slate-100 text-slate-600 px-6 py-4 rounded-2xl font-bold hover:bg-slate-200 transition-all">Batal</button>
+        </div>
+    </div>
+</div>
+
+{{-- SCRIPT PENGENDALI MODAL LOGOUT --}}
+<script>
+    function openLogoutModal() {
+        const modal = document.getElementById('logout-modal');
+        const box = document.getElementById('logout-modal-box');
+        modal.classList.remove('opacity-0', 'pointer-events-none');
+        setTimeout(() => {
+            box.classList.remove('scale-95');
+            box.classList.add('scale-100');
+        }, 10);
+    }
+
+    function closeLogoutModal() {
+        const modal = document.getElementById('logout-modal');
+        const box = document.getElementById('logout-modal-box');
+        box.classList.remove('scale-100');
+        box.classList.add('scale-95');
+        modal.classList.add('opacity-0', 'pointer-events-none');
+    }
+</script>

@@ -47,34 +47,35 @@
         </script>
     @endif
 
+    {{-- 🔥 3 KARTU STATISTIK GLOBAL YANG BARU 🔥 --}}
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-5 md:gap-8 mb-12">
         <div class="dashboard-card bg-white p-6 md:p-8 rounded-[2.5rem] border border-slate-100 shadow-sm relative overflow-hidden group">
             <div class="absolute top-0 right-0 w-24 h-24 bg-blue-50/50 rounded-bl-[5rem] -z-0"></div>
             <div class="relative z-10">
-                <p class="text-slate-400 text-xs font-bold uppercase tracking-widest mb-4">Total Pengunjung</p>
+                <p class="text-slate-400 text-xs font-bold uppercase tracking-widest mb-4">Total Undangan</p>
                 <div class="flex items-end gap-3">
-                    <span class="text-3xl md:text-4xl font-extrabold text-slate-800">{{ number_format($totalViews) }}</span>
-                    <span class="text-slate-400 text-xs font-bold mb-1">Orang</span>
+                    <span class="text-3xl md:text-4xl font-extrabold text-slate-800">{{ number_format($totalInvitations) }}</span>
+                    <span class="text-blue-500 text-xs font-bold mb-1">Acara</span>
+                </div>
+            </div>
+        </div>
+        <div class="dashboard-card bg-white p-6 md:p-8 rounded-[2.5rem] border border-slate-100 shadow-sm relative overflow-hidden group">
+            <div class="absolute top-0 right-0 w-24 h-24 bg-purple-50/50 rounded-bl-[5rem] -z-0"></div>
+            <div class="relative z-10">
+                <p class="text-slate-400 text-xs font-bold uppercase tracking-widest mb-4">Tamu Hadir (Check-In QR)</p>
+                <div class="flex items-end gap-3">
+                    <span class="text-3xl md:text-4xl font-extrabold text-slate-800">{{ number_format($totalCheckIn) }}</span>
+                    <span class="text-purple-500 text-xs font-bold mb-1">Orang</span>
                 </div>
             </div>
         </div>
         <div class="dashboard-card bg-white p-6 md:p-8 rounded-[2.5rem] border border-slate-100 shadow-sm relative overflow-hidden group">
             <div class="absolute top-0 right-0 w-24 h-24 bg-green-50/50 rounded-bl-[5rem] -z-0"></div>
             <div class="relative z-10">
-                <p class="text-slate-400 text-xs font-bold uppercase tracking-widest mb-4">Konfirmasi RSVP</p>
+                <p class="text-slate-400 text-xs font-bold uppercase tracking-widest mb-4">Pendaftar RSVP</p>
                 <div class="flex items-end gap-3">
                     <span class="text-3xl md:text-4xl font-extrabold text-slate-800">{{ number_format($totalRsvp) }}</span>
-                    <span class="text-slate-400 text-xs font-bold mb-1">Tamu</span>
-                </div>
-            </div>
-        </div>
-        <div class="dashboard-card bg-white p-6 md:p-8 rounded-[2.5rem] border border-slate-100 shadow-sm relative overflow-hidden group">
-            <div class="absolute top-0 right-0 w-24 h-24 bg-rRed/5 rounded-bl-[5rem] -z-0"></div>
-            <div class="relative z-10">
-                <p class="text-slate-400 text-xs font-bold uppercase tracking-widest mb-4">Ucapan Doa</p>
-                <div class="flex items-end gap-3">
-                    <span class="text-3xl md:text-4xl font-extrabold text-slate-800">{{ number_format($totalWishes) }}</span>
-                    <span class="text-rRed text-xs font-bold mb-1">Pesan</span>
+                    <span class="text-green-500 text-xs font-bold mb-1">Tamu</span>
                 </div>
             </div>
         </div>
@@ -97,18 +98,15 @@
 
             @foreach ($invitations as $invitation)
                 @php
-                    // HITUNG UMUR UNDANGAN
                     $umurHari = $invitation->created_at->diffInDays(now());
                     $isLocked = ($invitation->status != 'active' && $umurHari >= 7);
                 @endphp
 
                 <div class="bg-white p-6 rounded-[3rem] border border-slate-100 shadow-sm flex flex-col justify-between h-full min-h-[400px]">
                     <div>
-                        {{-- LIVE URL THUMBNAIL MENGGUNAKAN IFRAME --}}
                         <a href="{{ url('/' . $invitation->slug) }}" target="_blank"
                             class="block relative rounded-[2rem] overflow-hidden mb-6 aspect-video bg-slate-100 group">
 
-                            {{-- Pembungkus Iframe --}}
                             <div class="absolute inset-0 w-full h-full pointer-events-none overflow-hidden bg-stone-900">
                                 <iframe src="{{ url('/' . $invitation->slug) }}?thumbnail=1"
                                     class="absolute top-0 left-0 w-[400%] h-[400%] origin-top-left scale-[0.25] border-0"
@@ -116,7 +114,6 @@
                                 </iframe>
                             </div>
 
-                            {{-- Overlay Transparan saat di-hover --}}
                             <div class="absolute inset-0 bg-slate-900/10 opacity-0 group-hover:opacity-100 transition flex items-center justify-center z-10">
                                 <span class="bg-white/90 backdrop-blur-sm text-slate-800 text-[10px] font-bold px-4 py-2 rounded-full shadow-lg uppercase tracking-widest translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
                                     Buka Undangan
@@ -126,25 +123,16 @@
                             <div class="absolute top-4 left-4 z-10">
                                 @if ($invitation->status != 'active')
                                     @if ($isLocked)
-                                        <span class="px-4 py-2 mx-2 bg-red-100 text-red-600 text-xs font-bold uppercase rounded-full shadow-sm">
-                                            Terkunci (Expired)
-                                        </span>
+                                        <span class="px-4 py-2 mx-2 bg-red-100 text-red-600 text-xs font-bold uppercase rounded-full shadow-sm">Terkunci (Expired)</span>
                                     @else
-                                        <span class="px-4 py-2 mx-2 bg-amber-100 text-amber-600 text-xs font-bold uppercase rounded-full shadow-sm">
-                                            Draft / Belum Lunas
-                                        </span>
+                                        <span class="px-4 py-2 mx-2 bg-amber-100 text-amber-600 text-xs font-bold uppercase rounded-full shadow-sm">Draft / Belum Lunas</span>
                                     @endif
-                                    <span class="px-4 py-2 bg-white/90 backdrop-blur text-slate-800 text-xs font-bold rounded-full shadow-sm">
-                                        {{ $invitation->template->name }}
-                                    </span>
                                 @else
-                                    <span class="px-4 py-2 mx-2 bg-green-100 text-green-600 text-xs font-bold uppercase rounded-full shadow-sm">
-                                        Lunas
-                                    </span>
-                                    <span class="px-4 py-2 bg-white/90 backdrop-blur text-slate-800 text-xs font-bold rounded-full shadow-sm">
-                                        {{ $invitation->template->name }}
-                                    </span>
+                                    <span class="px-4 py-2 mx-2 bg-green-100 text-green-600 text-xs font-bold uppercase rounded-full shadow-sm">Lunas</span>
                                 @endif
+                                <span class="px-4 py-2 bg-white/90 backdrop-blur text-slate-800 text-xs font-bold rounded-full shadow-sm">
+                                    {{ $invitation->template->name }}
+                                </span>
                             </div>
                         </a>
 
@@ -157,36 +145,36 @@
                                     class="w-full flex items-center justify-center py-3 bg-gradient-to-r from-rRed to-rOrange text-white rounded-2xl font-bold text-sm hover:scale-[1.02] transition shadow-lg shadow-rOrange/30">
                                     Aktifkan & Bayar
                                 </button>
-                            @else
-                                <span class="px-3 py-1 bg-green-100 text-green-600 text-[10px] font-bold uppercase rounded-lg">Lunas</span>
                             @endif
                         </div>
                     </div>
 
                     <div class="grid grid-cols-2 gap-3">
                         @if($isLocked)
-                            {{-- TOMBOL TERKUNCI MENGGUNAKAN UNIVERSAL MODAL --}}
                             <button type="button" onclick="showUniversalAlert('warning', 'Terkunci', 'Waktu uji coba (Trial) 7 hari telah habis.\n\nSilakan klik Aktifkan & Bayar untuk membuka kunci dan mengedit data kembali.')"
-                                class="flex items-center justify-center py-3 bg-slate-200 text-slate-400 rounded-2xl font-bold text-sm cursor-not-allowed">
+                                class="col-span-2 flex items-center justify-center py-3 bg-slate-200 text-slate-400 rounded-2xl font-bold text-sm cursor-not-allowed">
                                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
-                                Terkunci
+                                Data Terkunci
                             </button>
                         @else
-                            {{-- TOMBOL NORMAL JIKA MASIH TRIAL / SUDAH LUNAS --}}
                             <a href="{{ route('customer.invitations.edit', $invitation->id) }}"
                                 class="flex items-center justify-center py-3 bg-slate-100 text-slate-600 rounded-2xl font-bold text-sm hover:bg-slate-200 transition">
                                 Kelola Data
                             </a>
+                            <a href="{{ url('/' . $invitation->slug) }}" target="_blank"
+                                class="flex items-center justify-center py-3 bg-rRed text-white rounded-2xl font-bold text-sm hover:bg-rRed/90 transition shadow-lg shadow-rRed/20">
+                                Live Preview
+                            </a>
+                            <a href="{{ route('customer.blast.index', $invitation->id) }}"
+                                class="flex items-center justify-center py-3 bg-green-500 text-white rounded-2xl font-bold text-sm hover:bg-green-600 transition shadow-lg shadow-green-500/20">
+                                WA Blast
+                            </a>
+                            {{-- 🔥 TOMBOL SCANNER QR 🔥 --}}
+                            <a href="{{ route('customer.invitations.scanner', $invitation->id) }}"
+                                class="flex items-center justify-center py-3 bg-indigo-500 text-white rounded-2xl font-bold text-sm hover:bg-indigo-600 transition shadow-lg shadow-indigo-500/20">
+                                Scanner
+                            </a>
                         @endif
-
-                        <a href="{{ url('/' . $invitation->slug) }}" target="_blank"
-                            class="flex items-center justify-center py-3 bg-rRed text-white rounded-2xl font-bold text-sm hover:bg-rRed/90 transition shadow-lg shadow-rRed/20">
-                            Live Preview
-                        </a>
-                        <a href="{{ route('customer.blast.index', $invitation->id) }}"
-                            class="flex items-center justify-center py-3 bg-rOrange text-white rounded-2xl font-bold text-sm hover:bg-rOrange/90 transition shadow-lg shadow-rOrange/20">
-                            Buka Halaman WA Blast
-                        </a>
                     </div>
                 </div>
             @endforeach
@@ -228,9 +216,6 @@
 
 @push('scripts')
     <script>
-        // =========================================================
-        // 🔥 LOGIKA FUNGSI UNIVERSAL ALERT MODAL 🔥
-        // =========================================================
         let universalModalCallback = null;
 
         function showUniversalAlert(type, title, message, callback = null) {
@@ -245,12 +230,10 @@
 
             universalModalCallback = callback;
 
-            // Bersihkan sisa class sebelumnya
             ping.className = "absolute inset-0 rounded-full animate-ping opacity-25";
             iconBg.className = "relative w-24 h-24 rounded-full flex items-center justify-center border-4 border-white shadow-inner animate-warning";
             btn.className = "w-full text-white px-6 py-4 rounded-2xl font-bold shadow-lg hover:-translate-y-0.5 transition-all active:scale-95";
 
-            // Atur Warna & Ikon berdasarkan 'type'
             if (type === 'success') {
                 ping.classList.add('bg-emerald-100');
                 iconBg.classList.add('bg-emerald-50', 'text-emerald-500');
@@ -261,7 +244,7 @@
                 iconBg.classList.add('bg-red-50', 'text-red-500');
                 btn.classList.add('bg-gradient-to-r', 'from-red-500', 'to-rose-600', 'shadow-red-500/30');
                 icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path>';
-            } else { // warning
+            } else { 
                 ping.classList.add('bg-amber-100');
                 iconBg.classList.add('bg-amber-50', 'text-amber-500');
                 btn.classList.add('bg-gradient-to-r', 'from-amber-500', 'to-orange-600', 'shadow-amber-500/30');
@@ -271,7 +254,6 @@
             titleEl.innerText = title;
             msgEl.innerText = message;
 
-            // Munculkan Modal
             modal.classList.remove('opacity-0', 'pointer-events-none');
             setTimeout(() => { box.classList.remove('scale-95'); box.classList.add('scale-100'); }, 10);
         }
@@ -282,16 +264,13 @@
             box.classList.remove('scale-100'); box.classList.add('scale-95');
             modal.classList.add('opacity-0', 'pointer-events-none');
 
-            // Jalankan callback (misal: refresh halaman) jika ada, setelah animasi tutup selesai
             if (universalModalCallback) {
                 setTimeout(universalModalCallback, 300);
                 universalModalCallback = null;
             }
         }
 
-        // =========================================================
-        // 🔥 LOGIKA LIVE PREVIEW URL (Dari form ke tab baru) 🔥
-        // =========================================================
+        // Live Preview URL Builder
         document.addEventListener('DOMContentLoaded', function() {
             const previewBtn = document.getElementById('btn-live-preview');
             const mainForm = document.querySelector('form[action*="invitations"]'); 
@@ -299,33 +278,26 @@
             if (previewBtn && mainForm) {
                 previewBtn.addEventListener('click', function(e) {
                     e.preventDefault(); 
-
                     const formData = new FormData(mainForm);
                     const params = new URLSearchParams();
-
                     for (const [key, value] of formData.entries()) {
                         if (typeof value === 'string' && value.trim() !== '') {
                             params.append(key, value);
                         }
                     }
-
                     const baseUrl = this.getAttribute('href').split('?')[0];
                     const previewUrl = baseUrl + '?' + params.toString();
-
                     window.open(previewUrl, '_blank');
                 });
             }
         });
 
-        // =========================================================
-        // 🔥 LOGIKA MIDTRANS PEMBAYARAN AJAX 🔥
-        // =========================================================
+        // Midtrans Payment Logic
         function payNow(btnElement, invitationId) {
             const originalText = btnElement.innerText;
             btnElement.innerText = 'Memproses...';
             btnElement.disabled = true;
 
-            // Memanggil endpoint baru yang sudah kita buat sebelumnya di CheckoutController
             fetch('/customer/checkout/get-snap-token', {
                     method: 'POST',
                     headers: {
@@ -333,7 +305,6 @@
                         'X-CSRF-TOKEN': '{{ csrf_token() }}',
                         'Accept': 'application/json'
                     },
-                    // Karena ini aktivasi dari dashboard, kita kirimkan 'package_premium'
                     body: JSON.stringify({ type: 'package_premium', invitation_id: invitationId })
                 })
                 .then(response => response.json())
@@ -344,10 +315,8 @@
                     if (data.snap_token) {
                         snap.pay(data.snap_token, {
                             onSuccess: function(result) {
-                            // Ubah teks tombol jadi Loading
                             if(typeof btnElement !== 'undefined') btnElement.innerText = 'Menyimpan...';
 
-                            // Tembak data sukses ke server lokal (beserta jenis pembayarannya)
                             fetch('/customer/checkout/success', {
                                 method: 'POST',
                                 headers: {
@@ -359,15 +328,8 @@
                             .then(res => res.json())
                             .then(data => {
                                 if(data.success) {
-                                    // Rapikan nama metode (contoh: "bank_transfer" jadi "BANK TRANSFER")
                                     let metode = result.payment_type.replace(/_/g, ' ').toUpperCase();
-                                    
-                                    showUniversalAlert(
-                                        'success', 
-                                        'Pembayaran Berhasil!', 
-                                        'Transaksi sukses menggunakan metode:\n' + metode, 
-                                        () => window.location.reload()
-                                    );
+                                    showUniversalAlert('success', 'Pembayaran Berhasil!', 'Transaksi sukses menggunakan metode:\n' + metode, () => window.location.reload());
                                 } else {
                                     showUniversalAlert('warning', 'Menunggu', 'Pembayaran sedang diproses oleh bank.');
                                 }

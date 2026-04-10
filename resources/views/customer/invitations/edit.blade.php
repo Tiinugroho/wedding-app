@@ -407,6 +407,32 @@
             initCustomInputs();
         }
 
+        // ==========================================
+        // FUNGSI INPUT BARIS DINAMIS UNTUK KADO
+        // ==========================================
+        function addGiftRow() {
+            // Hapus teks "Belum ada kado" jika ada
+            const emptyText = document.querySelector('.empty-gift-text');
+            if(emptyText) emptyText.remove();
+
+            const id = Date.now();
+            const html = `
+                <div class="relative p-5 border border-slate-200 rounded-2xl bg-slate-50 gift-item mt-4 animate-fade-in">
+                    <button type="button" onclick="this.closest('.gift-item').remove()" class="absolute top-4 right-4 text-red-500 hover:text-red-700 font-bold text-sm">Hapus</button>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-600 mb-1">Nama Barang / Kado</label>
+                            <input type="text" name="gifts[${id}][item_name]" class="w-full py-2.5 px-4 bg-white border border-slate-200 rounded-xl focus:ring-rOrange" placeholder="Contoh: Air Fryer Digital">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-600 mb-1">Deskripsi Tambahan (Opsional)</label>
+                            <input type="text" name="gifts[${id}][description]" class="w-full py-2.5 px-4 bg-white border border-slate-200 rounded-xl focus:ring-rOrange" placeholder="Contoh: Warna Hitam / Kapasitas 4L">
+                        </div>
+                    </div>
+                </div>`;
+            document.getElementById('gift-wrapper').insertAdjacentHTML('beforeend', html);
+        }
+
         function addYoutubeRow() {
             const html = `
                 <div class="flex items-center gap-2 youtube-item mt-3">
