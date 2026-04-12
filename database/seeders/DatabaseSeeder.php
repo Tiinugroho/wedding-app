@@ -8,6 +8,7 @@ use App\Models\Music;
 use App\Models\Package;
 use App\Models\Template;
 use App\Models\User;
+use Database\Seeders\BankSeeder;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
@@ -115,5 +116,8 @@ class DatabaseSeeder extends Seeder
                 'gallery_limit' => 5,
             ]),
         ]);
+
+        BankSeeder::class;
+
     }
 }
