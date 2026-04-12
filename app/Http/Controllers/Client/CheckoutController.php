@@ -7,6 +7,7 @@ use App\Models\Invitation;
 use App\Models\InvitationAddon;
 use App\Models\Order;
 use App\Models\Payment;
+use App\Models\Package; // 🔥 Pastikan Model Package di-import
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -51,7 +52,6 @@ class CheckoutController extends Controller
         // ====================================================
         if ($type === 'package_premium') {
             
-            // Cari order pending dari database
             $order = Order::with('package')->where('user_id', Auth::id())
                 ->where('invitation_id', $invitation->id)
                 ->where('status', 'pending')
@@ -63,20 +63,15 @@ class CheckoutController extends Controller
                 return response()->json(['error' => 'Data pesanan tidak ditemukan. Mungkin sudah kedaluwarsa atau lunas.'], 404);
             }
 
-            // Ambil harga dari order (yang sudah termasuk fee di versi terakhir)
-            // Jika kamu sudah memperbaiki InvitationController agar amount order = harga paket + admin fee,
-            // maka kita gunakan order->amount langsung.
             $totalAmount = $order->amount; 
             $baseAmount = $totalAmount - $adminFee;
             $productDetails = "Aktivasi Paket Premium";
 
-            // Pastikan jika ada ketidaksesuaian kita perbaiki (seharusnya tidak terjadi lagi jika InvitationController sudah benar)
             if ($totalAmount != ($order->package->price + $adminFee)) {
                  $totalAmount = $order->package->price + $adminFee;
                  $baseAmount = $order->package->price;
                  $order->update(['amount' => $totalAmount]);
             }
-
 
         // ====================================================
         // 🔥 LOGIKA 2: TOP UP KUOTA (ADDON)
@@ -153,14 +148,24 @@ class CheckoutController extends Controller
         }
     }
 
-    // 🔥 FUNGSI CALLBACK DENGAN SISTEM LOG PENDETEKSI ERROR 🔥
+    // 🔥 Fungsi Tambahan: Ambil durasi masa aktif dari tabel packages
+    private function getActiveDays($packageId)
+    {
+        $package = Package::find($packageId);
+        if ($package && $package->features) {
+            $features = json_decode($package->features, true);
+            return $features['logic']['active_days'] ?? 30; // Default 30 hari jika tidak diset
+        }
+        return 30;
+    }
+
+    // 🔥 FUNGSI CALLBACK WEBHOOK
     public function callback(Request $request)
     {
         Log::info('=== MIDTRANS CALLBACK MASUK ===');
         Log::info($request->all());
 
         $serverKey = config('midtrans.server_key');
-        // PENTING: Gunakan gross_amount persis seperti yang dikirim Midtrans (termasuk desimal .00)
         $hashed = hash("sha512", $request->order_id . $request->status_code . $request->gross_amount . $serverKey);
 
         if ($hashed == $request->signature_key) {
@@ -173,7 +178,6 @@ class CheckoutController extends Controller
                 return response()->json(['message' => 'Order Not Found'], 404);
             }
 
-            // Hanya proses jika status order masih pending
             if ($order->status == 'pending') {
                 
                 if ($request->transaction_status == 'capture' || $request->transaction_status == 'settlement') {
@@ -194,11 +198,14 @@ class CheckoutController extends Controller
                     if ($order->package_id != null) {
                         $invitation = Invitation::find($order->invitation_id);
                         if ($invitation) {
+                            // 🔥 Hitung Masa Aktif Otomatis 🔥
+                            $activeDays = $this->getActiveDays($order->package_id);
+
                             $invitation->update([
                                 'status'     => 'active',
-                                'expires_at' => now()->addYear() 
+                                'expires_at' => now()->addDays($activeDays) // Bukan lagi addYear()
                             ]);
-                            Log::info('BERHASIL: Status undangan ' . $invitation->id . ' diubah menjadi Active!');
+                            Log::info('BERHASIL: Status undangan ' . $invitation->id . ' diubah menjadi Active! (Masa Aktif: '.$activeDays.' hari)');
                         } else {
                             Log::error('GAGAL AKTIVASI: Undangan ' . $order->invitation_id . ' tidak ditemukan.');
                         }
@@ -235,8 +242,7 @@ class CheckoutController extends Controller
         return response()->json(['message' => 'Invalid Signature'], 403);
     }
 
-    // 🔥 FUNGSI BARU: MENERIMA SUKSES LANGSUNG DARI BROWSER (LOCALHOST FRIENDLY) 🔥
-    // 🔥 FUNGSI FRONTEND CALLBACK (SUDAH DIAMANKAN DARI HACKER) 🔥
+    // 🔥 FUNGSI FRONTEND CALLBACK
     public function frontendCallback(Request $request)
     {
         $result = $request->all();
@@ -247,46 +253,39 @@ class CheckoutController extends Controller
             return response()->json(['success' => false, 'message' => 'Order ID tidak ditemukan']);
         }
 
-        // ==========================================================
-        // 🔒 SISTEM KEAMANAN: DOUBLE CHECK KE SERVER MIDTRANS
-        // Jangan percaya Javascript! Kita cek langsung ke Midtrans API
-        // ==========================================================
         Config::$serverKey = config('midtrans.server_key');
         Config::$isProduction = config('midtrans.is_production');
 
         try {
-            // Tanya Midtrans status aslinya apa
             $midtransStatus = Transaction::status($orderId);
 
-            // Pastikan Midtrans menjawab 'capture' atau 'settlement' (LUNAS)
             if ($midtransStatus && in_array($midtransStatus->transaction_status, ['capture', 'settlement'])) {
                 
                 $order = Order::where('order_number', $orderId)->first();
                 
-                // Cek apakah order masih pending (mencegah update 2x kalau webhook sudah jalan duluan)
                 if ($order && $order->status === 'pending') {
                     
-                    // A. Update status Order jadi success
                     $order->update([
                         'status' => 'success',
                         'reference' => $midtransStatus->transaction_id ?? ($result['transaction_id'] ?? null)
                     ]);
                     
-                    // B. Simpan ke tabel payments
                     Payment::create([
                         'order_id'       => $order->id,
                         'transaction_id' => $midtransStatus->transaction_id ?? ($result['transaction_id'] ?? null),
                         'payment_type'   => $paymentType,
-                        'payload'        => json_encode($midtransStatus) // Simpan payload asli dari server
+                        'payload'        => json_encode($midtransStatus) 
                     ]);
 
-                    // C. Proses Aktivasi
                     if ($order->package_id != null) {
                         $invitation = Invitation::find($order->invitation_id);
                         if ($invitation) {
+                            // 🔥 Hitung Masa Aktif Otomatis 🔥
+                            $activeDays = $this->getActiveDays($order->package_id);
+
                             $invitation->update([
                                 'status'     => 'active',
-                                'expires_at' => now()->addYear() 
+                                'expires_at' => now()->addDays($activeDays) // Bukan lagi addYear()
                             ]);
                         }
                     } else {
@@ -300,12 +299,10 @@ class CheckoutController extends Controller
                 return response()->json(['success' => true]);
 
             } else {
-                // Hacker ketahuan bohong!
                 return response()->json(['success' => false, 'message' => 'Penipuan terdeteksi. Status di Midtrans belum lunas.']);
             }
 
         } catch (\Exception $e) {
-            // Error jika Order ID ngawur / tidak terdaftar di Midtrans
             return response()->json(['success' => false, 'message' => 'Transaksi tidak valid.']);
         }
     }

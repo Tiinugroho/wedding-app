@@ -47,8 +47,8 @@
         </script>
     @endif
 
-    {{-- 🔥 3 KARTU STATISTIK GLOBAL YANG BARU 🔥 --}}
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-5 md:gap-8 mb-12">
+    {{-- 🔥 KARTU STATISTIK GLOBAL (Hanya Total Undangan) 🔥 --}}
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-8 mb-12">
         <div class="dashboard-card bg-white p-6 md:p-8 rounded-[2.5rem] border border-slate-100 shadow-sm relative overflow-hidden group">
             <div class="absolute top-0 right-0 w-24 h-24 bg-blue-50/50 rounded-bl-[5rem] -z-0"></div>
             <div class="relative z-10">
@@ -56,26 +56,6 @@
                 <div class="flex items-end gap-3">
                     <span class="text-3xl md:text-4xl font-extrabold text-slate-800">{{ number_format($totalInvitations) }}</span>
                     <span class="text-blue-500 text-xs font-bold mb-1">Acara</span>
-                </div>
-            </div>
-        </div>
-        <div class="dashboard-card bg-white p-6 md:p-8 rounded-[2.5rem] border border-slate-100 shadow-sm relative overflow-hidden group">
-            <div class="absolute top-0 right-0 w-24 h-24 bg-purple-50/50 rounded-bl-[5rem] -z-0"></div>
-            <div class="relative z-10">
-                <p class="text-slate-400 text-xs font-bold uppercase tracking-widest mb-4">Tamu Hadir (Check-In QR)</p>
-                <div class="flex items-end gap-3">
-                    <span class="text-3xl md:text-4xl font-extrabold text-slate-800">{{ number_format($totalCheckIn) }}</span>
-                    <span class="text-purple-500 text-xs font-bold mb-1">Orang</span>
-                </div>
-            </div>
-        </div>
-        <div class="dashboard-card bg-white p-6 md:p-8 rounded-[2.5rem] border border-slate-100 shadow-sm relative overflow-hidden group">
-            <div class="absolute top-0 right-0 w-24 h-24 bg-green-50/50 rounded-bl-[5rem] -z-0"></div>
-            <div class="relative z-10">
-                <p class="text-slate-400 text-xs font-bold uppercase tracking-widest mb-4">Pendaftar RSVP</p>
-                <div class="flex items-end gap-3">
-                    <span class="text-3xl md:text-4xl font-extrabold text-slate-800">{{ number_format($totalRsvp) }}</span>
-                    <span class="text-green-500 text-xs font-bold mb-1">Tamu</span>
                 </div>
             </div>
         </div>
@@ -98,8 +78,33 @@
 
             @foreach ($invitations as $invitation)
                 @php
-                    $umurHari = $invitation->created_at->diffInDays(now());
-                    $isLocked = ($invitation->status != 'active' && $umurHari >= 7);
+                    $isLocked = false;
+                    $isExpired = false;
+                    $sisaHari = 0;
+
+                    if ($invitation->status != 'active') {
+                        // 1. LOGIKA UNTUK BELUM LUNAS (Masa Uji Coba 7 Hari)
+                        $batasWaktuTrial = $invitation->created_at->copy()->addDays(7);
+                        if (now()->greaterThanOrEqualTo($batasWaktuTrial)) {
+                            $isLocked = true;
+                        } else {
+                            $sisaHari = now()->diffInDays($batasWaktuTrial);
+                            // Jika kurang dari 24 jam, set minimal 1 hari
+                            $sisaHari = $sisaHari == 0 ? 1 : $sisaHari; 
+                        }
+                    } else {
+                        // 2. LOGIKA UNTUK SUDAH LUNAS (Masa Aktif Premium)
+                        if ($invitation->expires_at) {
+                            $batasWaktuAktif = \Carbon\Carbon::parse($invitation->expires_at);
+                            if (now()->greaterThanOrEqualTo($batasWaktuAktif)) {
+                                $isExpired = true;
+                            } else {
+                                $sisaHari = now()->diffInDays($batasWaktuAktif);
+                                // Jika kurang dari 24 jam, set minimal 1 hari
+                                $sisaHari = $sisaHari == 0 ? 1 : $sisaHari;
+                            }
+                        }
+                    }
                 @endphp
 
                 <div class="bg-white p-6 rounded-[3rem] border border-slate-100 shadow-sm flex flex-col justify-between h-full min-h-[400px]">
@@ -120,19 +125,42 @@
                                 </span>
                             </div>
 
-                            <div class="absolute top-4 left-4 z-10">
-                                @if ($invitation->status != 'active')
-                                    @if ($isLocked)
-                                        <span class="px-4 py-2 mx-2 bg-red-100 text-red-600 text-xs font-bold uppercase rounded-full shadow-sm">Terkunci (Expired)</span>
+                            <div class="absolute top-4 left-4 z-10 flex flex-col items-start gap-2">
+                                <div class="flex items-center">
+                                    @if ($invitation->status != 'active')
+                                        @if ($isLocked)
+                                            <span class="px-4 py-2 mr-2 bg-red-100 text-red-600 text-xs font-bold uppercase rounded-full shadow-sm">Terkunci (Expired)</span>
+                                        @else
+                                            <span class="px-4 py-2 mr-2 bg-amber-100 text-amber-600 text-xs font-bold uppercase rounded-full shadow-sm">Draft / Belum Lunas</span>
+                                        @endif
                                     @else
-                                        <span class="px-4 py-2 mx-2 bg-amber-100 text-amber-600 text-xs font-bold uppercase rounded-full shadow-sm">Draft / Belum Lunas</span>
+                                        <span class="px-4 py-2 mr-2 bg-green-100 text-green-600 text-xs font-bold uppercase rounded-full shadow-sm">Lunas</span>
                                     @endif
-                                @else
-                                    <span class="px-4 py-2 mx-2 bg-green-100 text-green-600 text-xs font-bold uppercase rounded-full shadow-sm">Lunas</span>
+                                    <span class="px-4 py-2 bg-white/90 backdrop-blur text-slate-800 text-xs font-bold rounded-full shadow-sm">
+                                        {{ $invitation->template->name }}
+                                    </span>
+                                </div>
+                                
+                                {{-- 🔥 LABEL SISA WAKTU MUNCUL DI SINI 🔥 --}}
+                                @if ($invitation->status != 'active' && !$isLocked)
+                                    <span class="px-3 py-1.5 bg-amber-500/90 backdrop-blur text-white text-[10px] font-bold rounded-full shadow-sm flex items-center gap-1">
+                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                        Sisa Trial: {{ $sisaHari }} Hari
+                                    </span>
+                                @elseif ($invitation->status == 'active')
+                                    @if ($isExpired)
+                                        <span class="px-3 py-1.5 bg-red-600/90 backdrop-blur text-white text-[10px] font-bold rounded-full shadow-sm flex items-center gap-1">
+                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                            Masa Aktif Habis
+                                        </span>
+                                    @else
+                                        <span class="px-3 py-1.5 bg-slate-900/80 backdrop-blur text-white text-[10px] font-bold rounded-full shadow-sm flex items-center gap-1">
+                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                            Sisa Aktif: {{ $sisaHari }} Hari
+                                        </span>
+                                    @endif
                                 @endif
-                                <span class="px-4 py-2 bg-white/90 backdrop-blur text-slate-800 text-xs font-bold rounded-full shadow-sm">
-                                    {{ $invitation->template->name }}
-                                </span>
+
                             </div>
                         </a>
 
@@ -149,31 +177,25 @@
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-2 gap-3">
+                    <div class="mt-auto">
                         @if($isLocked)
                             <button type="button" onclick="showUniversalAlert('warning', 'Terkunci', 'Waktu uji coba (Trial) 7 hari telah habis.\n\nSilakan klik Aktifkan & Bayar untuk membuka kunci dan mengedit data kembali.')"
-                                class="col-span-2 flex items-center justify-center py-3 bg-slate-200 text-slate-400 rounded-2xl font-bold text-sm cursor-not-allowed">
+                                class="w-full flex items-center justify-center py-3 bg-slate-200 text-slate-400 rounded-2xl font-bold text-sm cursor-not-allowed">
                                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
                                 Data Terkunci
                             </button>
+                        @elseif($isExpired && $invitation->status == 'active')
+                            <button type="button" onclick="showUniversalAlert('warning', 'Masa Aktif Habis', 'Masa aktif undangan ini telah berakhir. Hubungi Admin untuk perpanjangan masa aktif.')"
+                                class="w-full flex items-center justify-center py-3 bg-slate-200 text-slate-400 rounded-2xl font-bold text-sm cursor-not-allowed">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                Kadaluarsa
+                            </button>
                         @else
-                            <a href="{{ route('customer.invitations.edit', $invitation->id) }}"
-                                class="flex items-center justify-center py-3 bg-slate-100 text-slate-600 rounded-2xl font-bold text-sm hover:bg-slate-200 transition">
+                            <button type="button" 
+                                onclick="openActionModal('{{ route('customer.invitations.edit', $invitation->id) }}', '{{ url('/' . $invitation->slug) }}', '{{ route('customer.blast.index', $invitation->id) }}', '{{ route('customer.invitations.scanner', $invitation->id) }}')"
+                                class="w-full flex items-center justify-center py-3 bg-slate-900 text-white rounded-2xl font-bold text-sm hover:bg-slate-800 transition shadow-lg">
                                 Kelola Data
-                            </a>
-                            <a href="{{ url('/' . $invitation->slug) }}" target="_blank"
-                                class="flex items-center justify-center py-3 bg-rRed text-white rounded-2xl font-bold text-sm hover:bg-rRed/90 transition shadow-lg shadow-rRed/20">
-                                Live Preview
-                            </a>
-                            <a href="{{ route('customer.blast.index', $invitation->id) }}"
-                                class="flex items-center justify-center py-3 bg-green-500 text-white rounded-2xl font-bold text-sm hover:bg-green-600 transition shadow-lg shadow-green-500/20">
-                                WA Blast
-                            </a>
-                            {{-- 🔥 TOMBOL SCANNER QR 🔥 --}}
-                            <a href="{{ route('customer.invitations.scanner', $invitation->id) }}"
-                                class="flex items-center justify-center py-3 bg-indigo-500 text-white rounded-2xl font-bold text-sm hover:bg-indigo-600 transition shadow-lg shadow-indigo-500/20">
-                                Scanner
-                            </a>
+                            </button>
                         @endif
                     </div>
                 </div>
@@ -192,6 +214,51 @@
 
         </div>
     </section>
+
+    {{-- ========================================================= --}}
+    {{-- 🔥 MODAL AKSI (KELOLA DATA) 🔥 --}}
+    {{-- ========================================================= --}}
+    <div id="action-modal" class="fixed inset-0 z-[10000] flex items-center justify-center opacity-0 pointer-events-none transition-all duration-300">
+        <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm transition-all" onclick="closeActionModal()"></div>
+        <div class="relative bg-white p-8 md:p-10 rounded-[2.5rem] shadow-2xl border border-slate-100 max-w-md w-full mx-4 transform scale-95 transition-all duration-300" id="action-modal-box">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-extrabold text-slate-800">Pilih Aksi</h3>
+                <button onclick="closeActionModal()" class="text-slate-400 hover:text-slate-600 transition">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+            
+            <div class="grid grid-cols-2 gap-4">
+                <a href="#" id="btn-kelola-konten" class="flex flex-col items-center justify-center p-4 bg-slate-50 rounded-2xl border border-slate-100 hover:border-slate-300 hover:bg-slate-100 transition group">
+                    <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center mb-3 shadow-sm group-hover:scale-110 transition">
+                        <svg class="w-5 h-5 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                    </div>
+                    <span class="text-sm font-bold text-slate-700">Kelola Konten</span>
+                </a>
+                
+                <a href="#" id="btn-live-preview-modal" target="_blank" class="flex flex-col items-center justify-center p-4 bg-red-50 rounded-2xl border border-red-100 hover:border-red-300 hover:bg-red-100 transition group">
+                    <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center mb-3 shadow-sm group-hover:scale-110 transition">
+                        <svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                    </div>
+                    <span class="text-sm font-bold text-red-600">Live Preview</span>
+                </a>
+
+                <a href="#" id="btn-wa-blast" class="flex flex-col items-center justify-center p-4 bg-green-50 rounded-2xl border border-green-100 hover:border-green-300 hover:bg-green-100 transition group">
+                    <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center mb-3 shadow-sm group-hover:scale-110 transition">
+                        <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg>
+                    </div>
+                    <span class="text-sm font-bold text-green-600">WA Blast</span>
+                </a>
+
+                <a href="#" id="btn-scanner" class="flex flex-col items-center justify-center p-4 bg-indigo-50 rounded-2xl border border-indigo-100 hover:border-indigo-300 hover:bg-indigo-100 transition group">
+                    <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center mb-3 shadow-sm group-hover:scale-110 transition">
+                        <svg class="w-5 h-5 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm14 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path></svg>
+                    </div>
+                    <span class="text-sm font-bold text-indigo-600">Scanner</span>
+                </a>
+            </div>
+        </div>
+    </div>
 
     {{-- ========================================================= --}}
     {{-- 🔥 UNIVERSAL ALERT MODAL (UNTUK SUCCESS, ERROR, WARNING) 🔥 --}}
@@ -216,6 +283,33 @@
 
 @push('scripts')
     <script>
+        // ==========================================
+        // SCRIPT KELOLA DATA MODAL
+        // ==========================================
+        function openActionModal(editUrl, previewUrl, blastUrl, scannerUrl) {
+            document.getElementById('btn-kelola-konten').href = editUrl;
+            document.getElementById('btn-live-preview-modal').href = previewUrl;
+            document.getElementById('btn-wa-blast').href = blastUrl;
+            document.getElementById('btn-scanner').href = scannerUrl;
+
+            const modal = document.getElementById('action-modal');
+            const box = document.getElementById('action-modal-box');
+            
+            modal.classList.remove('opacity-0', 'pointer-events-none');
+            setTimeout(() => { box.classList.remove('scale-95'); box.classList.add('scale-100'); }, 10);
+        }
+
+        function closeActionModal() {
+            const modal = document.getElementById('action-modal');
+            const box = document.getElementById('action-modal-box');
+            
+            box.classList.remove('scale-100'); box.classList.add('scale-95');
+            modal.classList.add('opacity-0', 'pointer-events-none');
+        }
+
+        // ==========================================
+        // SCRIPT UNIVERSAL ALERT MODAL
+        // ==========================================
         let universalModalCallback = null;
 
         function showUniversalAlert(type, title, message, callback = null) {
@@ -270,29 +364,9 @@
             }
         }
 
-        // Live Preview URL Builder
-        document.addEventListener('DOMContentLoaded', function() {
-            const previewBtn = document.getElementById('btn-live-preview');
-            const mainForm = document.querySelector('form[action*="invitations"]'); 
-
-            if (previewBtn && mainForm) {
-                previewBtn.addEventListener('click', function(e) {
-                    e.preventDefault(); 
-                    const formData = new FormData(mainForm);
-                    const params = new URLSearchParams();
-                    for (const [key, value] of formData.entries()) {
-                        if (typeof value === 'string' && value.trim() !== '') {
-                            params.append(key, value);
-                        }
-                    }
-                    const baseUrl = this.getAttribute('href').split('?')[0];
-                    const previewUrl = baseUrl + '?' + params.toString();
-                    window.open(previewUrl, '_blank');
-                });
-            }
-        });
-
-        // Midtrans Payment Logic
+        // ==========================================
+        // MIDTRANS PAYMENT LOGIC
+        // ==========================================
         function payNow(btnElement, invitationId) {
             const originalText = btnElement.innerText;
             btnElement.innerText = 'Memproses...';

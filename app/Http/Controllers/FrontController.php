@@ -7,6 +7,7 @@ use App\Models\Invitation;
 use App\Models\WishesRsvp;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class FrontController extends Controller
 {
@@ -17,16 +18,22 @@ class FrontController extends Controller
             ->firstOrFail();
 
         // =========================================================
-        // LOGIKA PROTEKSI UNDANGAN (KUNCI PUBLIK JIKA BELUM LUNAS)
+        // LOGIKA PROTEKSI UNDANGAN (DRAFT & EXPIRED)
         // =========================================================
+        $isOwner = auth()->check() && auth()->id() === $invitation->user_id;
+
+        // 1. JIKA UNDANGAN BELUM LUNAS / DRAFT
         if ($invitation->status !== 'active') {
-            // Cek apakah pengunjung saat ini adalah pemilik undangan
-            $isOwner = auth()->check() && auth()->id() === $invitation->user_id;
-            
-            // Jika BUKAN pemilik, tolak aksesnya
             if (!$isOwner) {
-                // Kamu bisa mengarahkan ke halaman 403 bawaan Laravel
-                abort(403, 'Maaf, undangan ini belum diaktifkan oleh mempelai atau masa berlakunya telah habis.');
+                abort(403, 'Maaf, undangan ini belum diaktifkan oleh mempelai.');
+            }
+        } 
+        // 2. JIKA UNDANGAN SUDAH LUNAS TAPI MASA AKTIF HABIS (EXPIRED)
+        else {
+            if ($invitation->expires_at && Carbon::now()->greaterThan($invitation->expires_at)) {
+                if (!$isOwner) {
+                    abort(403, 'Maaf, masa aktif undangan ini telah habis.');
+                }
             }
         }
         // =========================================================
