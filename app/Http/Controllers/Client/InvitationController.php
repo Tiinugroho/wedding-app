@@ -134,6 +134,7 @@ class InvitationController extends Controller
 
             'akad_date' => 'nullable|date',
             'akad_time' => 'nullable|string',
+            'akad_time_end' => 'nullable|string',
             'akad_location' => 'nullable|string',
             'akad_address' => 'nullable|string',
             'akad_map' => 'nullable|url',
@@ -148,8 +149,9 @@ class InvitationController extends Controller
             'enable_adab_walimah' => 'nullable|boolean',
             'enable_qr_attendance' => 'nullable|boolean',
             'is_livestream_active' => 'nullable|boolean',
-            'live_stream_platform' => 'nullable|string|in:youtube,tiktok,zoom,instagram',
-            'live_stream_link' => 'nullable|url',
+            'live_streams' => 'nullable|array',
+            'live_streams.*.platform' => 'nullable|string|in:youtube,tiktok,zoom,instagram',
+            'live_streams.*.link' => 'nullable|url',
 
             'youtube_links' => 'nullable|array',
             'youtube_links.*' => 'nullable|url',
@@ -282,6 +284,7 @@ class InvitationController extends Controller
             // Akad Statis
             'akad_date' => $request->akad_date,
             'akad_time' => $request->akad_time,
+            'akad_time_end' => $request->akad_time_end,
             'akad_location' => $request->akad_location,
             'akad_address' => $request->akad_address,
             'akad_map' => $request->akad_map,
@@ -296,8 +299,13 @@ class InvitationController extends Controller
             'enable_health_protocol' => $request->has('enable_health_protocol'),
             'enable_adab_walimah' => $request->has('enable_adab_walimah'),
             'is_livestream_active' => $request->has('is_livestream_active'),
-            'live_stream_platform' => $request->live_stream_platform,
-            'live_stream_link' => $request->live_stream_link,
+            // Ambil array live streams, lalu filter agar link yang kosong tidak ikut tersimpan
+            'live_streams' => collect($request->live_streams)
+                ->filter(function ($stream) {
+                    return !empty($stream['link']);
+                })
+                ->values()
+                ->toArray(),
             'enable_qr_attendance' => $request->has('enable_qr_attendance'),
 
             // BUKAN 'alamat_kado' => 'nullable|string', tapi ambil dari request:

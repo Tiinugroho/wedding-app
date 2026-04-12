@@ -14,43 +14,70 @@
     </div>
 
     @if (isset($packageLogic['has_live_stream']) && $packageLogic['has_live_stream'] == true)
-        <div class="p-5 border border-slate-100 rounded-2xl bg-slate-50">
-            <label class="flex items-center gap-3 cursor-pointer mb-5">
-                <input type="checkbox" name="is_livestream_active" value="1"
-                    {{ !empty($content['is_livestream_active']) ? 'checked' : '' }}
-                    class="w-5 h-5 text-rOrange rounded border-slate-300 focus:ring-rOrange">
-                <div>
-                    <span class="font-bold text-slate-700">Aktifkan Tombol Live Stream</span>
-                    <p class="text-xs text-slate-500 mt-1">Tamu dapat mengklik tombol pada undangan untuk
-                        bergabung ke siaran langsung acara Anda.</p>
-                </div>
-            </label>
+        <div class="p-5 border border-slate-100 rounded-2xl bg-slate-50 relative">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-5">
+                <label class="flex items-center gap-3 cursor-pointer">
+                    <input type="checkbox" name="is_livestream_active" value="1"
+                        {{ !empty($content['is_livestream_active']) ? 'checked' : '' }}
+                        class="w-5 h-5 text-rOrange rounded border-slate-300 focus:ring-rOrange">
+                    <div>
+                        <span class="font-bold text-slate-700">Aktifkan Tombol Live Stream</span>
+                        <p class="text-xs text-slate-500 mt-1">Tamu dapat mengklik tombol pada undangan untuk
+                            bergabung ke siaran langsung acara Anda.</p>
+                    </div>
+                </label>
+                <button type="button" onclick="addLivestreamRow()"
+                    class="px-3 py-1.5 bg-slate-200 text-slate-700 text-xs font-bold rounded-lg hover:bg-slate-300 transition shrink-0">
+                    + Tambah Link Live
+                </button>
+            </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div class="md:col-span-1">
-                    <label class="block text-xs font-bold text-slate-600 mb-1">Platform</label>
-                    <select name="live_stream_platform"
-                        class="w-full py-2.5 px-4 bg-white border border-slate-200 rounded-xl focus:ring-rOrange cursor-pointer">
-                        <option value="youtube"
-                            {{ ($content['live_stream_platform'] ?? '') == 'youtube' ? 'selected' : '' }}>
-                            YouTube</option>
-                        <option value="zoom"
-                            {{ ($content['live_stream_platform'] ?? '') == 'zoom' ? 'selected' : '' }}>Zoom
-                        </option>
-                        <option value="tiktok"
-                            {{ ($content['live_stream_platform'] ?? '') == 'tiktok' ? 'selected' : '' }}>
-                            TikTok</option>
-                        <option value="instagram"
-                            {{ ($content['live_stream_platform'] ?? '') == 'instagram' ? 'selected' : '' }}>
-                            Instagram</option>
-                    </select>
-                </div>
-                <div class="md:col-span-2">
-                    <label class="block text-xs font-bold text-slate-600 mb-1">Link / URL Streaming</label>
-                    <input type="url" name="live_stream_link" value="{{ $content['live_stream_link'] ?? '' }}"
-                        class="w-full py-2.5 px-4 bg-white border border-slate-200 rounded-xl focus:ring-rOrange"
-                        placeholder="https://...">
-                </div>
+            <div id="livestream-wrapper" class="space-y-4">
+                @php
+                    // Ambil data live streams, jika tidak ada atau format lama (bukan array), buat array default
+                    $liveStreamsData = !empty($content['live_streams']) && is_array($content['live_streams']) 
+                        ? $content['live_streams'] 
+                        : [];
+                    
+                    // Migrasi dari format lama (platform tunggal) jika ada
+                    if (empty($liveStreamsData) && !empty($content['live_stream_link'])) {
+                        $liveStreamsData[] = [
+                            'platform' => $content['live_stream_platform'] ?? 'youtube',
+                            'link' => $content['live_stream_link']
+                        ];
+                    }
+
+                    // Jika masih kosong, berikan 1 isian default
+                    if (empty($liveStreamsData)) {
+                        $liveStreamsData[] = ['platform' => 'youtube', 'link' => ''];
+                    }
+                @endphp
+
+                @foreach ($liveStreamsData as $key => $stream)
+                    <div class="grid grid-cols-1 md:grid-cols-12 gap-4 relative livestream-item items-end">
+                        <div class="md:col-span-3">
+                            <label class="block text-xs font-bold text-slate-600 mb-1">Platform</label>
+                            <select name="live_streams[{{ $key }}][platform]"
+                                class="w-full py-2.5 px-4 bg-white border border-slate-200 rounded-xl focus:ring-rOrange cursor-pointer">
+                                <option value="youtube" {{ ($stream['platform'] ?? '') == 'youtube' ? 'selected' : '' }}>YouTube</option>
+                                <option value="zoom" {{ ($stream['platform'] ?? '') == 'zoom' ? 'selected' : '' }}>Zoom</option>
+                                <option value="tiktok" {{ ($stream['platform'] ?? '') == 'tiktok' ? 'selected' : '' }}>TikTok</option>
+                                <option value="instagram" {{ ($stream['platform'] ?? '') == 'instagram' ? 'selected' : '' }}>Instagram</option>
+                            </select>
+                        </div>
+                        <div class="md:col-span-8">
+                            <label class="block text-xs font-bold text-slate-600 mb-1">Link / URL Streaming</label>
+                            <input type="url" name="live_streams[{{ $key }}][link]" value="{{ $stream['link'] ?? '' }}"
+                                class="w-full py-2.5 px-4 bg-white border border-slate-200 rounded-xl focus:ring-rOrange"
+                                placeholder="https://...">
+                        </div>
+                        <div class="md:col-span-1">
+                            @if ($key > 0)
+                                <button type="button" onclick="this.closest('.livestream-item').remove()" class="w-full py-2.5 bg-red-50 text-red-500 rounded-xl hover:bg-red-500 hover:text-white transition font-bold text-sm">Hapus</button>
+                            @endif
+                        </div>
+                    </div>
+                @endforeach
             </div>
         </div>
     @else

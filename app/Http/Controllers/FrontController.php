@@ -6,6 +6,7 @@ use App\Models\Guest;
 use App\Models\Invitation;
 use App\Models\WishesRsvp;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class FrontController extends Controller
 {
@@ -55,36 +56,38 @@ class FrontController extends Controller
 
     public function storeRsvp(Request $request, $slug)
     {
+        // 1. Cari undangan berdasarkan slug di URL
         $invitation = Invitation::where('slug', $slug)->firstOrFail();
 
-        // Validasi inputan form dari tamu (Tambahkan validasi guest_id)
+        // 2. Validasi data yang dikirim dari Javascript
         $request->validate([
-            'guest_id' => 'nullable|exists:guests,id', // Cek apakah ID tamu valid
             'guest_name' => 'required|string|max:255',
-            'pax' => 'required|integer|min:1|max:10',
-            'status_rsvp' => 'required|in:hadir,tidak_hadir,ragu', // Sesuai dengan ENUM migration kamu!
-            'message' => 'required|string|max:1000',
+            'status_rsvp' => 'required|in:hadir,tidak_hadir,ragu',
+            'pax' => 'required|integer|min:0',
+            'message' => 'required|string',
         ]);
 
-        // Simpan ke database wishes_rsvps
-        WishesRsvp::create([
+        // 3. Cek apakah ini tamu VIP (dari tabel guests yang di-blast WA)
+        $guest = DB::table('guests')
+            ->where('invitation_id', $invitation->id)
+            ->where('name', $request->guest_name)
+            ->first();
+
+        // 4. Simpan ke database wishes_rsvps
+        DB::table('wishes_rsvps')->insert([
             'invitation_id' => $invitation->id,
-            'guest_id' => $request->guest_id, // Simpan ID Tamu jika ada
+            'guest_id' => $guest ? $guest->id : null,
             'guest_name' => $request->guest_name,
             'status_rsvp' => $request->status_rsvp,
             'pax' => $request->pax,
             'message' => $request->message,
+            'created_at' => now(),
+            'updated_at' => now(),
         ]);
 
-        // Jika tamu ini spesifik (punya guest_id) dan statusnya hadir,
-        // Kita juga bisa update status 'is_present' di tabel guests menjadi true!
-        if ($request->guest_id && $request->status_rsvp === 'hadir') {
-            Guest::where('id', $request->guest_id)->update(['is_present' => true]);
-        }
-
         return response()->json([
-            'success' => true, 
-            'message' => 'Terima kasih atas konfirmasi dan doa restu Anda.'
+            'status' => 'success', 
+            'message' => 'RSVP berhasil disimpan!'
         ]);
     }
 }

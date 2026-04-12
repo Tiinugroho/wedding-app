@@ -9,7 +9,7 @@
     // LOGIKA COUNTDOWN (DARI RESEPSI PERTAMA)
     // ==========================================
     $hasResepsi = false;
-    $countdownDateStr = '';
+    $weddingTimestamp = 0; // Menggunakan timestamp agar 100% terbaca di semua browser
     $coverDateDisplay = '- . - . -';
 
     if (!empty($content['events']) && is_array($content['events']) && count($content['events']) > 0) {
@@ -20,20 +20,17 @@
             // Format Cover (d . m . Y)
             $coverDateDisplay = \Carbon\Carbon::parse($firstEvent['date'])->format('d . m . Y');
 
-            // Format JS Countdown (Y, m-1, d, H, i, s)
+            // Format JS Countdown (Miliseconds)
             $eventTime = !empty($firstEvent['time']) ? $firstEvent['time'] : '00:00:00';
-            $countdownDateStr = \Carbon\Carbon::parse($firstEvent['date'] . ' ' . $eventTime)->format(
-                'Y, m-1, d, H, i, s',
-            );
+            $weddingTimestamp = \Carbon\Carbon::parse($firstEvent['date'] . ' ' . $eventTime)->timestamp * 1000;
         }
     }
 
-    /// ==========================================
+    // ==========================================
     // LOGIKA AKAD (KOSONGKAN JIKA TIDAK DIISI, JANGAN HARI INI)
     // ==========================================
     $rawDate = !empty($content['akad_date']) ? $content['akad_date'] : null;
     $rawTime = !empty($content['akad_time']) ? $content['akad_time'] : null;
-    // Gunakan 00:00:00 jika waktu tidak diisi, tapi tetap null jika tanggal kosong
     $akadDateObj = $rawDate ? \Carbon\Carbon::parse($rawDate . ' ' . ($rawTime ?? '00:00:00')) : null;
 
     // Path untuk cover
@@ -42,7 +39,7 @@
         : 'https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=1000&auto=format&fit=crop';
 
     // ==========================================
-    // LOGIKA TAMU & QR CODE (DARI TABEL GUESTS)
+    // LOGIKA TAMU & QR CODE
     // ==========================================
     $guestSlug = request()->query('to');
     $guest = null;
@@ -58,7 +55,7 @@
     $qrCodeUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' . urlencode($qrData);
 
     // ==========================================
-    // LOGIKA UCAPAN & RSVP (DARI TABEL WISHES)
+    // LOGIKA UCAPAN & RSVP
     // ==========================================
     $dbWishes = \DB::table('wishes_rsvps')
         ->where('invitation_id', $invitation->id)
@@ -91,6 +88,10 @@
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <script>
+        const invitationId = {{ $invitation->id }}; // Simpan ID Undangan untuk dikirim via JS
+    </script>
     <script>
         tailwind.config = {
             theme: {
@@ -745,11 +746,15 @@
         @endif
 
         <section id="lokasi" class="py-12 px-6 bg-brand-elegant border-y border-brand-lightGold/30 shadow-inner">
-            
+
             @php
                 // Hitung total card (1 Akad + Jumlah Resepsi jika aktif)
                 $totalEvents = 0;
-                if (($content['is_event_active'] ?? false) && !empty($content['events']) && is_array($content['events'])) {
+                if (
+                    ($content['is_event_active'] ?? false) &&
+                    !empty($content['events']) &&
+                    is_array($content['events'])
+                ) {
                     $totalEvents = count($content['events']);
                 }
                 $totalCards = 1 + $totalEvents;
@@ -770,7 +775,8 @@
 
                 <div class="grid {{ $gridClass }} gap-8 text-left mx-auto">
 
-                    <div class="bg-brand-white p-10 rounded-3xl shadow-lg border border-brand-lightGold/50 flex flex-col h-full">
+                    <div
+                        class="bg-brand-white p-10 rounded-3xl shadow-lg border border-brand-lightGold/50 flex flex-col h-full">
                         <div class="flex-grow text-center">
                             <p class="text-xs font-bold uppercase tracking-widest text-brand-gold mb-3">Akad Nikah</p>
                             <i class="fa-solid fa-map-location-dot text-5xl text-brand-gold mb-6"></i>
@@ -778,15 +784,22 @@
                             <h3 class="text-2xl font-semibold mb-3">
                                 {{ !empty($content['akad_location']) ? $content['akad_location'] : '-' }}
                             </h3>
-                            
+
                             <p class="text-sm text-gray-600 mb-8 leading-relaxed">
                                 {{ !empty($content['akad_address']) ? $content['akad_address'] : '-' }}<br><br>
-                                
+
                                 {{ $akadDateObj ? $akadDateObj->translatedFormat('l, d F Y') : '-' }} <br>
-                                
+
                                 @php
-                                    $aTime = !empty($content['akad_time']) && $content['akad_time'] !== '00:00' && $content['akad_time'] !== '00:00:00' ? substr($content['akad_time'], 0, 5) : null;
-                                    $aTimeEnd = !empty($content['akad_time_end']) ? substr($content['akad_time_end'], 0, 5) : null;
+                                    $aTime =
+                                        !empty($content['akad_time']) &&
+                                        $content['akad_time'] !== '00:00' &&
+                                        $content['akad_time'] !== '00:00:00'
+                                            ? substr($content['akad_time'], 0, 5)
+                                            : null;
+                                    $aTimeEnd = !empty($content['akad_time_end'])
+                                        ? substr($content['akad_time_end'], 0, 5)
+                                        : null;
                                 @endphp
                                 {{ $aTime ? $aTime . ($aTimeEnd ? ' - ' . $aTimeEnd : '') . ' WIB' : '-' }}
                             </p>
@@ -804,29 +817,38 @@
 
                     @if ($content['is_event_active'] ?? false)
                         @foreach ($content['events'] ?? [] as $event)
-                            <div class="bg-brand-white p-10 rounded-3xl shadow-lg border border-brand-lightGold/50 flex flex-col h-full">
+                            <div
+                                class="bg-brand-white p-10 rounded-3xl shadow-lg border border-brand-lightGold/50 flex flex-col h-full">
                                 <div class="flex-grow text-center">
                                     <p class="text-xs font-bold uppercase tracking-widest text-brand-gold mb-3">
                                         {{ $event['title'] ?? 'Resepsi' }}</p>
                                     <i class="fa-solid fa-map-pin text-5xl text-brand-gold mb-6"></i>
-                                    
+
                                     <h3 class="text-2xl font-semibold mb-3">
                                         {{ !empty($event['location']) ? $event['location'] : '-' }}
                                     </h3>
-                                    
+
                                     <p class="text-sm text-gray-600 mb-8 leading-relaxed">
                                         {{ !empty($event['address']) ? $event['address'] : '-' }}<br><br>
-                                        
-                                        {{ !empty($event['date']) ? \Carbon\Carbon::parse($event['date'])->translatedFormat('l, d F Y') : '-' }} <br>
-                                        
+
+                                        {{ !empty($event['date']) ? \Carbon\Carbon::parse($event['date'])->translatedFormat('l, d F Y') : '-' }}
+                                        <br>
+
                                         @php
-                                            $eTime = !empty($event['time']) && $event['time'] !== '00:00' && $event['time'] !== '00:00:00' ? substr($event['time'], 0, 5) : null;
-                                            $eTimeEnd = !empty($event['time_end']) ? substr($event['time_end'], 0, 5) : null;
+                                            $eTime =
+                                                !empty($event['time']) &&
+                                                $event['time'] !== '00:00' &&
+                                                $event['time'] !== '00:00:00'
+                                                    ? substr($event['time'], 0, 5)
+                                                    : null;
+                                            $eTimeEnd = !empty($event['time_end'])
+                                                ? substr($event['time_end'], 0, 5)
+                                                : null;
                                         @endphp
                                         {{ $eTime ? $eTime . ($eTimeEnd ? ' - ' . $eTimeEnd : '') . ' WIB' : '-' }}
                                     </p>
                                 </div>
-                                
+
                                 @if (!empty($event['map']))
                                     <div class="mt-auto text-center">
                                         <a href="{{ $event['map'] }}" target="_blank"
@@ -978,44 +1000,56 @@
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
-                        @foreach ($content['banks'] ?? [] as $index => $bank)
-                            @php
-                                $bNameRaw = trim($bank['name'] ?? '');
-                                $bNameLower = strtolower($bNameRaw);
+    @foreach ($content['banks'] ?? [] as $index => $bank)
+        @php
+            $bNameRaw = trim($bank['name'] ?? '');
+            $bNameLower = strtolower($bNameRaw);
 
-                                // 2. Cocokkan nama bank (lowercase) dengan data array, jika tidak ada pakai default
-                                $logoUrl =
-                                    $masterLogos[$bNameLower] ??
-                                    'https://cdn-icons-png.flaticon.com/512/2830/2830284.png';
-                            @endphp
+            // Ambil path logo dari data master bank yang di-load di awal file
+            $logoPath = $masterLogos[$bNameLower] ?? null;
+        @endphp
 
-                            <div
-                                class="group relative p-10 bg-brand-elegant/40 rounded-[3rem] border border-brand-lightGold/20 backdrop-blur-sm transition-all duration-500 hover:shadow-2xl hover:shadow-brand-gold/10 hover:-translate-y-2">
-                                <div class="flex flex-col items-center">
+        <div class="group relative p-10 bg-brand-elegant/40 rounded-[3rem] border border-brand-lightGold/20 backdrop-blur-sm transition-all duration-500 hover:shadow-2xl hover:shadow-brand-gold/10 hover:-translate-y-2">
+            <div class="flex flex-col items-center">
 
-                                    <img src="{{ $logoUrl }}"
-                                        class="h-10 w-auto object-contain mb-6 transition-all duration-700 hover:scale-110 drop-shadow-sm"
-                                        alt="{{ $bNameRaw }}">
+                <div class="w-20 h-20 bg-white rounded-full flex items-center justify-center shadow-sm border border-brand-lightGold/30 mb-6 overflow-hidden p-4 transition-all duration-700 group-hover:scale-110">
+                    @if ($logoPath)
+                        @if (str_starts_with($logoPath, 'http'))
+                            {{-- Tampilkan jika URL External (Wikipedia/Wikimedia) --}}
+                            <img src="{{ $logoPath }}" alt="{{ $bNameRaw }}" 
+                                 class="w-full h-full object-contain">
+                        @else
+                            {{-- Tampilkan jika File Lokal (Storage) --}}
+                            <img src="{{ asset('storage/' . $logoPath) }}" alt="{{ $bNameRaw }}" 
+                                 class="w-full h-full object-contain">
+                        @endif
+                    @else
+                        {{-- Fallback ke Ikon jika logo tidak ada di database --}}
+                        <i class="fa-solid fa-building-columns text-brand-gold text-2xl"></i>
+                    @endif
+                </div>
+                <p class="text-[10px] uppercase tracking-[0.3em] text-brand-gold mb-2 font-bold">
+                    {{ $bNameRaw }}
+                </p>
+                <h3 id="rek-{{ $index }}" class="text-3xl font-serif font-bold text-brand-charcoal mb-2 tracking-widest">
+                    {{ $bank['account_number'] ?? '-' }}
+                </h3>
+                <p class="text-sm text-gray-400 italic mb-8 font-light">
+                    a.n {{ $bank['account_name'] ?? 'Mempelai' }}
+                </p>
+                <p class="text-xs text-red-500 font-bold">
+    DEBUG URL: {{ $logoPath ?? 'LOGO PATH KOSONG (NAMA TIDAK MATCH)' }}
+</p>
 
-                                    <p class="text-[10px] uppercase tracking-[0.3em] text-brand-gold mb-2 font-bold">
-                                        {{ $bNameRaw }}</p>
-                                    <h3 id="rek-{{ $index }}"
-                                        class="text-3xl font-serif font-bold text-brand-charcoal mb-2 tracking-widest">
-                                        {{ $bank['account_number'] ?? '-' }}
-                                    </h3>
-                                    <p class="text-sm text-gray-400 italic mb-8 font-light">
-                                        a.n {{ $bank['account_name'] ?? 'Mempelai' }}
-                                    </p>
-
-                                    <button onclick="copyToClipboard('rek-{{ $index }}', this)"
-                                        class="w-full py-4 bg-brand-gold text-white rounded-2xl text-[11px] font-bold uppercase tracking-[0.2em] transition-all duration-300 hover:bg-brand-charcoal shadow-lg shadow-brand-gold/20 active:scale-95">
-                                        <i class="fa-regular fa-copy mr-2"></i>
-                                        <span>Salin Nomor</span>
-                                    </button>
-                                </div>
-                            </div>
-                        @endforeach
-                    </div>
+                <button onclick="copyToClipboard('rek-{{ $index }}', this)"
+                    class="w-full py-4 bg-brand-gold text-white rounded-2xl text-[11px] font-bold uppercase tracking-[0.2em] transition-all duration-300 hover:bg-brand-charcoal shadow-lg shadow-brand-gold/20 active:scale-95">
+                    <i class="fa-regular fa-copy mr-2"></i>
+                    <span>Salin Nomor</span>
+                </button>
+            </div>
+        </div>
+    @endforeach
+</div>
 
                     <div id="copy-toast"
                         class="fixed bottom-28 left-1/2 -translate-x-1/2 z-[300] px-8 py-3.5 bg-brand-charcoal/90 backdrop-blur-md text-white text-[10px] rounded-full tracking-[0.3em] uppercase font-bold opacity-0 transition-all duration-500 pointer-events-none shadow-2xl border border-white/10">
@@ -1124,24 +1158,46 @@
                 </div>
 
                 <div id="confirm-modal" class="fixed inset-0 z-[600] hidden flex items-center justify-center p-6">
-                    <div class="absolute inset-0 bg-brand-charcoal/80 backdrop-blur-md"></div>
-                    <div class="relative bg-white w-full max-w-sm rounded-[2.5rem] p-10 text-center shadow-2xl">
+                    <div class="absolute inset-0 bg-brand-charcoal/80 backdrop-blur-md" onclick="closeConfirmModal()">
+                    </div>
+                    <div class="relative bg-white w-full max-w-sm rounded-[2.5rem] p-8 text-center shadow-2xl">
                         <div
-                            class="w-20 h-20 bg-brand-gold/10 text-brand-gold rounded-full flex items-center justify-center mx-auto mb-6">
-                            <i class="fa-solid fa-heart text-3xl"></i>
+                            class="w-16 h-16 bg-brand-gold/10 text-brand-gold rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="fa-solid fa-heart text-2xl"></i>
                         </div>
-                        <h4 class="text-lg font-serif italic text-brand-charcoal mb-4">Konfirmasi Niat Baik</h4>
-                        <p id="confirm-text" class="text-sm text-gray-500 font-light leading-relaxed mb-8">
-                            Apakah Anda yakin ingin mengirimkan kado ini? Nama Anda akan tercatat dalam sistem kami
-                            sebagai bentuk apresiasi.
+                        <h4 class="text-lg font-serif italic text-brand-charcoal mb-2">Konfirmasi Niat Baik</h4>
+                        <p id="confirm-text" class="text-[11px] text-gray-500 font-light leading-relaxed mb-6">
+                            Apakah Anda yakin ingin mengirimkan kado ini?
                         </p>
+
+                        <div class="mb-4 text-left">
+                            <label
+                                class="block text-[10px] uppercase tracking-widest text-brand-gold font-bold mb-2">Nama
+                                Anda</label>
+                            <input type="text" id="input-gift-name"
+                                value="{{ $guestNameDisplay !== 'Tamu Undangan' ? $guestNameDisplay : '' }}"
+                                class="w-full p-3.5 rounded-xl bg-brand-elegant border border-brand-lightGold/50 focus:outline-none focus:border-brand-gold text-sm placeholder-gray-400"
+                                placeholder="Masukkan Nama Anda">
+                        </div>
+
+                        <div class="mb-6 text-left">
+                            <label
+                                class="block text-[10px] uppercase tracking-widest text-brand-gold font-bold mb-2">Jumlah
+                                Kehadiran (Opsional)</label>
+                            <input type="number" id="input-gift-pax" value="0" min="0"
+                                class="w-full p-3.5 rounded-xl bg-brand-elegant border border-brand-lightGold/50 focus:outline-none focus:border-brand-gold text-sm placeholder-gray-400"
+                                placeholder="Jumlah orang hadir">
+                            <p class="text-[9px] text-gray-400 mt-1 italic leading-tight">*Isi 0 jika Anda tidak hadir
+                                dan hanya mengirim kado.</p>
+                        </div>
+
                         <div class="flex flex-col gap-3">
                             <button id="final-confirm-btn"
-                                class="w-full py-4 bg-brand-gold text-white rounded-2xl text-[11px] font-bold uppercase tracking-widest shadow-lg shadow-brand-gold/20 active:scale-95 transition-all">
+                                class="w-full py-3.5 bg-brand-gold text-white rounded-xl text-[11px] font-bold uppercase tracking-widest shadow-lg shadow-brand-gold/20 active:scale-95 transition-all">
                                 Ya, Saya Yakin
                             </button>
                             <button onclick="closeConfirmModal()"
-                                class="w-full py-4 bg-transparent text-gray-400 text-[10px] font-bold uppercase tracking-widest hover:text-brand-charcoal transition-all">
+                                class="w-full py-3.5 bg-transparent text-gray-400 text-[10px] font-bold uppercase tracking-widest hover:text-brand-charcoal transition-all">
                                 Batal
                             </button>
                         </div>
@@ -1218,49 +1274,60 @@
                         <p class="text-xs text-brand-gold tracking-widest uppercase">Konfirmasi Kehadiran Anda</p>
                     </div>
 
-                    <form class="space-y-4 text-left">
+                    <form class="space-y-4 text-left" id="rsvp-form-real">
+                        @csrf
                         <div>
                             <input type="text" id="input-nama-rsvp" placeholder="Nama Lengkap"
                                 value="{{ $guestNameDisplay !== 'Tamu Undangan' ? $guestNameDisplay : '' }}"
                                 class="w-full p-4 rounded-2xl bg-brand-elegant border border-brand-lightGold/50 focus:outline-none focus:border-brand-gold text-sm placeholder-gray-500">
                         </div>
+
                         <div class="grid grid-cols-2 gap-3">
-                            <button type="button" onclick="selectAttendance('Hadir')" id="btn-hadir"
-                                class="py-3 rounded-xl border border-brand-lightGold/50 text-sm font-medium transition-all bg-brand-elegant text-gray-600">
+                            <input type="hidden" id="rsvp_status_hidden" value="hadir">
+
+                            <button type="button" onclick="setAttendanceSelection('hadir')" id="btn-hadir"
+                                class="py-3 rounded-xl border border-brand-gold bg-brand-gold text-white text-sm font-medium transition-all shadow-md">
                                 <i class="fa-solid fa-check mr-2"></i>Hadir
                             </button>
-                            <button type="button" onclick="selectAttendance('Tidak Hadir')" id="btn-absen"
+                            <button type="button" onclick="setAttendanceSelection('tidak_hadir')" id="btn-absen"
                                 class="py-3 rounded-xl border border-brand-lightGold/50 text-sm font-medium transition-all bg-brand-elegant text-gray-600">
                                 <i class="fa-solid fa-xmark mr-2"></i>Absen
                             </button>
                         </div>
 
-                        <div id="guest-selection" class="hidden animate-fade-in">
-                            <label
-                                class="text-[10px] uppercase tracking-[0.2em] text-brand-gold ml-1 mb-2 block font-semibold">Membawa
-                                Tamu?</label>
+                        <div id="guest-selection" class="animate-fade-in mt-4 mb-4">
+                            <div class="flex items-center justify-between ml-1 mb-2">
+                                <label
+                                    class="text-[10px] uppercase tracking-[0.2em] text-brand-gold font-semibold">Jumlah
+                                    Kehadiran</label>
+                                <span class="text-[9px] text-gray-400 italic">*Pilih jumlah pax</span>
+                            </div>
                             <div class="flex gap-2">
-                                <button type="button"
-                                    class="flex-1 py-3 rounded-xl border border-brand-lightGold/30 bg-brand-elegant text-xs text-gray-600 hover:border-brand-gold transition-colors">1
-                                    Orang</button>
-                                <button type="button"
-                                    class="flex-1 py-3 rounded-xl border border-brand-lightGold/30 bg-brand-elegant text-xs text-gray-600 hover:border-brand-gold transition-colors">2
-                                    Orang</button>
-                                <button type="button"
-                                    class="flex-1 py-3 rounded-xl border border-brand-lightGold/30 bg-brand-elegant text-xs text-gray-600 hover:border-brand-gold transition-colors">+3
-                                    Orang</button>
+                                <button type="button" onclick="selectPax(1)" id="btn-pax-1"
+                                    class="flex-1 py-3 rounded-xl border border-brand-gold bg-brand-gold text-white text-xs shadow-md transition-colors">1</button>
+                                <button type="button" onclick="selectPax(2)" id="btn-pax-2"
+                                    class="flex-1 py-3 rounded-xl border border-brand-lightGold/30 bg-brand-elegant text-xs text-gray-600 hover:border-brand-gold transition-colors">2</button>
+                                <button type="button" onclick="selectPax(3)" id="btn-pax-3"
+                                    class="flex-1 py-3 rounded-xl border border-brand-lightGold/30 bg-brand-elegant text-xs text-gray-600 hover:border-brand-gold transition-colors">3</button>
+                                <button type="button" onclick="selectPax('custom')" id="btn-pax-custom"
+                                    class="flex-1 py-3 rounded-xl border border-brand-lightGold/30 bg-brand-elegant text-xs text-gray-600 hover:border-brand-gold transition-colors">3+</button>
+                            </div>
+                            <div id="custom-pax-container" class="hidden mt-3">
+                                <input type="number" id="custom-pax-input" min="4"
+                                    placeholder="Masukkan jumlah orang (misal: 4)"
+                                    class="w-full p-3 rounded-xl bg-brand-elegant border border-brand-lightGold/50 focus:outline-none focus:border-brand-gold text-sm placeholder-gray-500">
                             </div>
                         </div>
 
                         <div>
-                            <textarea rows="4" placeholder="Tuliskan doa & ucapan manis Anda..."
+                            <textarea id="input-pesan-rsvp" rows="4" placeholder="Tuliskan doa & ucapan manis Anda..."
                                 class="w-full p-4 rounded-2xl bg-brand-elegant border border-brand-lightGold/50 focus:outline-none focus:border-brand-gold text-sm placeholder-gray-500"></textarea>
                         </div>
 
                         <div class="flex gap-3 pt-2">
                             <button type="button" onclick="closeRSVP()"
                                 class="flex-1 py-4 bg-gray-100 text-gray-500 rounded-2xl font-semibold text-sm hover:bg-gray-200 transition-colors">Batal</button>
-                            <button type="button" onclick="updateGuestStats('hadir')"
+                            <button type="submit"
                                 class="flex-[2] py-4 bg-brand-gold hover:bg-brand-charcoal text-white rounded-2xl font-semibold text-sm transition-all shadow-lg shadow-brand-gold/20">Kirim
                                 RSVP</button>
                         </div>
@@ -1465,8 +1532,8 @@
     </script>
 
     <script>
-        // Menggunakan ternary untuk mencetak 0 jika $hasResepsi false
-        let weddingDate = {{ $hasResepsi ? 'new Date("' . $countdownDateStr . '").getTime()' : '0' }};
+        // Mengambil langsung dari timestamp mili-detik PHP (sangat akurat untuk JS)
+        let weddingDate = {{ $weddingTimestamp }};
 
         const countdownFunction = setInterval(function() {
             const now = new Date().getTime();
@@ -1499,6 +1566,44 @@
     </script>
 
     <script>
+        // ==========================================
+        // 1. FUNGSI FETCH UNTUK MENYIMPAN KE DATABASE
+        // ==========================================
+        async function sendRsvpData(data) {
+            const csrfMeta = document.querySelector('meta[name="csrf-token"]');
+            if (!csrfMeta) {
+                console.error(
+                    "CSRF Token tidak ditemukan! Pastikan ada <meta name='csrf-token' content='{{ csrf_token() }}'> di <head>."
+                );
+                return;
+            }
+            const csrfToken = csrfMeta.getAttribute('content');
+
+            try {
+                const response = await fetch("{{ route('rsvp.store', $invitation->slug) }}", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken,
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+                if (!response.ok) {
+                    console.error('Gagal menyimpan RSVP:', result);
+                } else {
+                    console.log('RSVP Berhasil Disimpan!');
+                }
+            } catch (error) {
+                console.error('Fetch error:', error);
+            }
+        }
+
+        // ==========================================
+        // LOGIKA KADO & KONFIRMASI NAMA + PAX
+        // ==========================================
         let currentSelectedItemId = null;
         let currentSelectedItemName = '';
 
@@ -1510,7 +1615,18 @@
             const confirmText = document.getElementById('confirm-text');
             if (confirmText) {
                 confirmText.innerHTML =
-                    `Terima kasih atas niat baiknya, <b>${guestName}</b>.<br><br>Apakah Anda yakin ingin mengirimkan <b>${name}</b> sebagai tanda kasih? Nama Anda akan kami catat dengan penuh rasa syukur.`;
+                    `Anda akan mengirimkan <b>${name}</b> sebagai tanda kasih. Silakan masukkan nama dan konfirmasi kehadiran Anda.`;
+            }
+
+            const inputName = document.getElementById('input-gift-name');
+            if (inputName && guestName !== 'Tamu Undangan' && !inputName.value) {
+                inputName.value = guestName;
+            }
+
+            // Reset nilai pax ke 0 setiap kali modal dibuka
+            const inputPax = document.getElementById('input-gift-pax');
+            if (inputPax) {
+                inputPax.value = 0;
             }
 
             const modal = document.getElementById('confirm-modal');
@@ -1519,33 +1635,83 @@
             const btn = document.getElementById('final-confirm-btn');
             if (btn) {
                 btn.onclick = function() {
-                    processClaim(guestName, name);
+                    // Ambil Nama
+                    const inputElement = document.getElementById('input-gift-name');
+                    let finalName = inputElement ? inputElement.value : '';
+                    if (!finalName) finalName = 'Hamba Allah';
+
+                    // Ambil Pax
+                    const paxElement = document.getElementById('input-gift-pax');
+                    let finalPax = paxElement ? parseInt(paxElement.value) : 0;
+                    if (isNaN(finalPax) || finalPax < 0) finalPax = 0;
+
+                    processClaim(finalName, name, finalPax);
                 };
             }
         }
 
-        function closeConfirmModal() {
-            const modal = document.getElementById('confirm-modal');
-            if (modal) modal.classList.add('hidden');
-        }
-
-        function processClaim(guestName, giftName) {
+        // Tambahkan parameter ke-3: giftPax
+        function processClaim(guestName, giftName, giftPax = 0) {
             const itemElement = document.getElementById(currentSelectedItemId);
             if (itemElement) {
                 const actionArea = itemElement.querySelector('button');
                 if (actionArea) {
                     actionArea.outerHTML = `
-                    <div class="flex items-center gap-2 text-green-600 animate-pulse">
-                        <span class="text-[9px] font-bold uppercase tracking-widest">Tercatat untuk Anda</span>
-                        <i class="fa-solid fa-circle-check text-lg"></i>
-                    </div>
-                    `;
+            <div class="flex items-center gap-2 text-green-600 animate-pulse">
+                <span class="text-[9px] font-bold uppercase tracking-widest">Tercatat untuk Anda</span>
+                <i class="fa-solid fa-circle-check text-lg"></i>
+            </div>
+            `;
                 }
                 itemElement.classList.add('border-green-100', 'bg-green-50/30');
             }
 
             closeConfirmModal();
 
+            // Menambahkan ucapan kado ke layar RSVP
+            const container = document.getElementById('wishes-container');
+            const emptyState = document.getElementById('empty-wishes');
+            if (emptyState) emptyState.remove();
+
+            const giftMessage = `Telah memberikan tanda kasih berupa: ${giftName} 🎁`;
+
+            if (container) {
+                const card = document.createElement('div');
+                card.className =
+                    'wish-card bg-brand-gold/10 p-6 rounded-[2rem] border border-brand-gold/30 animate-fade-in-up transition-all';
+                card.innerHTML = `
+            <div class="flex flex-col md:flex-row md:items-center justify-between mb-3 gap-1">
+                <h5 class="text-sm font-serif font-bold text-brand-charcoal">${guestName}</h5>
+                <span class="text-[9px] text-brand-gold italic uppercase tracking-wider font-bold">
+                    <i class="fa-solid fa-gift mr-1"></i> Kado Spesial
+                </span>
+            </div>
+            <p class="text-xs text-brand-gold leading-relaxed font-medium italic">"${giftMessage}"</p>
+        `;
+                container.prepend(card);
+
+                countWishes++;
+                if (typeof elWish !== 'undefined' && elWish) elWish.innerText = countWishes;
+            }
+
+            // Update jumlah tamu fisik (jika pax kado > 0)
+            if (giftPax > 0) {
+                countAttendance += giftPax;
+                if (typeof elAtt !== 'undefined' && elAtt) elAtt.innerText = countAttendance;
+            }
+
+            // Tentukan status RSVP berdasarkan pax (jika 0 maka tidak_hadir, jika > 0 maka hadir)
+            let statusHadir = giftPax > 0 ? 'hadir' : 'tidak_hadir';
+
+            // Simpan ke Database API
+            sendRsvpData({
+                guest_name: guestName,
+                status_rsvp: statusHadir,
+                pax: giftPax,
+                message: giftMessage
+            });
+
+            // Toast Konfirmasi
             const toast = document.getElementById('gift-toast');
             if (toast) {
                 toast.innerHTML =
@@ -1563,18 +1729,139 @@
             }
         }
 
-        function toggleGiftModal(show) {
-            const modal = document.getElementById('gift-modal');
-            if (modal) {
-                if (show) {
-                    modal.classList.remove('hidden');
-                    document.body.style.overflow = 'hidden';
+        // ==========================================
+        // 3. LOGIKA RSVP & JUMLAH ORANG (CUSTOM PAX)
+        // ==========================================
+        let selectedPax = 1; // Default ke 1 pax
+
+        function selectPax(pax) {
+            selectedPax = pax;
+            const options = [1, 2, 3, 'custom'];
+            const customContainer = document.getElementById('custom-pax-container');
+
+            options.forEach(opt => {
+                const btn = document.getElementById(`btn-pax-${opt}`);
+                if (!btn) return;
+
+                if (opt === pax) {
+                    btn.classList.add('border-brand-gold', 'bg-brand-gold', 'text-white', 'shadow-md');
+                    btn.classList.remove('border-brand-lightGold/30', 'bg-brand-elegant', 'text-gray-600');
                 } else {
-                    modal.classList.add('hidden');
-                    document.body.style.overflow = 'auto';
+                    btn.classList.add('border-brand-lightGold/30', 'bg-brand-elegant', 'text-gray-600');
+                    btn.classList.remove('border-brand-gold', 'bg-brand-gold', 'text-white', 'shadow-md');
                 }
+            });
+
+            // Tampilkan input form jika memilih '3+'
+            if (pax === 'custom') {
+                customContainer.classList.remove('hidden');
+                document.getElementById('custom-pax-input').focus();
+            } else {
+                customContainer.classList.add('hidden');
             }
         }
+
+        function setAttendanceSelection(status) {
+            const btnHadir = document.getElementById('btn-hadir');
+            const btnAbsen = document.getElementById('btn-absen');
+            const guestDiv = document.getElementById('guest-selection');
+            const hiddenStatus = document.getElementById('rsvp_status_hidden');
+
+            if (hiddenStatus) hiddenStatus.value = status;
+
+            if (status === 'hadir') {
+                btnHadir.classList.add('bg-brand-gold', 'text-white', 'border-brand-gold');
+                btnHadir.classList.remove('bg-brand-elegant', 'text-gray-600', 'border-brand-lightGold/50');
+
+                btnAbsen.classList.add('bg-brand-elegant', 'text-gray-600', 'border-brand-lightGold/50');
+                btnAbsen.classList.remove('bg-brand-gold', 'text-white', 'border-brand-gold');
+
+                guestDiv.classList.remove('hidden');
+            } else {
+                btnAbsen.classList.add('bg-brand-gold', 'text-white', 'border-brand-gold');
+                btnAbsen.classList.remove('bg-brand-elegant', 'text-gray-600', 'border-brand-lightGold/50');
+
+                btnHadir.classList.add('bg-brand-elegant', 'text-gray-600', 'border-brand-lightGold/50');
+                btnHadir.classList.remove('bg-brand-gold', 'text-white', 'border-brand-gold');
+
+                guestDiv.classList.add('hidden');
+            }
+        }
+
+        // Menangkap event submit form secara native
+        document.addEventListener('DOMContentLoaded', () => {
+            const rsvpForm = document.getElementById('rsvp-form-real');
+
+            if (rsvpForm) {
+                rsvpForm.addEventListener('submit', function(e) {
+                    e.preventDefault(); // Mencegah reload halaman
+
+                    const nameInput = document.getElementById('input-nama-rsvp').value || 'Tamu Baru';
+                    const msgInput = document.getElementById('input-pesan-rsvp').value ||
+                        'Selamat berbahagia!';
+                    const statusHadir = document.getElementById('rsvp_status_hidden').value;
+
+                    let finalPax = 0;
+                    if (statusHadir === 'hadir') {
+                        if (selectedPax === 'custom') {
+                            const customVal = parseInt(document.getElementById('custom-pax-input').value);
+                            // Pastikan nilainya valid (minimal 1)
+                            finalPax = (isNaN(customVal) || customVal < 1) ? 1 : customVal;
+                        } else {
+                            finalPax = parseInt(selectedPax);
+                        }
+                    }
+
+                    // Eksekusi API Fetch
+                    sendRsvpData({
+                        guest_name: nameInput,
+                        status_rsvp: statusHadir,
+                        pax: finalPax,
+                        message: msgInput
+                    });
+
+                    // Update UI Statistik
+                    countWishes++;
+                    if (elWish) elWish.innerText = countWishes;
+
+                    if (statusHadir === "hadir") {
+                        countAttendance += finalPax;
+                        if (elAtt) elAtt.innerText = countAttendance;
+                    }
+
+                    // Animasi Counter
+                    const statsCards = document.querySelectorAll('#guest-stats .font-serif');
+                    statsCards.forEach(card => {
+                        card.classList.add('scale-110', 'text-brand-gold');
+                        setTimeout(() => card.classList.remove('scale-110', 'text-brand-gold'),
+                            500);
+                    });
+
+                    closeRSVP();
+
+                    // Render Card Ucapan Baru
+                    const container = document.getElementById('wishes-container');
+                    const emptyState = document.getElementById('empty-wishes');
+                    if (emptyState) emptyState.remove();
+
+                    if (container) {
+                        const card = document.createElement('div');
+                        card.className =
+                            'wish-card bg-brand-elegant/40 p-6 rounded-[2rem] border border-white animate-fade-in-up transition-all hover:bg-white hover:shadow-md';
+                        card.innerHTML = `
+                    <div class="flex flex-col md:flex-row md:items-center justify-between mb-3 gap-1">
+                        <h5 class="text-sm font-serif font-bold text-brand-charcoal">${nameInput}</h5>
+                        <span class="text-[9px] text-brand-gold italic uppercase tracking-wider font-bold">
+                            <i class="fa-regular fa-clock mr-1"></i> Baru Saja
+                        </span>
+                    </div>
+                    <p class="text-xs text-gray-500 leading-relaxed font-light italic">"${msgInput}"</p>
+                `;
+                        container.prepend(card);
+                    }
+                });
+            }
+        });
     </script>
 
     <script>
@@ -1656,7 +1943,8 @@
             if (elWish) elWish.innerText = countWishes;
 
             if (statusHadir === "hadir") {
-                countAttendance++;
+                // Menambahkan total pax berdasarkan tombol yang dipilih, bukan cuma +1
+                countAttendance += selectedPax;
                 if (elAtt) elAtt.innerText = countAttendance;
             }
 

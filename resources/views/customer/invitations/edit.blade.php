@@ -3,12 +3,13 @@
 
 @push('styles')
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <link rel="stylesheet" type="text/css" href="https://npmcdn.com/flatpickr/dist/themes/airbnb.css">
     <link href="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/css/tom-select.css" rel="stylesheet">
 
     <style>
         /* =======================================
-           CUSTOM CSS TOM SELECT (DROPDOWN)
-           ======================================= */
+               CUSTOM CSS TOM SELECT (DROPDOWN)
+               ======================================= */
         .ts-control {
             padding: 0.75rem 1rem !important;
             border-radius: 0.75rem !important;
@@ -18,60 +19,204 @@
             color: #334155 !important;
             box-shadow: none !important;
         }
+
         .ts-control.focus {
             border-color: #f97316 !important;
             box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.15) !important;
         }
+
         .ts-dropdown {
             border-radius: 0.75rem !important;
             border: 1px solid #e2e8f0 !important;
             box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1) !important;
             overflow: hidden;
-            z-index: 9999 !important; 
+            z-index: 9999 !important;
         }
+
         .ts-dropdown .option {
             padding: 0.5rem 1rem;
             font-size: 0.875rem;
         }
+
         .ts-dropdown .option:hover,
-        .ts-dropdown .option.active {
+        .ts-dropdown .option.active,
+        .ts-dropdown .option.selected {
             background-color: #fff7ed !important;
             color: #ea580c !important;
         }
 
         /* =======================================
-           CUSTOM CSS FLATPICKR (KALENDER & JAM)
-           ======================================= */
+               STYLE FLATPICKR KEREN & RESPONSIVE
+               ======================================= */
+        /* Memastikan lebar dinamis & bayangan halus */
         .flatpickr-calendar {
-            border-radius: 1rem !important;
-            border: 1px solid #e2e8f0 !important;
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1) !important;
+            border-radius: 1.25rem !important;
+            border: none !important;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1) !important;
             padding: 0.5rem !important;
+            width: auto !important;
+            max-width: calc(100vw - 2rem) !important;
+            /* Mencegah overflow di layar kecil */
             font-family: inherit !important;
         }
-        .flatpickr-day.selected, 
-        .flatpickr-day.startRange, 
-        .flatpickr-day.endRange, 
-        .flatpickr-day.selected.inRange, 
-        .flatpickr-day.startRange.inRange, 
-        .flatpickr-day.endRange.inRange, 
-        .flatpickr-day.selected:focus, 
-        .flatpickr-day.startRange:focus, 
-        .flatpickr-day.endRange:focus, 
-        .flatpickr-day.selected:hover, 
-        .flatpickr-day.startRange:hover, 
-        .flatpickr-day.endRange:hover, 
-        .flatpickr-day.selected.prevMonthDay, 
-        .flatpickr-day.startRange.prevMonthDay, 
-        .flatpickr-day.endRange.prevMonthDay, 
-        .flatpickr-day.selected.nextMonthDay, 
-        .flatpickr-day.startRange.nextMonthDay, 
+
+        /* Mengubah warna highlight menjadi Oranye sesuai tema */
+        .flatpickr-day.selected,
+        .flatpickr-day.startRange,
+        .flatpickr-day.endRange,
+        .flatpickr-day.selected.inRange,
+        .flatpickr-day.startRange.inRange,
+        .flatpickr-day.endRange.inRange,
+        .flatpickr-day.selected:focus,
+        .flatpickr-day.startRange:focus,
+        .flatpickr-day.endRange:focus,
+        .flatpickr-day.selected:hover,
+        .flatpickr-day.startRange:hover,
+        .flatpickr-day.endRange:hover,
+        .flatpickr-day.selected.prevMonthDay,
+        .flatpickr-day.startRange.prevMonthDay,
+        .flatpickr-day.endRange.prevMonthDay,
+        .flatpickr-day.selected.nextMonthDay,
+        .flatpickr-day.startRange.nextMonthDay,
         .flatpickr-day.endRange.nextMonthDay {
             background: #f97316 !important;
             border-color: #f97316 !important;
+            color: #fff !important;
         }
 
-        /* Custom File Upload Button */
+        /* Warna hover tombol prev/next bulan */
+        .flatpickr-months .flatpickr-prev-month:hover svg,
+        .flatpickr-months .flatpickr-next-month:hover svg {
+            fill: #f97316 !important;
+        }
+
+        /* Warna untuk input waktu (panah atas bawah) */
+        .numInputWrapper:hover {
+            background: transparent !important;
+        }
+
+        .flatpickr-time input:hover,
+        .flatpickr-time .flatpickr-am-pm:hover,
+        .flatpickr-time input:focus,
+        .flatpickr-time .flatpickr-am-pm:focus {
+            background: #fff7ed !important;
+        }
+
+        /* =======================================
+               CUSTOM HEADER FLATPICKR (BULAN & TAHUN)
+               ======================================= */
+
+        /* Merapikan container header agar sejajar */
+        .flatpickr-current-month {
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            padding: 1rem 0 0.5rem 0 !important;
+        }
+
+        /* 1. Style Dropdown Bulan */
+        .flatpickr-current-month .flatpickr-monthDropdown-months {
+            -webkit-appearance: none !important;
+            -moz-appearance: none !important;
+            appearance: none !important;
+            background-color: #f8fafc !important;
+            border: 1px solid #e2e8f0 !important;
+            border-radius: 0.5rem !important;
+            padding: 0.3rem 2rem 0.3rem 0.75rem !important;
+            font-size: 0.875rem !important;
+            font-weight: 600 !important;
+            color: #334155 !important;
+            cursor: pointer !important;
+            margin: 0 !important;
+            /* Ikon panah bawah custom warna oranye */
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23f97316' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e") !important;
+            background-position: right 0.6rem center !important;
+            background-repeat: no-repeat !important;
+            background-size: 1em !important;
+            transition: all 0.2s ease !important;
+        }
+
+        /* Efek Hover & Fokus Dropdown Bulan (Menghilangkan border biru bawaan) */
+        .flatpickr-current-month .flatpickr-monthDropdown-months:focus,
+        .flatpickr-current-month .flatpickr-monthDropdown-months:hover {
+            outline: none !important;
+            border-color: #f97316 !important;
+            background-color: #ffffff !important;
+            box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.15) !important;
+        }
+
+        /* =======================================
+           STYLE NATIVE OPTION BULAN FLATPICKR
+           ======================================= */
+        /* Menyeragamkan background dan text list bulan */
+        .flatpickr-current-month .flatpickr-monthDropdown-months option {
+            background-color: #ffffff !important;
+            color: #334155 !important;
+            font-weight: 600 !important;
+            padding: 10px !important; /* Tergantung browser, kadang diabaikan */
+        }
+
+        /* Mengubah warna bulan yang sedang dipilih menjadi oranye */
+        /* Catatan: Bekerja sempurna di Firefox, namun Chrome/Edge kadang menimpanya dengan warna sistem */
+        .flatpickr-current-month .flatpickr-monthDropdown-months option:checked {
+            background-color: #f97316 !important; 
+            color: #ffffff !important; 
+        }
+
+        /* 2. Style Wrapper Angka Tahun */
+        .flatpickr-current-month .numInputWrapper {
+            width: 75px !important;
+            margin-left: 0.5rem !important;
+            border: 1px solid #e2e8f0 !important;
+            border-radius: 0.5rem !important;
+            background-color: #f8fafc !important;
+            transition: all 0.2s ease !important;
+        }
+
+        /* Efek Hover & Fokus Input Tahun */
+        .flatpickr-current-month .numInputWrapper:hover,
+        .flatpickr-current-month .numInputWrapper:focus-within {
+            border-color: #f97316 !important;
+            background-color: #ffffff !important;
+            box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.15) !important;
+        }
+
+        /* Menyesuaikan font input tahun */
+        .flatpickr-current-month input.cur-year {
+            font-weight: 600 !important;
+            color: #334155 !important;
+            /* font-size: 0.875rem !important; */
+        }
+
+        /* Memperbaiki panah atas/bawah pada input tahun */
+        .flatpickr-current-month .numInputWrapper span.arrowUp,
+        .flatpickr-current-month .numInputWrapper span.arrowDown {
+            border-left: 1px solid #e2e8f0 !important;
+        }
+
+        .flatpickr-current-month .numInputWrapper span.arrowUp:after {
+            border-bottom-color: #64748b !important;
+        }
+
+        .flatpickr-current-month .numInputWrapper span.arrowDown:after {
+            border-top-color: #64748b !important;
+        }
+
+        .flatpickr-current-month .numInputWrapper span:hover {
+            background-color: #fff7ed !important;
+        }
+
+        .flatpickr-current-month .numInputWrapper span:hover.arrowUp:after {
+            border-bottom-color: #f97316 !important;
+        }
+
+        .flatpickr-current-month .numInputWrapper span:hover.arrowDown:after {
+            border-top-color: #f97316 !important;
+        }
+
+        /* =======================================
+               CUSTOM BUTTON UPLOAD FILE
+               ======================================= */
         input[type="file"]::file-selector-button {
             margin-right: 1rem;
             padding: 0.5rem 1.25rem;
@@ -84,6 +229,7 @@
             cursor: pointer;
             transition: all 0.3s ease;
         }
+
         input[type="file"]::file-selector-button:hover {
             background-color: #fff7ed;
             color: #ea580c;
@@ -123,9 +269,11 @@
     </header>
 
     @if (session('success'))
-        <div class="bg-green-50 border border-green-200 text-green-700 px-6 py-4 rounded-2xl mb-8 flex items-center gap-3 font-medium">
+        <div
+            class="bg-green-50 border border-green-200 text-green-700 px-6 py-4 rounded-2xl mb-8 flex items-center gap-3 font-medium">
             <svg class="w-6 h-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
             </svg>
             {{ session('success') }}
         </div>
@@ -135,7 +283,8 @@
         <div class="bg-red-50 border border-red-200 text-red-700 px-6 py-4 rounded-2xl mb-8 font-medium shadow-sm">
             <div class="flex items-center gap-3 mb-2">
                 <svg class="w-6 h-6 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                 </svg>
                 <strong>Gagal Menyimpan! Periksa isian Anda:</strong>
             </div>
@@ -201,11 +350,14 @@
             <div class="hidden xl:block xl:col-span-4">
                 <div class="sticky top-10 bg-slate-900 text-white p-8 rounded-[2.5rem] shadow-xl text-center">
                     <h4 class="font-extrabold text-2xl mb-2">Simpan Perubahan</h4>
-                    <p class="text-sm text-slate-400 mb-8 leading-relaxed">Pastikan semua data sudah benar sebelum disimpan.</p>
+                    <p class="text-sm text-slate-400 mb-8 leading-relaxed">Pastikan semua data sudah benar sebelum disimpan.
+                    </p>
                     <button type="button" onclick="openSaveDrawer()"
                         class="w-full py-4 bg-gradient-to-r from-rRed to-rOrange rounded-2xl font-bold text-white hover:scale-105 transition shadow-lg flex justify-center items-center gap-2">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4">
+                            </path>
                         </svg>
                         <span>Simpan Data Undangan</span>
                     </button>
@@ -218,33 +370,52 @@
             <button type="button" onclick="openSaveDrawer()"
                 class="bg-slate-900 text-white px-6 py-3.5 rounded-full font-bold flex items-center gap-3 shadow-[0_10px_30px_rgba(0,0,0,0.3)] hover:scale-105 transition-transform w-max border border-slate-700 cursor-pointer">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4">
+                    </path>
                 </svg>
                 <span class="whitespace-nowrap">Simpan Data</span>
             </button>
         </div>
 
         {{-- BOTTOM CANVAS / DRAWER --}}
-        <div id="save-drawer-overlay" class="fixed inset-0 bg-slate-900/50 z-[100] hidden opacity-0 transition-opacity duration-300 backdrop-blur-sm" onclick="closeSaveDrawer()"></div>
+        <div id="save-drawer-overlay"
+            class="fixed inset-0 bg-slate-900/50 z-[100] hidden opacity-0 transition-opacity duration-300 backdrop-blur-sm"
+            onclick="closeSaveDrawer()"></div>
 
-        <div id="save-drawer" class="fixed bottom-0 inset-x-0 xl:inset-x-auto xl:right-0 xl:top-0 xl:w-[400px] h-auto xl:h-full max-h-[85vh] xl:max-h-none bg-white z-[110] shadow-[0_-20px_40px_rgba(0,0,0,0.2)] transform translate-y-full xl:translate-y-0 xl:translate-x-full transition-transform duration-300 ease-in-out flex flex-col rounded-t-[2.5rem] xl:rounded-none">
+        <div id="save-drawer"
+            class="fixed bottom-0 inset-x-0 xl:inset-x-auto xl:right-0 xl:top-0 xl:w-[400px] h-auto xl:h-full max-h-[85vh] xl:max-h-none bg-white z-[110] shadow-[0_-20px_40px_rgba(0,0,0,0.2)] transform translate-y-full xl:translate-y-0 xl:translate-x-full transition-transform duration-300 ease-in-out flex flex-col rounded-t-[2.5rem] xl:rounded-none">
             <div class="w-full flex justify-center pt-4 pb-2 xl:hidden" onclick="closeSaveDrawer()">
                 <div class="w-12 h-1.5 bg-slate-200 rounded-full cursor-pointer"></div>
             </div>
             <div class="p-6 pt-2 xl:pt-6 border-b border-slate-100 flex justify-between items-center bg-white shrink-0">
                 <h3 class="font-extrabold text-lg text-slate-800">Konfirmasi</h3>
-                <button type="button" onclick="closeSaveDrawer()" class="w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 text-slate-400 hover:text-red-500 hover:bg-red-50 transition cursor-pointer">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                <button type="button" onclick="closeSaveDrawer()"
+                    class="w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 text-slate-400 hover:text-red-500 hover:bg-red-50 transition cursor-pointer">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                        </path>
+                    </svg>
                 </button>
             </div>
             <div class="p-6 pb-12 overflow-y-auto flex flex-col justify-center xl:flex-1">
-                <div class="w-20 h-20 bg-orange-50 text-rOrange rounded-full flex items-center justify-center mb-6 mx-auto border-[6px] border-orange-100/50">
-                    <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path></svg>
+                <div
+                    class="w-20 h-20 bg-orange-50 text-rOrange rounded-full flex items-center justify-center mb-6 mx-auto border-[6px] border-orange-100/50">
+                    <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4">
+                        </path>
+                    </svg>
                 </div>
                 <h4 class="text-center font-extrabold text-2xl mb-3 text-slate-800">Simpan Data?</h4>
-                <p class="text-center text-sm text-slate-500 mb-8 leading-relaxed">Data yang disimpan akan langsung di-update pada halaman undangan publik Anda.</p>
-                <button type="button" onclick="document.getElementById('invitationForm').submit()" class="w-full py-4 bg-gradient-to-r from-rRed to-rOrange rounded-xl font-bold text-white hover:scale-[1.02] transition shadow-lg shadow-rOrange/30">Ya, Simpan Sekarang</button>
-                <button type="button" onclick="closeSaveDrawer()" class="w-full py-4 mt-3 bg-slate-100 rounded-xl font-bold text-slate-600 hover:bg-slate-200 transition cursor-pointer">Batal, Periksa Lagi</button>
+                <p class="text-center text-sm text-slate-500 mb-8 leading-relaxed">Data yang disimpan akan langsung
+                    di-update pada halaman undangan publik Anda.</p>
+                <button type="button" onclick="document.getElementById('invitationForm').submit()"
+                    class="w-full py-4 bg-gradient-to-r from-rRed to-rOrange rounded-xl font-bold text-white hover:scale-[1.02] transition shadow-lg shadow-rOrange/30">Ya,
+                    Simpan Sekarang</button>
+                <button type="button" onclick="closeSaveDrawer()"
+                    class="w-full py-4 mt-3 bg-slate-100 rounded-xl font-bold text-slate-600 hover:bg-slate-200 transition cursor-pointer">Batal,
+                    Periksa Lagi</button>
             </div>
         </div>
     </form>
@@ -263,58 +434,103 @@
 
 @push('scripts')
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/id.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/js/tom-select.complete.min.js"></script>
-    
+
     <script>
         // ==========================================
         // 🌟 INIT KUSTOMISASI DATE, TIME, & SELECT
         // ==========================================
+
+        // Deteksi apakah perangkat adalah mobile
+        const isMobile = window.matchMedia("(max-width: 768px)").matches || 'ontouchstart' in window;
+
         function initCustomInputs() {
-            // Trik: Suntikkan placeholder dd/mm/yyyy ke input Date
-            document.querySelectorAll('input[type="date"]').forEach(el => {
-                if (!el.getAttribute('placeholder')) {
-                    el.setAttribute('placeholder', 'dd/mm/yyyy');
-                }
-            });
-
-            // Trik: Suntikkan placeholder --:-- ke input Time
-            document.querySelectorAll('input[type="time"]').forEach(el => {
-                if (!el.getAttribute('placeholder')) {
-                    el.setAttribute('placeholder', '--:--');
-                }
-            });
-
-            // 1. Ubah Input Date jadi Kalender Mewah
-            flatpickr('input[type="date"]', {
-                dateFormat: "Y-m-d", // Format untuk dikirim ke database
+            // 1. DATE PICKER (Berlaku untuk Desktop & Mobile)
+            flatpickr('.init-date', {
+                dateFormat: "Y-m-d", 
                 altInput: true,
-                altFormat: "d/m/Y",  // Format Indonesia yang dilihat Klien (contoh: 24/12/2026)
-                disableMobile: true  
+                altFormat: "d F Y", 
+                locale: "id", 
+                disableMobile: true,
+                monthSelectorType: "static" // 🔥 Tambahkan baris ini
             });
 
-            // 2. Ubah Input Time jadi Jam Mewah
-            flatpickr('input[type="time"]', {
+            // 2. TIME PICKER (Berlaku untuk Desktop & Mobile)
+            flatpickr('.init-time', {
                 enableTime: true,
                 noCalendar: true,
                 dateFormat: "H:i",
-                time_24hr: true,
-                disableMobile: true,
-                altInput: true,     
-                altFormat: "H:i"
+                altInput: true,
+                altFormat: "H:i",
+                time_24hr: true, // Format 24 jam umumnya lebih rapi untuk undangan
+                disableMobile: true
             });
 
-            // 3. Ubah semua Dropdown (<select>) jadi Mewah
-            document.querySelectorAll('select:not(.tomselected)').forEach((el) => {
+            // 3. INIT SELECT DROPDOWN
+            document.querySelectorAll('select:not(.tomselected):not(.flatpickr-monthDropdown-months)').forEach((el) => {
                 new TomSelect(el, {
                     create: false,
-                    sortField: { field: "text", direction: "asc" },
+                    sortField: {
+                        field: "text",
+                        direction: "asc"
+                    },
                     dropdownParent: 'body'
                 });
             });
         }
 
-        // Panggil saat halaman pertama kali dimuat
-        initCustomInputs();
+        // Panggil saat halaman pertama dimuat
+        document.addEventListener('DOMContentLoaded', initCustomInputs);
+
+        // ==========================================
+        // FUNGSI INPUT BARIS DINAMIS
+        // ==========================================
+        function addEventRow() {
+            const id = Date.now();
+            const html = `
+                <div class="p-5 bg-blue-50/50 rounded-2xl border border-blue-100 relative event-item mt-4 animate-fade-in">
+                    <button type="button" onclick="this.closest('.event-item').remove()" class="absolute top-4 right-4 text-red-500 hover:text-white bg-red-50 hover:bg-red-500 font-bold text-xs px-3 py-1.5 rounded-lg shadow-sm transition-colors">Hapus</button>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
+                        <div class="md:col-span-2">
+                            <label class="block text-xs font-bold text-slate-600 mb-1">Nama Acara</label>
+                            <input type="text" name="events[${id}][title]" class="w-full py-2.5 px-4 bg-white border border-slate-200 rounded-xl focus:ring-rOrange" placeholder="Contoh: Resepsi Tambahan">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-xs font-bold text-slate-600 mb-1">Tanggal</label>
+                            <input type="text" name="events[${id}][date]" class="w-full py-2 px-3 sm:py-2.5 sm:px-4 bg-white border border-slate-200 rounded-xl focus:ring-rOrange cursor-pointer text-sm sm:text-base init-date" placeholder="Pilih Tanggal...">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-xs font-bold text-slate-600 mb-1">Waktu Acara (Mulai - Selesai)</label>
+                            <div class="flex items-center gap-3">
+                                <div class="w-24 sm:w-32 relative">
+                                    <input type="text" name="events[${id}][time]" class="w-full py-2 px-3 sm:py-2.5 sm:px-4 bg-white border border-slate-200 rounded-xl focus:ring-rOrange text-sm sm:text-base text-center cursor-pointer init-time" placeholder="Waktu Mulai">
+                                </div>
+                                <span class="text-slate-400 font-bold shrink-0">-</span>
+                                <div class="w-24 sm:w-32 relative">
+                                    <input type="text" name="events[${id}][time_end]" class="w-full py-2 px-3 sm:py-2.5 sm:px-4 bg-white border border-slate-200 rounded-xl focus:ring-rOrange text-sm sm:text-base text-center cursor-pointer init-time" placeholder="Waktu Selesai">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="block text-xs font-bold text-slate-600 mb-1">Nama Tempat/Gedung</label>
+                            <input type="text" name="events[${id}][location]" class="w-full py-2.5 px-4 bg-white border border-slate-200 rounded-xl focus:ring-rOrange" placeholder="Contoh: Gedung Serbaguna">
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="block text-xs font-bold text-slate-600 mb-1">Alamat Lengkap</label>
+                            <textarea name="events[${id}][address]" rows="2" class="w-full py-2.5 px-4 bg-white border border-slate-200 rounded-xl focus:ring-rOrange" placeholder="Contoh: Pekanbaru, Riau"></textarea>
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="block text-xs font-bold text-slate-600 mb-1">Link Google Maps (Opsional)</label>
+                            <input type="url" name="events[${id}][map]" class="w-full py-2.5 px-4 bg-white border border-slate-200 rounded-xl focus:ring-rOrange" placeholder="https://maps.google.com/...">
+                        </div>
+                    </div>
+                </div>`;
+            document.getElementById('event-wrapper').insertAdjacentHTML('beforeend', html);
+            initCustomInputs(); // Panggil ulang init setelah menambah baris baru
+        }
 
         // ==========================================
         // LACI/DRAWER KONFIRMASI SIMPAN
@@ -335,36 +551,7 @@
             drawer.classList.add('translate-y-full', 'xl:translate-x-full');
             overlay.classList.add('opacity-0');
             setTimeout(() => overlay.classList.add('hidden'), 300);
-            // Pakai string kosong untuk menghindari bug di Tailwind saat ditutup
             document.body.style.overflow = '';
-        }
-
-        // ==========================================
-        // FUNGSI INPUT BARIS DINAMIS
-        // ==========================================
-        function addEventRow() {
-            const id = Date.now();
-            const html = `
-                <div class="p-5 bg-blue-50/50 rounded-2xl border border-blue-100 relative event-item mt-4 animate-fade-in">
-                    <button type="button" onclick="this.closest('.event-item').remove()" class="absolute top-4 right-4 text-red-500 hover:text-white bg-red-50 hover:bg-red-500 font-bold text-xs px-3 py-1.5 rounded-lg shadow-sm transition-colors">Hapus</button>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
-                        <div class="md:col-span-2"><label class="block text-xs font-bold text-slate-600 mb-1">Nama Acara</label><input type="text" name="events[${id}][title]" class="w-full py-2.5 px-4 bg-white border border-slate-200 rounded-xl focus:ring-rOrange" placeholder="Contoh: Resepsi Tambahan"></div>
-                        <div><label class="block text-xs font-bold text-slate-600 mb-1">Tanggal</label><input type="date" name="events[${id}][date]" class="w-full py-2.5 px-4 bg-white border border-slate-200 rounded-xl focus:ring-rOrange"></div>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-600 mb-1">Waktu Acara (Mulai - Selesai)</label>
-                            <div class="flex items-center gap-2">
-                                <input type="time" name="events[${id}][time]" class="w-full py-2.5 px-4 bg-white border border-slate-200 rounded-xl focus:ring-rOrange">
-                                <span class="text-slate-400 font-bold">-</span>
-                                <input type="time" name="events[${id}][time_end]" class="w-full py-2.5 px-4 bg-white border border-slate-200 rounded-xl focus:ring-rOrange">
-                            </div>
-                        </div>
-                        <div class="md:col-span-2"><label class="block text-xs font-bold text-slate-600 mb-1">Nama Tempat/Gedung</label><input type="text" name="events[${id}][location]" class="w-full py-2.5 px-4 bg-white border border-slate-200 rounded-xl focus:ring-rOrange" placeholder="Contoh: Gedung Serbaguna"></div>
-                        <div class="md:col-span-2"><label class="block text-xs font-bold text-slate-600 mb-1">Alamat Lengkap</label><textarea name="events[${id}][address]" rows="2" class="w-full py-2.5 px-4 bg-white border border-slate-200 rounded-xl focus:ring-rOrange"></textarea></div>
-                        <div class="md:col-span-2"><label class="block text-xs font-bold text-slate-600 mb-1">Link Google Maps (Opsional)</label><input type="url" name="events[${id}][map]" class="w-full py-2.5 px-4 bg-white border border-slate-200 rounded-xl focus:ring-rOrange" placeholder="https://maps.google.com/..."></div>
-                    </div>
-                </div>`;
-            document.getElementById('event-wrapper').insertAdjacentHTML('beforeend', html);
-            initCustomInputs();
         }
 
         function addLoveStoryRow() {
@@ -374,17 +561,18 @@
                     <button type="button" onclick="this.closest('.love-story-item').remove()" class="absolute top-5 right-5 text-red-500 hover:text-white bg-red-50 hover:bg-red-500 font-bold text-xs px-3 py-1.5 rounded-lg transition-colors">Hapus</button>
                     <input type="hidden" name="love_stories[${id}][old_image]" value="">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mt-2">
-                        <div><label class="block text-xs font-bold text-slate-600 mb-1">Tahun/Waktu</label><input type="text" name="love_stories[${id}][year]" class="w-full py-3 px-4 bg-white border border-slate-200 rounded-xl focus:ring-rOrange" placeholder="Contoh: Januari 2021"></div>
+                        <div><label class="block text-xs font-bold text-slate-600 mb-1">Tahun/Waktu</label><input type="month" name="love_stories[${id}][year]" class="w-full py-3 px-4 bg-white border border-slate-200 rounded-xl focus:ring-rOrange cursor-pointer"></div>
                         <div class="pr-12 md:pr-0"><label class="block text-xs font-bold text-slate-600 mb-1">Judul Momen</label><input type="text" name="love_stories[${id}][title]" class="w-full py-3 px-4 bg-white border border-slate-200 rounded-xl focus:ring-rOrange" placeholder="Contoh: Awal Bertemu"></div>
                         <div class="md:col-span-2"><label class="block text-xs font-bold text-slate-600 mb-1">Deskripsi Cerita</label><textarea name="love_stories[${id}][description]" rows="3" class="w-full py-3 px-4 bg-white border border-slate-200 rounded-xl focus:ring-rOrange" placeholder="Ceritakan momen tersebut..."></textarea></div>
                         <div class="md:col-span-2"><label class="block text-xs font-bold text-slate-600 mb-2">Foto Momen (Opsional)</label><input type="file" name="love_stories[${id}][image]" accept="image/*" class="w-full py-2 px-4 bg-white border border-slate-200 rounded-xl text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-rose-50 file:text-rose-600 hover:file:bg-rose-100 cursor-pointer"></div>
                     </div>
                 </div>`;
             document.getElementById('love-story-wrapper').insertAdjacentHTML('beforeend', html);
-            initCustomInputs();
         }
 
-        const bankOptions = `{!! isset($masterBanks) ? $masterBanks->map(fn($b) => '<option value="' . $b->name . '">' . $b->name . '</option>')->implode('') : '' !!}`;
+        const bankOptions = `{!! isset($masterBanks)
+            ? $masterBanks->map(fn($b) => '<option value="' . $b->name . '">' . $b->name . '</option>')->implode('')
+            : '' !!}`;
 
         function addBankRow() {
             const id = Date.now();
@@ -407,14 +595,9 @@
             initCustomInputs();
         }
 
-        // ==========================================
-        // FUNGSI INPUT BARIS DINAMIS UNTUK KADO
-        // ==========================================
         function addGiftRow() {
-            // Hapus teks "Belum ada kado" jika ada
             const emptyText = document.querySelector('.empty-gift-text');
-            if(emptyText) emptyText.remove();
-
+            if (emptyText) emptyText.remove();
             const id = Date.now();
             const html = `
                 <div class="relative p-5 border border-slate-200 rounded-2xl bg-slate-50 gift-item mt-4 animate-fade-in">
@@ -445,6 +628,31 @@
             document.getElementById('youtube-wrapper').insertAdjacentHTML('beforeend', html);
         }
 
+        function addLivestreamRow() {
+            const id = Date.now();
+            const html = `
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-4 relative livestream-item items-end mt-4 animate-fade-in">
+                    <div class="md:col-span-3">
+                        <label class="block text-xs font-bold text-slate-600 mb-1">Platform</label>
+                        <select name="live_streams[${id}][platform]" class="w-full py-2.5 px-4 bg-white border border-slate-200 rounded-xl focus:ring-rOrange cursor-pointer">
+                            <option value="youtube">YouTube</option>
+                            <option value="zoom">Zoom</option>
+                            <option value="tiktok">TikTok</option>
+                            <option value="instagram">Instagram</option>
+                        </select>
+                    </div>
+                    <div class="md:col-span-8">
+                        <label class="block text-xs font-bold text-slate-600 mb-1">Link / URL Streaming</label>
+                        <input type="url" name="live_streams[${id}][link]" class="w-full py-2.5 px-4 bg-white border border-slate-200 rounded-xl focus:ring-rOrange" placeholder="https://...">
+                    </div>
+                    <div class="md:col-span-1">
+                        <button type="button" onclick="this.closest('.livestream-item').remove()" class="w-full py-2.5 bg-red-50 text-red-500 rounded-xl hover:bg-red-500 hover:text-white transition font-bold text-sm">Hapus</button>
+                    </div>
+                </div>`;
+            document.getElementById('livestream-wrapper').insertAdjacentHTML('beforeend', html);
+            initCustomInputs(); // Jika Select menggunakan TomSelect, panggil ini
+        }
+
         // ==========================================
         // FUNGSI PREVIEW FOTO
         // ==========================================
@@ -456,8 +664,10 @@
                     const reader = new FileReader();
                     reader.onload = function(e) {
                         const div = document.createElement('div');
-                        div.className = 'relative aspect-square rounded-2xl overflow-hidden border-2 border-rOrange';
-                        div.innerHTML = `<img src="${e.target.result}" class="w-full h-full object-cover opacity-60"><div class="absolute inset-0 flex items-center justify-center"><span class="bg-rOrange text-white text-[10px] px-2 py-1 rounded-lg font-bold uppercase">Ready</span></div>`;
+                        div.className =
+                            'relative aspect-square rounded-2xl overflow-hidden border-2 border-rOrange';
+                        div.innerHTML =
+                            `<img src="${e.target.result}" class="w-full h-full object-cover opacity-60"><div class="absolute inset-0 flex items-center justify-center"><span class="bg-rOrange text-white text-[10px] px-2 py-1 rounded-lg font-bold uppercase">Ready</span></div>`;
                         container.appendChild(div);
                     }
                     reader.readAsDataURL(file);
@@ -482,7 +692,8 @@
                 toggle.addEventListener('change', function() {
                     const wrapper = this.closest('.bg-white').querySelector('.transition-opacity');
                     if (wrapper) {
-                        if (this.checked) wrapper.classList.remove('opacity-40', 'pointer-events-none');
+                        if (this.checked) wrapper.classList.remove('opacity-40',
+                            'pointer-events-none');
                         else wrapper.classList.add('opacity-40', 'pointer-events-none');
                     }
                 });
@@ -503,7 +714,8 @@
                     const filterCat = btn.getAttribute('data-filter');
 
                     templateCards.forEach(card => {
-                        if (filterCat === 'all' || card.getAttribute('data-category') === filterCat) {
+                        if (filterCat === 'all' || card.getAttribute('data-category') ===
+                            filterCat) {
                             card.style.display = 'block';
                             card.style.animation = 'none';
                             card.offsetHeight;
@@ -572,7 +784,8 @@
                 btn.addEventListener('click', function(e) {
                     e.preventDefault();
                     e.stopPropagation();
-                    openModal(this.getAttribute('data-title'), this.getAttribute('data-category'), this.getAttribute('data-path'));
+                    openModal(this.getAttribute('data-title'), this.getAttribute('data-category'),
+                        this.getAttribute('data-path'));
                 });
             });
 

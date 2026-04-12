@@ -25,28 +25,33 @@
         </div>
     </div>
 
-    <div
-        class="space-y-6 transition-opacity duration-300 {{ !($content['is_event_active'] ?? true) ? 'opacity-40 pointer-events-none' : '' }}">
+    <div class="space-y-6 transition-opacity duration-300 {{ !($content['is_event_active'] ?? true) ? 'opacity-40 pointer-events-none' : '' }}">
         {{-- AKAD NIKAH (STATIS) --}}
         <div class="p-5 bg-orange-50/50 rounded-2xl border border-orange-100 relative">
             <h5 class="font-bold text-orange-600 mb-4">Akad Nikah / Pemberkatan</h5>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                     <label class="block text-xs font-bold text-slate-600 mb-1">Tanggal</label>
-                    <input type="date" name="akad_date" value="{{ old('akad_date', $content['akad_date'] ?? '') }}"
-                        class="w-full py-2.5 px-4 bg-white border border-slate-200 rounded-xl focus:ring-rOrange">
+                    <input type="text" name="akad_date" value="{{ old('akad_date', $content['akad_date'] ?? '') }}"
+                        class="w-full py-2 px-3 sm:py-2.5 sm:px-4 bg-white border border-slate-200 rounded-xl focus:ring-rOrange cursor-pointer text-sm sm:text-base init-date"
+                        placeholder="Pilih Tanggal...">
                 </div>
                 <div>
-                    <label class="block text-xs font-bold text-slate-600 mb-1">Waktu Acara (Mulai -
-                        Selesai)</label>
-                    <div class="flex items-center gap-2">
-                        @php $safeAkadTime = !empty($content['akad_time']) ? substr(trim($content['akad_time']), 0, 5) : ''; @endphp
-                        <input type="time" name="akad_time" value="{{ old('akad_time', $safeAkadTime) }}"
-                            class="w-full py-2.5 px-4 bg-white border border-slate-200 rounded-xl focus:ring-rOrange">
-                        <span class="text-slate-400 font-bold">-</span>
-                        @php $safeAkadTimeEnd = !empty($content['akad_time_end']) ? substr(trim($content['akad_time_end']), 0, 5) : ''; @endphp
-                        <input type="time" name="akad_time_end" value="{{ old('akad_time_end', $safeAkadTimeEnd) }}"
-                            class="w-full py-2.5 px-4 bg-white border border-slate-200 rounded-xl focus:ring-rOrange">
+                    <label class="block text-xs font-bold text-slate-600 mb-1">Waktu Acara (Mulai - Selesai)</label>
+                    <div class="flex items-center gap-3">
+                        <div class="w-24 sm:w-32 relative">
+                            @php $safeAkadTime = !empty($content['akad_time']) ? substr(trim($content['akad_time']), 0, 5) : ''; @endphp
+                            <input type="text" name="akad_time" value="{{ old('akad_time', $safeAkadTime) }}"
+                                class="w-full py-2 px-3 sm:py-2.5 sm:px-4 bg-white border border-slate-200 rounded-xl focus:ring-rOrange text-sm sm:text-base text-center cursor-pointer init-time"
+                                placeholder="Waktu Mulai">
+                        </div>
+                        <span class="text-slate-400 font-bold shrink-0">-</span>
+                        <div class="w-24 sm:w-32 relative">
+                            @php $safeAkadTimeEnd = !empty($content['akad_time_end']) ? substr(trim($content['akad_time_end']), 0, 5) : ''; @endphp
+                            <input type="text" name="akad_time_end" value="{{ old('akad_time_end', $safeAkadTimeEnd) }}"
+                                class="w-full py-2 px-3 sm:py-2.5 sm:px-4 bg-white border border-slate-200 rounded-xl focus:ring-rOrange text-sm sm:text-base text-center cursor-pointer init-time"
+                                placeholder="Waktu Selesai">
+                        </div>
                     </div>
                 </div>
                 <div class="md:col-span-2">
@@ -77,7 +82,7 @@
                 $eventsData = !empty($content['events']) && is_array($content['events']) ? $content['events'] : [];
                 if (empty($eventsData)) {
                     $eventsData[] = [
-                        'title' => 'Resepsi Pernikahan',
+                        'title' => '', // Dikosongkan agar placeholder HTML berfungsi
                         'date' => '',
                         'time' => '',
                         'time_end' => '',
@@ -108,20 +113,27 @@
                         </div>
                         <div>
                             <label class="block text-xs font-bold text-slate-600 mb-1">Tanggal</label>
-                            <input type="date" name="events[{{ $key }}][date]"
+                            <input type="text" name="events[{{ $key }}][date]"
                                 value="{{ $event['date'] ?? '' }}"
-                                class="w-full py-2.5 px-4 bg-white border border-slate-200 rounded-xl focus:ring-rOrange">
+                                class="w-full py-2 px-3 sm:py-2.5 sm:px-4 bg-white border border-slate-200 rounded-xl focus:ring-rOrange cursor-pointer text-sm sm:text-base init-date"
+                                placeholder="Pilih Tanggal...">
                         </div>
                         <div>
                             <label class="block text-xs font-bold text-slate-600 mb-1">Waktu Acara</label>
-                            <div class="flex items-center gap-2">
-                                <input type="time" name="events[{{ $key }}][time]"
-                                    value="{{ $safeEventTime }}"
-                                    class="w-full py-2.5 px-4 bg-white border border-slate-200 rounded-xl focus:ring-rOrange">
-                                <span class="text-slate-400 font-bold">-</span>
-                                <input type="time" name="events[{{ $key }}][time_end]"
-                                    value="{{ $safeEventTimeEnd }}"
-                                    class="w-full py-2.5 px-4 bg-white border border-slate-200 rounded-xl focus:ring-rOrange">
+                            <div class="flex items-center gap-3">
+                                <div class="w-24 sm:w-32 relative">
+                                    <input type="text" name="events[{{ $key }}][time]"
+                                        value="{{ $safeEventTime }}"
+                                        class="w-full py-2 px-3 sm:py-2.5 sm:px-4 bg-white border border-slate-200 rounded-xl focus:ring-rOrange text-sm sm:text-base text-center cursor-pointer init-time"
+                                        placeholder="Waktu Mulai">
+                                </div>
+                                <span class="text-slate-400 font-bold shrink-0">-</span>
+                                <div class="w-24 sm:w-32 relative">
+                                    <input type="text" name="events[{{ $key }}][time_end]"
+                                        value="{{ $safeEventTimeEnd }}"
+                                        class="w-full py-2 px-3 sm:py-2.5 sm:px-4 bg-white border border-slate-200 rounded-xl focus:ring-rOrange text-sm sm:text-base text-center cursor-pointer init-time"
+                                        placeholder="Waktu Selesai">
+                                </div>
                             </div>
                         </div>
                         <div class="md:col-span-2">
