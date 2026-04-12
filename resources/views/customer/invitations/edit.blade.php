@@ -5,11 +5,12 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <link rel="stylesheet" type="text/css" href="https://npmcdn.com/flatpickr/dist/themes/airbnb.css">
     <link href="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/css/tom-select.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
 
     <style>
         /* =======================================
-               CUSTOM CSS TOM SELECT (DROPDOWN)
-               ======================================= */
+                       CUSTOM CSS TOM SELECT (DROPDOWN)
+                       ======================================= */
         .ts-control {
             padding: 0.75rem 1rem !important;
             border-radius: 0.75rem !important;
@@ -46,8 +47,8 @@
         }
 
         /* =======================================
-               STYLE FLATPICKR KEREN & RESPONSIVE
-               ======================================= */
+                       STYLE FLATPICKR KEREN & RESPONSIVE
+                       ======================================= */
         /* Memastikan lebar dinamis & bayangan halus */
         .flatpickr-calendar {
             border-radius: 1.25rem !important;
@@ -103,8 +104,8 @@
         }
 
         /* =======================================
-               CUSTOM HEADER FLATPICKR (BULAN & TAHUN)
-               ======================================= */
+                       CUSTOM HEADER FLATPICKR (BULAN & TAHUN)
+                       ======================================= */
 
         /* Merapikan container header agar sejajar */
         .flatpickr-current-month {
@@ -146,21 +147,22 @@
         }
 
         /* =======================================
-           STYLE NATIVE OPTION BULAN FLATPICKR
-           ======================================= */
+                   STYLE NATIVE OPTION BULAN FLATPICKR
+                   ======================================= */
         /* Menyeragamkan background dan text list bulan */
         .flatpickr-current-month .flatpickr-monthDropdown-months option {
             background-color: #ffffff !important;
             color: #334155 !important;
             font-weight: 600 !important;
-            padding: 10px !important; /* Tergantung browser, kadang diabaikan */
+            padding: 10px !important;
+            /* Tergantung browser, kadang diabaikan */
         }
 
         /* Mengubah warna bulan yang sedang dipilih menjadi oranye */
         /* Catatan: Bekerja sempurna di Firefox, namun Chrome/Edge kadang menimpanya dengan warna sistem */
         .flatpickr-current-month .flatpickr-monthDropdown-months option:checked {
-            background-color: #f97316 !important; 
-            color: #ffffff !important; 
+            background-color: #f97316 !important;
+            color: #ffffff !important;
         }
 
         /* 2. Style Wrapper Angka Tahun */
@@ -215,8 +217,8 @@
         }
 
         /* =======================================
-               CUSTOM BUTTON UPLOAD FILE
-               ======================================= */
+                       CUSTOM BUTTON UPLOAD FILE
+                       ======================================= */
         input[type="file"]::file-selector-button {
             margin-right: 1rem;
             padding: 0.5rem 1.25rem;
@@ -347,20 +349,22 @@
             </div>
 
             {{-- DESKTOP SIDEBAR SAVE BUTTON --}}
-            <div class="hidden xl:block xl:col-span-4">
-                <div class="sticky top-10 bg-slate-900 text-white p-8 rounded-[2.5rem] shadow-xl text-center">
-                    <h4 class="font-extrabold text-2xl mb-2">Simpan Perubahan</h4>
-                    <p class="text-sm text-slate-400 mb-8 leading-relaxed">Pastikan semua data sudah benar sebelum disimpan.
-                    </p>
-                    <button type="button" onclick="openSaveDrawer()"
-                        class="w-full py-4 bg-gradient-to-r from-rRed to-rOrange rounded-2xl font-bold text-white hover:scale-105 transition shadow-lg flex justify-center items-center gap-2">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4">
-                            </path>
-                        </svg>
-                        <span>Simpan Data Undangan</span>
-                    </button>
+            <div class="hidden xl:block xl:col-span-4 h-full relative">
+                <div class="sticky top-10 h-max z-[50]">
+                    <div class="bg-slate-900 text-white p-8 rounded-[2.5rem] shadow-xl text-center">
+                        <h4 class="font-extrabold text-2xl mb-2">Simpan Perubahan</h4>
+                        <p class="text-sm text-slate-400 mb-8 leading-relaxed">Pastikan semua data sudah benar sebelum disimpan.</p>
+                        
+                        <button type="button" onclick="openSaveDrawer()"
+                            class="w-full py-4 bg-gradient-to-r from-rRed to-rOrange rounded-2xl font-bold text-white hover:scale-105 transition shadow-lg flex justify-center items-center gap-2 cursor-pointer">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4">
+                                </path>
+                            </svg>
+                            <span>Simpan Data Undangan</span>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -410,7 +414,7 @@
                 <h4 class="text-center font-extrabold text-2xl mb-3 text-slate-800">Simpan Data?</h4>
                 <p class="text-center text-sm text-slate-500 mb-8 leading-relaxed">Data yang disimpan akan langsung
                     di-update pada halaman undangan publik Anda.</p>
-                <button type="button" onclick="document.getElementById('invitationForm').submit()"
+                <button type="button" onclick="submitWithLoading()"
                     class="w-full py-4 bg-gradient-to-r from-rRed to-rOrange rounded-xl font-bold text-white hover:scale-[1.02] transition shadow-lg shadow-rOrange/30">Ya,
                     Simpan Sekarang</button>
                 <button type="button" onclick="closeSaveDrawer()"
@@ -430,12 +434,41 @@
 
     {{-- MODAL PREVIEW TEMA IFRAME --}}
     @include('customer.invitations.partials.preview_modal')
+
+    <div id="cropper-modal" class="fixed inset-0 z-[9999] hidden flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-slate-900/80 backdrop-blur-sm" onclick="closeCropperModal()"></div>
+        <div class="relative bg-white w-full max-w-2xl rounded-3xl overflow-hidden shadow-2xl flex flex-col max-h-[90vh]">
+            <div class="p-6 border-b border-slate-100 flex justify-between items-center">
+                <h3 class="text-xl font-bold text-slate-800">Sesuaikan Foto</h3>
+                <button type="button" onclick="closeCropperModal()"
+                    class="text-slate-400 hover:text-red-500 transition">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                        </path>
+                    </svg>
+                </button>
+            </div>
+            <div class="p-6 flex-1 overflow-hidden bg-slate-50 flex items-center justify-center">
+                <div class="w-full max-h-[50vh]">
+                    <img id="cropper-image" src="" class="max-w-full block">
+                </div>
+            </div>
+            <div class="p-6 border-t border-slate-100 bg-white flex justify-end gap-3">
+                <button type="button" onclick="closeCropperModal()"
+                    class="px-6 py-2.5 rounded-xl font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 transition">Batal</button>
+                <button type="button" onclick="saveCrop()"
+                    class="px-6 py-2.5 rounded-xl font-bold text-white bg-gradient-to-r from-rRed to-rOrange shadow-lg hover:scale-105 transition">Potong
+                    & Simpan</button>
+            </div>
+        </div>
+    </div>
 @endsection
 
 @push('scripts')
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/id.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/js/tom-select.complete.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
 
     <script>
         // ==========================================
@@ -448,10 +481,10 @@
         function initCustomInputs() {
             // 1. DATE PICKER (Berlaku untuk Desktop & Mobile)
             flatpickr('.init-date', {
-                dateFormat: "Y-m-d", 
+                dateFormat: "Y-m-d",
                 altInput: true,
-                altFormat: "d F Y", 
-                locale: "id", 
+                altFormat: "d F Y",
+                locale: "id",
                 disableMobile: true,
                 monthSelectorType: "static" // 🔥 Tambahkan baris ini
             });
@@ -552,6 +585,19 @@
             overlay.classList.add('opacity-0');
             setTimeout(() => overlay.classList.add('hidden'), 300);
             document.body.style.overflow = '';
+        }
+
+        function submitWithLoading() {
+            // Tutup lacinya
+            closeSaveDrawer();
+            
+            // Tampilkan layar loading
+            document.getElementById('loading-overlay').classList.replace('hidden', 'flex');
+            
+            // Jeda sedikit agar animasi mulus, lalu submit formnya
+            setTimeout(() => {
+                document.getElementById('invitationForm').submit();
+            }, 300);
         }
 
         function addLoveStoryRow() {
@@ -800,5 +846,167 @@
                 if (e.key === 'Escape' && !modal.classList.contains('hidden')) closeModal();
             });
         });
+
+        let cropper = null;
+        let currentLimit = {{ $packageLogic['gallery_limit'] ?? 5 }};
+        let currentCount = {{ $invitation->galleries->where('type', 'photo')->count() }};
+        let newImageCount = 0;
+        let editingGalleryId = null;
+
+        function openCropper(input) {
+            editingGalleryId = null;
+            if (input.files && input.files[0]) {
+                if (currentCount + newImageCount >= currentLimit) {
+                    alert('Limit galeri telah tercapai.');
+                    input.value = '';
+                    return;
+                }
+
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    initCropperModal(e.target.result);
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function editExistingPhoto(id, url) {
+            editingGalleryId = id;
+            initCropperModal(url);
+        }
+
+        function initCropperModal(imageSrc) {
+            const image = document.getElementById('cropper-image');
+
+            // 🔥 INI KUNCI AGAR TIDAK ERROR SAAT EDIT FOTO LAMA (CORS Bypass) 🔥
+            image.crossOrigin = 'anonymous';
+            image.src = imageSrc;
+
+            document.getElementById('cropper-modal').classList.remove('hidden');
+
+            if (cropper) cropper.destroy();
+
+            // Tunggu gambar terload sebelum inisiasi Cropper
+            image.onload = function() {
+                cropper = new Cropper(image, {
+                    aspectRatio: 1 / 1,
+                    viewMode: 2,
+                    dragMode: 'move',
+                    autoCropArea: 1,
+                    restore: false,
+                    guides: true,
+                    center: true,
+                    highlight: false,
+                    cropBoxMovable: true,
+                    cropBoxResizable: true,
+                    toggleDragModeOnDblclick: false,
+                });
+            };
+        }
+
+        function closeCropperModal() {
+            document.getElementById('cropper-modal').classList.add('hidden');
+            if (cropper) {
+                cropper.destroy();
+                cropper = null;
+            }
+            document.getElementById('gallery-input').value = '';
+            editingGalleryId = null;
+        }
+
+        // Fungsi untuk mengubah Base64 kembali menjadi File Fisik di Browser
+        function dataURLtoFile(dataurl, filename) {
+            let arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
+                bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
+            while (n--) {
+                u8arr[n] = bstr.charCodeAt(n);
+            }
+            return new File([u8arr], filename, { type: mime });
+        }
+
+        function saveCrop() {
+            if (!cropper) return;
+
+            try {
+                // 1. Ambil hasil crop
+                const canvas = cropper.getCroppedCanvas({ width: 800, height: 800 });
+                const base64Image = canvas.toDataURL('image/jpeg', 0.85);
+
+                // 2. Konversi Base64 menjadi Object File Standar (.jpg)
+                const fileName = 'crop-' + Date.now() + '.jpg';
+                const file = dataURLtoFile(base64Image, fileName);
+                
+                // 3. Masukkan ke dalam DataTransfer agar bisa disuntikkan ke <input type="file">
+                const dataTransfer = new DataTransfer();
+                dataTransfer.items.add(file);
+
+                if (editingGalleryId) {
+                    // --- JIKA EDIT FOTO LAMA ---
+                    const container = document.getElementById('gallery-item-' + editingGalleryId);
+                    const imgEl = container.querySelector('img');
+                    
+                    // Update UI di layar
+                    imgEl.src = base64Image;
+
+                    // Buat input type="file" tersembunyi
+                    let fileInput = container.querySelector(`input[name="edited_gallery_files[${editingGalleryId}]"]`);
+                    if (!fileInput) {
+                        fileInput = document.createElement('input');
+                        fileInput.type = 'file';
+                        fileInput.name = `edited_gallery_files[${editingGalleryId}]`; // Nama untuk file yang diedit
+                        fileInput.className = 'hidden';
+                        container.appendChild(fileInput);
+                    }
+                    
+                    // Suntikkan file hasil crop ke input
+                    fileInput.files = dataTransfer.files;
+
+                } else {
+                    // --- JIKA TAMBAH FOTO BARU ---
+                    const previewId = 'new-crop-' + Date.now();
+                    const previewHtml = `
+                        <div id="${previewId}" class="relative group aspect-square rounded-2xl overflow-hidden border border-slate-100 animate-fade-in">
+                            <img src="${base64Image}" class="w-full h-full object-cover">
+                            
+                            <input type="file" name="gallery_files[]" class="hidden" id="file-${previewId}">
+                            
+                            <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
+                                <button type="button" onclick="removeNewCrop('${previewId}')" class="bg-white text-red-500 p-2 rounded-full hover:bg-red-500 hover:text-white transition shadow-lg">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                    document.getElementById('preview-container').insertAdjacentHTML('beforeend', previewHtml);
+                    
+                    // Suntikkan file hasil crop ke input file yang baru dibuat
+                    document.getElementById(`file-${previewId}`).files = dataTransfer.files;
+                    
+                    newImageCount++;
+                    updateCounter();
+                }
+
+                closeCropperModal();
+            } catch (error) {
+                console.error(error);
+                alert("Gagal memotong gambar. Pastikan gambar valid.");
+            }
+        }
+
+        function removeNewCrop(elementId) {
+            document.getElementById(elementId).remove();
+            newImageCount--;
+            updateCounter();
+        }
+
+        function updateCounter() {
+            const total = currentCount + newImageCount;
+            document.getElementById('current-gallery-count').innerText = total;
+            const btnContainer = document.getElementById('add-photo-btn-container');
+            if (btnContainer) {
+                if (total >= currentLimit) btnContainer.classList.add('hidden');
+                else btnContainer.classList.remove('hidden');
+            }
+        }
     </script>
 @endpush

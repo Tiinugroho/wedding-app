@@ -865,7 +865,7 @@
             </div>
         </section>
 
-        @if ($content['is_livestream_active'] ?? false)
+        @if (($content['is_livestream_active'] ?? false) && !empty($content['live_streams']))
             <section id="live-streaming" class="py-24 px-6 bg-brand-white relative overflow-hidden font-sans">
                 <div
                     class="absolute inset-0 opacity-[0.05] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/graphy-light.png')]">
@@ -888,95 +888,46 @@
                     </div>
 
                     <div
-                        class="relative max-w-3xl mx-auto p-4 bg-brand-elegant/20 rounded-[2.5rem] border border-brand-gold/10 backdrop-blur-sm">
-                        <div id="streaming-display"
-                            class="relative aspect-video rounded-[1.8rem] bg-brand-charcoal overflow-hidden flex items-center justify-center shadow-inner">
-                            <div class="absolute inset-0 opacity-30 grayscale hover:grayscale-0 transition-all duration-1000 bg-cover bg-center"
-                                style="background-image: url('{{ $coverImage }}');"></div>
-                            <div class="relative z-10 flex flex-col items-center p-6 text-white text-center">
-                                @php
-                                    $platform = strtolower($content['live_stream_platform'] ?? 'youtube');
-                                    $iconClasses = [
-                                        'youtube' => 'fa-brands fa-youtube',
-                                        'tiktok' => 'fa-brands fa-tiktok',
-                                        'instagram' => 'fa-brands fa-instagram',
-                                        'zoom' => 'fa-solid fa-video',
-                                    ];
-                                    $iconDisplay = $iconClasses[$platform] ?? 'fa-solid fa-video';
-                                @endphp
+                        class="grid grid-cols-1 {{ count($content['live_streams']) > 1 ? 'md:grid-cols-2' : 'max-w-3xl mx-auto' }} gap-6">
+
+                        @foreach ($content['live_streams'] as $stream)
+                            <div
+                                class="relative p-4 bg-brand-elegant/20 rounded-[2.5rem] border border-brand-gold/10 backdrop-blur-sm transition hover:scale-[1.02]">
                                 <div
-                                    class="mb-4 p-5 bg-white/10 backdrop-blur-xl rounded-full border border-white/20 shadow-2xl">
-                                    <i id="platform-icon" class="{{ $iconDisplay }} text-5xl"></i>
+                                    class="relative aspect-video rounded-[1.8rem] bg-brand-charcoal overflow-hidden flex items-center justify-center shadow-inner">
+                                    <div class="absolute inset-0 opacity-30 grayscale hover:grayscale-0 transition-all duration-1000 bg-cover bg-center"
+                                        style="background-image: url('{{ $coverImage ?? '' }}');"></div>
+
+                                    <div class="relative z-10 flex flex-col items-center p-6 text-white text-center">
+                                        @php
+                                            // Ambil platform dari array $stream
+                                            $platform = strtolower($stream['platform'] ?? 'youtube');
+                                            $iconClasses = [
+                                                'youtube' => 'fa-brands fa-youtube',
+                                                'tiktok' => 'fa-brands fa-tiktok',
+                                                'instagram' => 'fa-brands fa-instagram',
+                                                'zoom' => 'fa-solid fa-video',
+                                            ];
+                                            $iconDisplay = $iconClasses[$platform] ?? 'fa-solid fa-video';
+                                        @endphp
+
+                                        <div
+                                            class="mb-4 p-4 md:p-5 bg-white/10 backdrop-blur-xl rounded-full border border-white/20 shadow-2xl">
+                                            <i class="{{ $iconDisplay }} text-4xl md:text-5xl"></i>
+                                        </div>
+
+                                        <h3 class="text-lg md:text-xl font-serif italic mb-2 capitalize">
+                                            {{ $platform }} Live</h3>
+
+                                        <a href="{{ $stream['link'] ?? '#' }}" target="_blank"
+                                            class="px-8 py-3 md:px-10 md:py-3.5 mt-2 bg-brand-gold text-white rounded-full text-[10px] md:text-[11px] font-bold uppercase tracking-[0.2em] transition-all duration-300 hover:bg-yellow-600 shadow-lg active:scale-95">
+                                            Gabung Sekarang
+                                        </a>
+                                    </div>
                                 </div>
-                                <h3 id="platform-title" class="text-xl font-serif italic mb-2 capitalize">
-                                    {{ $platform }} Live</h3>
-                                <a id="platform-link" href="{{ $content['live_stream_link'] ?? '#' }}"
-                                    target="_blank"
-                                    class="px-10 py-3.5 mt-4 bg-brand-gold text-white rounded-full text-[11px] font-bold uppercase tracking-[0.2em] transition-all duration-300 hover:scale-105 shadow-lg active:scale-95">
-                                    Gabung Sekarang
-                                </a>
                             </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-        @endif
+                        @endforeach
 
-        @if ($content['is_wishes_active'] ?? false)
-            <section id="guest-stats" class="py-20 px-6 bg-brand-elegant/30 relative overflow-hidden">
-                <div class="max-w-4xl mx-auto relative z-10">
-                    <div class="text-center mb-12">
-                        <p class="text-[10px] tracking-[0.4em] uppercase text-brand-gold mb-3 font-semibold">Guest
-                            Participation</p>
-                        <h2 class="text-3xl font-serif italic text-brand-charcoal">Kehadiran & Doa</h2>
-                        <div class="h-[1px] w-12 bg-brand-gold/20 mx-auto mt-4"></div>
-                    </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-10">
-                        <div
-                            class="bg-white p-8 rounded-[2.5rem] shadow-sm border border-brand-lightGold/20 flex items-center gap-6 transition-transform hover:scale-[1.02] duration-300">
-                            <div
-                                class="w-16 h-16 bg-brand-elegant rounded-full flex items-center justify-center shrink-0">
-                                <i class="fa-solid fa-users text-brand-gold text-2xl"></i>
-                            </div>
-                            <div>
-                                <h4 id="total-attendance" class="text-4xl font-serif font-bold text-brand-charcoal">0
-                                </h4>
-                                <p class="text-[10px] uppercase tracking-widest text-gray-400 font-medium">Orang Akan
-                                    Hadir</p>
-                            </div>
-                        </div>
-                        <div
-                            class="bg-white p-8 rounded-[2.5rem] shadow-sm border border-brand-lightGold/20 flex items-center gap-6 transition-transform hover:scale-[1.02] duration-300">
-                            <div
-                                class="w-16 h-16 bg-brand-elegant rounded-full flex items-center justify-center shrink-0">
-                                <i class="fa-solid fa-comment-dots text-brand-gold text-2xl"></i>
-                            </div>
-                            <div>
-                                <h4 id="total-wishes" class="text-4xl font-serif font-bold text-brand-charcoal">0</h4>
-                                <p class="text-[10px] uppercase tracking-widest text-gray-400 font-medium">Ucapan
-                                    Hangat</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div
-                        class="mt-16 bg-white/60 backdrop-blur-md rounded-[3rem] border border-brand-lightGold/20 p-6 md:p-10 shadow-sm relative overflow-hidden">
-                        <div
-                            class="flex items-center justify-between mb-8 border-b border-brand-lightGold/10 pb-4 px-2">
-                            <span class="text-[10px] font-bold uppercase tracking-[0.3em] text-brand-gold">Ucapan
-                                Sahabat & Keluarga</span>
-                            <i class="fa-solid fa-feather-pointed text-brand-gold/40"></i>
-                        </div>
-
-                        <div id="wishes-container" class="space-y-6"></div>
-
-                        <div class="mt-12 text-center">
-                            <button id="btn-load-more" onclick="loadMoreWishes()" style="display: none;"
-                                class="px-8 py-3 bg-transparent border border-brand-gold/40 text-brand-gold rounded-full text-[10px] font-bold uppercase tracking-widest hover:bg-brand-gold hover:text-white transition-all duration-500 shadow-sm">
-                                Lihat Ucapan Lainnya
-                            </button>
-                        </div>
                     </div>
                 </div>
             </section>
@@ -1000,56 +951,56 @@
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
-    @foreach ($content['banks'] ?? [] as $index => $bank)
-        @php
-            $bNameRaw = trim($bank['name'] ?? '');
-            $bNameLower = strtolower($bNameRaw);
+                        @foreach ($content['banks'] ?? [] as $index => $bank)
+                            @php
+                                $bNameRaw = trim($bank['name'] ?? '');
+                                $bNameLower = strtolower($bNameRaw);
 
-            // Ambil path logo dari data master bank yang di-load di awal file
-            $logoPath = $masterLogos[$bNameLower] ?? null;
-        @endphp
+                                // Ambil path logo dari data master bank yang di-load di awal file
+                                $logoPath = $masterLogos[$bNameLower] ?? null;
+                            @endphp
 
-        <div class="group relative p-10 bg-brand-elegant/40 rounded-[3rem] border border-brand-lightGold/20 backdrop-blur-sm transition-all duration-500 hover:shadow-2xl hover:shadow-brand-gold/10 hover:-translate-y-2">
-            <div class="flex flex-col items-center">
+                            <div
+                                class="group relative p-10 bg-brand-elegant/40 rounded-[3rem] border border-brand-lightGold/20 backdrop-blur-sm transition-all duration-500 hover:shadow-2xl hover:shadow-brand-gold/10 hover:-translate-y-2">
+                                <div class="flex flex-col items-center">
 
-                <div class="w-20 h-20 bg-white rounded-full flex items-center justify-center shadow-sm border border-brand-lightGold/30 mb-6 overflow-hidden p-4 transition-all duration-700 group-hover:scale-110">
-                    @if ($logoPath)
-                        @if (str_starts_with($logoPath, 'http'))
-                            {{-- Tampilkan jika URL External (Wikipedia/Wikimedia) --}}
-                            <img src="{{ $logoPath }}" alt="{{ $bNameRaw }}" 
-                                 class="w-full h-full object-contain">
-                        @else
-                            {{-- Tampilkan jika File Lokal (Storage) --}}
-                            <img src="{{ asset('storage/' . $logoPath) }}" alt="{{ $bNameRaw }}" 
-                                 class="w-full h-full object-contain">
-                        @endif
-                    @else
-                        {{-- Fallback ke Ikon jika logo tidak ada di database --}}
-                        <i class="fa-solid fa-building-columns text-brand-gold text-2xl"></i>
-                    @endif
-                </div>
-                <p class="text-[10px] uppercase tracking-[0.3em] text-brand-gold mb-2 font-bold">
-                    {{ $bNameRaw }}
-                </p>
-                <h3 id="rek-{{ $index }}" class="text-3xl font-serif font-bold text-brand-charcoal mb-2 tracking-widest">
-                    {{ $bank['account_number'] ?? '-' }}
-                </h3>
-                <p class="text-sm text-gray-400 italic mb-8 font-light">
-                    a.n {{ $bank['account_name'] ?? 'Mempelai' }}
-                </p>
-                <p class="text-xs text-red-500 font-bold">
-    DEBUG URL: {{ $logoPath ?? 'LOGO PATH KOSONG (NAMA TIDAK MATCH)' }}
-</p>
+                                    <div
+                                        class="w-20 h-20 bg-white rounded-full flex items-center justify-center shadow-sm border border-brand-lightGold/30 mb-6 overflow-hidden p-4 transition-all duration-700 group-hover:scale-110">
+                                        @if ($logoPath)
+                                            @if (str_starts_with($logoPath, 'http'))
+                                                {{-- Tampilkan jika URL External (Wikipedia/Wikimedia) --}}
+                                                <img src="{{ $logoPath }}" alt="{{ $bNameRaw }}"
+                                                    class="w-full h-full object-contain">
+                                            @else
+                                                {{-- Tampilkan jika File Lokal (Storage) --}}
+                                                <img src="{{ asset('storage/' . $logoPath) }}"
+                                                    alt="{{ $bNameRaw }}" class="w-full h-full object-contain">
+                                            @endif
+                                        @else
+                                            {{-- Fallback ke Ikon jika logo tidak ada di database --}}
+                                            <i class="fa-solid fa-building-columns text-brand-gold text-2xl"></i>
+                                        @endif
+                                    </div>
+                                    <p class="text-[10px] uppercase tracking-[0.3em] text-brand-gold mb-2 font-bold">
+                                        {{ $bNameRaw }}
+                                    </p>
+                                    <h3 id="rek-{{ $index }}"
+                                        class="text-3xl font-serif font-bold text-brand-charcoal mb-2 tracking-widest">
+                                        {{ $bank['account_number'] ?? '-' }}
+                                    </h3>
+                                    <p class="text-sm text-gray-400 italic mb-8 font-light">
+                                        a.n {{ $bank['account_name'] ?? 'Mempelai' }}
+                                    </p>
 
-                <button onclick="copyToClipboard('rek-{{ $index }}', this)"
-                    class="w-full py-4 bg-brand-gold text-white rounded-2xl text-[11px] font-bold uppercase tracking-[0.2em] transition-all duration-300 hover:bg-brand-charcoal shadow-lg shadow-brand-gold/20 active:scale-95">
-                    <i class="fa-regular fa-copy mr-2"></i>
-                    <span>Salin Nomor</span>
-                </button>
-            </div>
-        </div>
-    @endforeach
-</div>
+                                    <button onclick="copyToClipboard('rek-{{ $index }}', this)"
+                                        class="w-full py-4 bg-brand-gold text-white rounded-2xl text-[11px] font-bold uppercase tracking-[0.2em] transition-all duration-300 hover:bg-brand-charcoal shadow-lg shadow-brand-gold/20 active:scale-95">
+                                        <i class="fa-regular fa-copy mr-2"></i>
+                                        <span>Salin Nomor</span>
+                                    </button>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
 
                     <div id="copy-toast"
                         class="fixed bottom-28 left-1/2 -translate-x-1/2 z-[300] px-8 py-3.5 bg-brand-charcoal/90 backdrop-blur-md text-white text-[10px] rounded-full tracking-[0.3em] uppercase font-bold opacity-0 transition-all duration-500 pointer-events-none shadow-2xl border border-white/10">
@@ -1336,6 +1287,66 @@
             </section>
         @endif
 
+        @if ($content['is_wishes_active'] ?? false)
+            <section id="guest-stats" class="py-20 px-6 bg-brand-elegant/30 relative overflow-hidden">
+                <div class="max-w-4xl mx-auto relative z-10">
+                    <div class="text-center mb-12">
+                        <p class="text-[10px] tracking-[0.4em] uppercase text-brand-gold mb-3 font-semibold">Guest
+                            Participation</p>
+                        <h2 class="text-3xl font-serif italic text-brand-charcoal">Kehadiran & Doa</h2>
+                        <div class="h-[1px] w-12 bg-brand-gold/20 mx-auto mt-4"></div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-10">
+                        <div
+                            class="bg-white p-8 rounded-[2.5rem] shadow-sm border border-brand-lightGold/20 flex items-center gap-6 transition-transform hover:scale-[1.02] duration-300">
+                            <div
+                                class="w-16 h-16 bg-brand-elegant rounded-full flex items-center justify-center shrink-0">
+                                <i class="fa-solid fa-users text-brand-gold text-2xl"></i>
+                            </div>
+                            <div>
+                                <h4 id="total-attendance" class="text-4xl font-serif font-bold text-brand-charcoal">0
+                                </h4>
+                                <p class="text-[10px] uppercase tracking-widest text-gray-400 font-medium">Orang Akan
+                                    Hadir</p>
+                            </div>
+                        </div>
+                        <div
+                            class="bg-white p-8 rounded-[2.5rem] shadow-sm border border-brand-lightGold/20 flex items-center gap-6 transition-transform hover:scale-[1.02] duration-300">
+                            <div
+                                class="w-16 h-16 bg-brand-elegant rounded-full flex items-center justify-center shrink-0">
+                                <i class="fa-solid fa-comment-dots text-brand-gold text-2xl"></i>
+                            </div>
+                            <div>
+                                <h4 id="total-wishes" class="text-4xl font-serif font-bold text-brand-charcoal">0</h4>
+                                <p class="text-[10px] uppercase tracking-widest text-gray-400 font-medium">Ucapan
+                                    Hangat</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div
+                        class="mt-16 bg-white/60 backdrop-blur-md rounded-[3rem] border border-brand-lightGold/20 p-6 md:p-10 shadow-sm relative overflow-hidden">
+                        <div
+                            class="flex items-center justify-between mb-8 border-b border-brand-lightGold/10 pb-4 px-2">
+                            <span class="text-[10px] font-bold uppercase tracking-[0.3em] text-brand-gold">Ucapan
+                                Sahabat & Keluarga</span>
+                            <i class="fa-solid fa-feather-pointed text-brand-gold/40"></i>
+                        </div>
+
+                        <div id="wishes-container" class="space-y-6"></div>
+
+                        <div class="mt-12 text-center">
+                            <button id="btn-load-more" onclick="loadMoreWishes()" style="display: none;"
+                                class="px-8 py-3 bg-transparent border border-brand-gold/40 text-brand-gold rounded-full text-[10px] font-bold uppercase tracking-widest hover:bg-brand-gold hover:text-white transition-all duration-500 shadow-sm">
+                                Lihat Ucapan Lainnya
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        @endif
+
         <footer
             class="py-20 px-6 bg-brand-white border-t border-brand-lightGold/20 text-center relative overflow-hidden">
             <div
@@ -1606,6 +1617,48 @@
         // ==========================================
         let currentSelectedItemId = null;
         let currentSelectedItemName = '';
+
+        // ==========================================
+        // FUNGSI KONTROL MODAL KADO & KONFIRMASI
+        // ==========================================
+        
+        function toggleGiftModal(show) {
+            const modal = document.getElementById('gift-modal');
+            if (!modal) return;
+            
+            if (show) {
+                modal.classList.remove('hidden');
+                setTimeout(() => modal.classList.remove('opacity-0'), 20);
+                
+                // Kunci scroll saat pop-up terbuka
+                document.body.style.overflowY = 'hidden'; 
+            } else {
+                modal.classList.add('opacity-0');
+                setTimeout(() => {
+                    modal.classList.add('hidden');
+                }, 300);
+                
+                // 🔥 KUNCI PERBAIKAN: Kembalikan ke 'auto', BUKAN dikosongkan ('')
+                document.body.style.overflowY = 'auto'; 
+            }
+        }
+
+        function closeConfirmModal() {
+            const modal = document.getElementById('confirm-modal');
+            if (!modal) return;
+            
+            modal.classList.add('opacity-0');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 300);
+            
+            // Kembalikan scroll body HANYA JIKA modal daftar kado utama juga sedang tertutup
+            const giftModal = document.getElementById('gift-modal');
+            if (giftModal && giftModal.classList.contains('hidden')) {
+                // 🔥 KUNCI PERBAIKAN: Kembalikan ke 'auto'
+                document.body.style.overflowY = 'auto';
+            }
+        }
 
         function confirmGift(id, name) {
             currentSelectedItemId = id;

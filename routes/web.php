@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\BankController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboard;
 use App\Http\Controllers\Admin\MusicController;
@@ -59,6 +60,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::resource('categories', CategoryController::class)->except(['show']);
             Route::resource('templates', TemplateController::class)->except(['show']);
             Route::resource('musics', MusicController::class)->except(['show']);
+            Route::resource('banks', BankController::class)->except(['show']);
 
             // 🔥 Transaksi & User
             Route::resource('orders', AdminOrderController::class)->only(['index', 'show']);

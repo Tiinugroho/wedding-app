@@ -51,7 +51,7 @@
     @stack('styles')
 </head>
 
-<body class="bg-slate-50 min-h-screen text-slate-800">
+<body class="bg-slate-50 min-h-screen text-slate-800 overflow-x-hidden">
     @if (session('success') || session('error') || session('status'))
         <div id="toast-notification"
             class="fixed top-24 right-4 md:right-8 z-[100] transform transition-all duration-500 translate-x-0 opacity-100 flex items-center p-4 mb-4 text-slate-500 bg-white rounded-[1.5rem] shadow-[0_10px_40px_rgba(0,0,0,0.08)] border border-slate-100 min-w-[300px]"
@@ -119,7 +119,7 @@
 
         @include('customer.partials.sidebar')
 
-        <main class="flex-1 w-full p-6 md:p-10 lg:p-12 pb-32 lg:pb-12 overflow-x-hidden">
+        <main class="flex-1 w-full p-6 md:p-10 lg:p-12 pb-32 lg:pb-12">
             @yield('content')
         </main>
 

@@ -117,7 +117,6 @@ class DatabaseSeeder extends Seeder
             ]),
         ]);
 
-        BankSeeder::class;
-
+        $this->call([BankSeeder::class]);
     }
 }

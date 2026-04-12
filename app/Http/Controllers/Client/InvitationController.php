@@ -176,14 +176,45 @@ class InvitationController extends Controller
             $coverImagePath = $request->file('cover_image')->store('covers/' . $invitation->id, 'public');
         }
 
+        // ==========================================
+        // 1. PROSES FOTO BARU (HASIL CROP)
+        // Menggunakan name: gallery_files[]
+        // ==========================================
         if ($request->hasFile('gallery_files')) {
             foreach ($request->file('gallery_files') as $file) {
+                // Laravel akan mengenali ini sebagai file asli berkat DataTransfer JS
                 $path = $file->store('galleries/' . $invitation->id, 'public');
+                
                 Gallery::create([
                     'invitation_id' => $invitation->id,
                     'file_path' => $path,
                     'type' => 'photo',
                 ]);
+            }
+        }
+
+        // ==========================================
+        // 2. PROSES UPDATE FOTO LAMA (HASIL CROP ULANG)
+        // Menggunakan name: edited_gallery_files[ID]
+        // ==========================================
+        if ($request->hasFile('edited_gallery_files')) {
+            foreach ($request->file('edited_gallery_files') as $galleryId => $file) {
+                $gallery = Gallery::where('invitation_id', $invitation->id)->find($galleryId);
+                
+                if ($gallery) {
+                    // Hapus file fisik foto lama di server agar storage tidak bengkak
+                    if (Storage::disk('public')->exists($gallery->file_path)) {
+                        Storage::disk('public')->delete($gallery->file_path);
+                    }
+
+                    // Simpan file fisik baru hasil crop
+                    $path = $file->store('galleries/' . $invitation->id, 'public');
+                    
+                    // Update record database
+                    $gallery->update([
+                        'file_path' => $path
+                    ]);
+                }
             }
         }
 
