@@ -462,6 +462,25 @@
             </div>
         </div>
     </div>
+
+    {{-- CUSTOM MODAL POP-UP (HAPUS) --}}
+    <div id="custom-modal" class="fixed inset-0 z-[100] flex items-center justify-center opacity-0 pointer-events-none transition-all duration-300">
+        <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm transition-all" onclick="closeCustomModal()"></div>
+        <div class="relative bg-white/95 backdrop-blur-xl p-8 md:p-10 rounded-[2.5rem] shadow-2xl border-2 border-white text-center max-w-sm w-full mx-4 transform scale-95 transition-all duration-300" id="custom-modal-box">
+            <div class="relative w-24 h-24 mx-auto mb-6">
+                <div class="absolute inset-0 bg-red-100 rounded-full animate-ping opacity-25"></div>
+                <div class="relative w-24 h-24 bg-red-50 text-red-500 rounded-full flex items-center justify-center border-4 border-white shadow-inner animate-warning">
+                    <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                </div>
+            </div>
+            <h3 class="text-2xl font-extrabold text-slate-800 mb-3">Hapus Data?</h3>
+            <p id="custom-modal-text" class="text-slate-500 text-sm mb-8 leading-relaxed px-2"></p>
+            <div class="flex flex-col gap-3">
+                <button type="button" id="confirm-btn" class="w-full bg-gradient-to-r from-red-500 to-rose-600 text-white px-6 py-4 rounded-2xl font-bold shadow-lg shadow-red-500/30 hover:-translate-y-0.5 transition-all active:scale-95">Ya, Hapus Permanen</button>
+                <button type="button" onclick="closeCustomModal()" class="w-full bg-slate-100 text-slate-600 px-6 py-4 rounded-2xl font-bold hover:bg-slate-200 transition-all">Batal</button>
+            </div>
+        </div>
+    </div>
 @endsection
 
 @push('scripts')
@@ -721,11 +740,63 @@
             }
         }
 
+        let targetFormId = '';
+
+        function openCustomModal(type, formId, message) {
+            targetFormId = formId;
+            
+            const textElement = document.getElementById('custom-modal-text');
+            if (textElement) textElement.innerText = message;
+            
+            const modal = document.getElementById('custom-modal');
+            const box = document.getElementById('custom-modal-box');
+            
+            if (modal && box) {
+                modal.classList.remove('opacity-0', 'pointer-events-none');
+                setTimeout(() => { 
+                    box.classList.remove('scale-95'); 
+                    box.classList.add('scale-100'); 
+                }, 10);
+            }
+        }
+
+        function closeCustomModal() {
+            const modal = document.getElementById('custom-modal');
+            const box = document.getElementById('custom-modal-box');
+            
+            if (modal && box) {
+                box.classList.remove('scale-100'); 
+                box.classList.add('scale-95'); 
+                modal.classList.add('opacity-0', 'pointer-events-none');
+            }
+            
+            // Reset ID form setelah ditutup agar aman
+            setTimeout(() => { targetFormId = ''; }, 300);
+        }
+
+        // Pengecekan agar event listener tidak error
+        const confirmBtn = document.getElementById('confirm-btn');
+        if (confirmBtn) {
+            confirmBtn.addEventListener('click', function() {
+                if (targetFormId) {
+                    document.getElementById(targetFormId).submit();
+                }
+            });
+        }
+
+        // 🔥 PERBAIKAN: Menggunakan Custom Modal alih-alih confirm() bawaan browser
         function handleDeletePhoto(photoId) {
-            if (confirm('Hapus foto ini secara permanen?')) {
-                const deleteForm = document.getElementById('global-delete-photo-form');
+            const deleteForm = document.getElementById('global-delete-photo-form');
+            if (deleteForm) {
+                // Ubah action form sesuai ID foto
                 deleteForm.action = `/customer/gallery/${photoId}`;
-                deleteForm.submit();
+                
+                // Panggil custom modal
+                openCustomModal(
+                    'delete', 
+                    'global-delete-photo-form', 
+                    'Apakah Anda yakin ingin menghapus foto ini secara permanen?'
+                );
             }
         }
 

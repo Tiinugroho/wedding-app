@@ -26,23 +26,32 @@
         <p class="font-bold text-slate-700 text-sm mb-3">Foto Album
             (<span id="current-gallery-count">{{ $invitation->galleries->where('type', 'photo')->count() }}</span> /
             {{ $packageLogic['gallery_limit'] ?? 5 }})</p>
-        
+
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
             @foreach ($invitation->galleries->where('type', 'photo') as $img)
-                <div id="gallery-item-{{ $img->id }}" class="relative group aspect-square rounded-2xl overflow-hidden border border-slate-100">
+                <div id="gallery-item-{{ $img->id }}"
+                    class="relative group aspect-square rounded-2xl overflow-hidden border border-slate-100">
                     <img src="{{ asset('storage/' . $img->file_path) }}" class="w-full h-full object-cover">
-                    <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition flex items-center justify-center gap-2">
-                        <button type="button" onclick="editExistingPhoto('{{ $img->id }}', '{{ asset('storage/' . $img->file_path) }}')"
-                            class="bg-white text-amber-500 p-2 rounded-full hover:bg-amber-500 hover:text-white transition shadow-lg" title="Edit/Crop Foto">
+                    <div
+                        class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition flex items-center justify-center gap-2">
+                        <button type="button"
+                            onclick="editExistingPhoto('{{ $img->id }}', '{{ asset('storage/' . $img->file_path) }}')"
+                            class="bg-white text-amber-500 p-2 rounded-full hover:bg-amber-500 hover:text-white transition shadow-lg"
+                            title="Edit/Crop Foto">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z">
+                                </path>
                             </svg>
                         </button>
-                        
+
                         <button type="button" onclick="handleDeletePhoto('{{ $img->id }}')"
-                            class="bg-white text-red-500 p-2 rounded-full hover:bg-red-500 hover:text-white transition shadow-lg" title="Hapus Foto">
+                            class="bg-white text-red-500 p-2 rounded-full hover:bg-red-500 hover:text-white transition shadow-lg"
+                            title="Hapus Foto">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
+                                </path>
                             </svg>
                         </button>
                     </div>
@@ -53,11 +62,14 @@
 
             @if ($invitation->galleries->where('type', 'photo')->count() < ($packageLogic['gallery_limit'] ?? 5))
                 <div class="relative aspect-square" id="add-photo-btn-container">
-                    <input type="file" id="gallery-input" accept="image/*" class="hidden" onchange="openCropper(this)">
+                    <input type="file" id="gallery-input" accept="image/*" class="hidden"
+                        onchange="openCropper(this)">
                     <button type="button" onclick="document.getElementById('gallery-input').click()"
                         class="w-full h-full border-2 border-dashed border-slate-200 rounded-2xl flex flex-col items-center justify-center hover:border-rOrange hover:bg-orange-50 transition cursor-pointer">
-                        <svg class="w-8 h-8 text-slate-400 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                        <svg class="w-8 h-8 text-slate-400 mb-2" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4">
+                            </path>
                         </svg>
                         <span class="text-xs font-bold text-slate-500">Pilih Foto</span>
                     </button>
