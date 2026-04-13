@@ -170,7 +170,7 @@
             </div>
         </section>
 
-        {{-- SECTION CARA KERJA (INFO BARU) --}}
+        {{-- SECTION CARA KERJA --}}
         <section id="cara-kerja" class="py-24 bg-white relative border-t border-slate-100">
             <div class="max-w-7xl mx-auto px-4 reveal">
                 <div class="text-center mb-16">
@@ -180,21 +180,18 @@
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-10 text-center relative">
                     <div class="hidden md:block absolute top-12 left-[15%] right-[15%] h-0.5 bg-gradient-to-r from-slate-100 via-rLightOrange to-slate-100 z-0"></div>
                     
-                    {{-- Langkah 1 --}}
                     <div class="relative z-10">
                         <div class="w-24 h-24 mx-auto bg-white border-4 border-rLightOrange rounded-full flex items-center justify-center shadow-xl shadow-rOrange/10 mb-6 text-3xl font-extrabold text-rOrange">1</div>
                         <h3 class="text-xl font-bold text-slate-800 mb-3">Pilih Paket & Tema</h3>
                         <p class="text-slate-500 text-sm">Pilih desain tema undangan yang paling cocok dengan selera pernikahanmu dari katalog eksklusif kami.</p>
                     </div>
                     
-                    {{-- Langkah 2 --}}
                     <div class="relative z-10">
                         <div class="w-24 h-24 mx-auto bg-rOrange border-4 border-white text-white rounded-full flex items-center justify-center shadow-xl shadow-rOrange/20 mb-6 text-3xl font-extrabold">2</div>
                         <h3 class="text-xl font-bold text-slate-800 mb-3">Isi Data Lengkap</h3>
                         <p class="text-slate-500 text-sm">Masukkan data mempelai, jadwal akad & resepsi, foto galeri pre-wedding, hingga link alamat Google Maps.</p>
                     </div>
                     
-                    {{-- Langkah 3 --}}
                     <div class="relative z-10">
                         <div class="w-24 h-24 mx-auto bg-slate-900 border-4 border-white text-white rounded-full flex items-center justify-center shadow-xl shadow-slate-900/20 mb-6 text-3xl font-extrabold">3</div>
                         <h3 class="text-xl font-bold text-slate-800 mb-3">Sebarkan Tautan</h3>
@@ -247,53 +244,33 @@
             </div>
         </section>
 
-        {{-- KATALOG TEMA --}}
-        <section id="produk" class="py-24 relative bg-white border-t border-slate-100">
-            <div class="max-w-7xl mx-auto px-4 reveal">
-                <div class="flex flex-col md:flex-row justify-between items-end mb-12 gap-4">
-                    <div class="max-w-xl">
-                        <h2 class="text-3xl md:text-4xl font-extrabold text-slate-800 mb-4">Katalog <span class="text-rOrange">Tema Eksklusif</span></h2>
-                        <p class="text-slate-500 font-medium">Pilih desain yang mencerminkan karakter cintamu. Semua template responsif di HP dan sangat mudah disesuaikan.</p>
-                    </div>
-                    <div>
-                        <a href="{{ route('katalog') }}" class="text-rRed font-bold flex items-center hover:translate-x-2 transition-transform bg-red-50 px-6 py-3 rounded-full">
-                            Lihat Semua Tema <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
-                        </a>
-                    </div>
-                </div>
+        {{-- 🔥 KATALOG TEMA (DIPERBAIKI) 🔥 --}}
+        <section id="produk" class="py-24 relative bg-white border-t border-slate-100 overflow-hidden">
+            <div class="absolute top-0 right-0 w-72 h-72 bg-rLightOrange rounded-full mix-blend-multiply filter blur-3xl opacity-30 z-0"></div>
+            <div class="absolute bottom-0 left-0 w-72 h-72 bg-rRed rounded-full mix-blend-multiply filter blur-3xl opacity-10 z-0"></div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-                    @forelse($templates->take(6) as $template)
-                        <div tabindex="0" class="group relative bg-slate-50 rounded-[2.5rem] overflow-hidden border border-slate-200 transition-all duration-500 hover:shadow-2xl hover:shadow-rOrange/20 focus:outline-none">
-                            <div class="h-[450px] overflow-hidden relative bg-stone-100">
-                                <div class="absolute inset-0 w-full h-full transition-transform duration-700 group-hover:scale-110 group-focus:scale-110">
-                                    <div class="absolute inset-0 w-full h-full pointer-events-none overflow-hidden">
-                                        <iframe src="{{ asset('preview/' . $template->view_path . '/index.html') }}" class="absolute top-0 left-0 w-[400%] h-[400%] origin-top-left scale-[0.25] border-0" scrolling="no" tabindex="-1"></iframe>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/20 to-transparent opacity-0 group-hover:opacity-100 group-focus:opacity-100 transition-opacity duration-500 flex flex-col justify-end p-6 pointer-events-none">
-                                <div class="bg-white/95 backdrop-blur-md p-6 rounded-[2rem] translate-y-10 group-hover:translate-y-0 group-focus:translate-y-0 transition-transform duration-500 pointer-events-auto shadow-lg text-center">
-                                    <h3 class="text-xl font-extrabold text-slate-800">{{ $template->name }}</h3>
-                                    <p class="text-rOrange text-[10px] uppercase font-bold tracking-widest mb-4">{{ $template->category->name ?? 'Umum' }}</p>
-                                    <a href="{{ asset('preview/' . $template->view_path . '/index.html') }}" target="_blank" class="block w-full py-3 bg-slate-900 text-white rounded-xl font-bold hover:bg-rOrange transition shadow-md">
-                                        Lihat Demo Live
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    @empty
-                        <div class="col-span-1 md:col-span-3 text-center py-16 bg-slate-50 rounded-[3rem] border border-slate-200">
-                            <svg class="w-16 h-16 text-slate-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
-                            <p class="text-slate-500 font-medium">Belum ada template yang diunggah oleh admin.</p>
-                        </div>
-                    @endforelse
+            <div class="max-w-4xl mx-auto px-4 relative z-10 text-center reveal">
+                <span class="inline-block py-1.5 px-4 rounded-full bg-slate-100 text-slate-600 text-xs font-bold mb-6 tracking-widest uppercase">
+                    Koleksi Desain RuangRestu
+                </span>
+                
+                <h2 class="text-4xl md:text-5xl lg:text-6xl font-extrabold text-slate-800 mb-6 leading-tight">
+                    Temukan Tema <span class="bg-clip-text text-transparent bg-gradient-to-r from-rRed to-rOrange">Paling Sempurna</span> Untukmu
+                </h2>
+                
+                <p class="text-slate-500 font-medium text-lg mb-12 max-w-2xl mx-auto leading-relaxed">
+                    Dari desain elegan, modern, hingga tradisional, kami menyediakan puluhan *template* eksklusif yang responsif dan siap disesuaikan dengan kisah cintamu.
+                </p>
+
+                <div class="flex flex-col sm:flex-row justify-center items-center gap-4">
+                    <a href="{{ route('katalog') }}" class="bg-slate-900 text-white px-10 py-4 rounded-full font-bold text-lg hover:scale-105 hover:bg-slate-800 transition-all duration-300 shadow-xl shadow-slate-900/20 flex items-center justify-center gap-3 w-full sm:w-auto">
+                        <i class="fa-solid fa-layer-group"></i> Jelajahi Semua Tema
+                    </a>
                 </div>
             </div>
         </section>
 
-        {{-- SECTION HARGA (Diperbaiki Layout-nya) --}}
-        {{-- SECTION HARGA (Diperbaiki Layout & Equal Height-nya) --}}
+        {{-- SECTION HARGA --}}
         <section id="harga" class="py-24 bg-slate-50 border-t border-slate-100">
             <div class="max-w-7xl mx-auto px-4 reveal">
                 <div class="text-center mb-16">
@@ -301,7 +278,6 @@
                     <p class="text-slate-500 font-medium">Bayar sekali, dapatkan fitur sepuasnya tanpa biaya langganan bulanan tersembunyi.</p>
                 </div>
 
-                {{-- 🔥 Flex Container dengan items-stretch menjamin tinggi card sama 🔥 --}}
                 <div class="flex flex-wrap justify-center gap-6 lg:gap-8 max-w-6xl mx-auto items-stretch">
                     @forelse($packages as $package)
                         @php
@@ -319,24 +295,17 @@
                                 }
                             }
                             
-                            // Logika highlight untuk paket termahal/Premium
                             $isPremium = strtolower($package->name) == 'premium' || $package->price > 50000;
                         @endphp
                         
-                        {{-- 
-                            PENTING: flex, flex-col, dan transition ditambahkan di sini.
-                            Ini adalah kunci utama agar card bisa menyesuaikan isi dan membagi ruang dengan flex-1 di dalamnya.
-                        --}}
                         <div class="w-full md:w-[calc(50%-0.75rem)] lg:w-[calc(33.333%-1.5rem)] flex flex-col bg-white p-8 md:p-10 rounded-[2.5rem] border-2 {{ $isPremium ? 'border-rOrange shadow-2xl shadow-rOrange/20' : 'border-slate-100 shadow-xl shadow-slate-200/50' }} relative transition-all duration-300 hover:-translate-y-2">
                             
                             @if($isPremium)
-                                {{-- Posisi pita disesuaikan agar menempel manis di sudut atas kanan --}}
                                 <div class="absolute top-0 right-0 bg-gradient-to-r from-rRed to-rOrange text-white px-5 py-1.5 rounded-bl-2xl rounded-tr-[2.3rem] font-bold text-[10px] uppercase tracking-widest shadow-md z-20">Paling Laris</div>
                             @endif
 
                             <div class="mb-6">
                                 <h3 class="text-2xl font-extrabold text-slate-800 mb-2">{{ $package->name }}</h3>
-                                {{-- Mengunci tinggi deskripsi agar rata --}}
                                 <p class="text-sm text-slate-500 font-medium h-10 overflow-hidden line-clamp-2">{{ $package->description }}</p>
                             </div>
                             
@@ -356,7 +325,6 @@
 
                             <hr class="border-slate-100 mb-6">
                             
-                            {{-- 🔥 KUNCI EQUAL HEIGHT: flex-1 akan mendorong konten di bawahnya (tombol) ke titik paling bawah 🔥 --}}
                             <ul class="space-y-4 mb-8 text-sm flex-1">
                                 @if (is_array($includedItems) && count($includedItems) > 0)
                                     @foreach ($includedItems as $included_feature)
@@ -376,7 +344,6 @@
                                 @endif
                             </ul>
                             
-                            {{-- mt-auto menempelkan tombol ke dasar card --}}
                             <div class="mt-auto pt-4">
                                 @auth
                                     <a href="{{ route('customer.dashboard') }}" class="block text-center w-full py-4 {{ $isPremium ? 'bg-gradient-to-r from-rRed to-rOrange text-white shadow-lg shadow-rRed/30 glow-btn border-0' : 'bg-slate-900 text-white hover:bg-slate-800' }} rounded-2xl font-bold transition">Buat Sekarang</a>
@@ -428,7 +395,7 @@
                 </div>
             </div>
             <div class="border-t border-slate-100 mt-8 pt-8 text-center text-slate-400 text-xs font-bold uppercase tracking-wider">
-                &copy; 2026 RuangRestu.com. All rights reserved.
+                &copy; {{ date('Y') }} RuangRestu.com. All rights reserved.
             </div>
         </div>
     </footer>
