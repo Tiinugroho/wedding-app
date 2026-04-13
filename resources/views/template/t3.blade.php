@@ -1,880 +1,922 @@
+@php
+    // 1. Decode data JSON dari database
+    $content = json_decode($invitation->details->content ?? '{}', true);
+
+    // 2. Logika Urutan Mempelai
+    $groomFirst = ($content['couple_order'] ?? 'groom_first') === 'groom_first';
+
+    $groom = [
+        'name' => $content['groom_name'] ?? 'Romeo Montague',
+        'nickname' => $content['groom_nickname'] ?? 'Romeo',
+        'father' => $content['groom_father'] ?? 'Bapak Montague',
+        'mother' => $content['groom_mother'] ?? 'Ibu Montague',
+        'photo' => !empty($content['groom_photo']) ? asset('storage/' . $content['groom_photo']) : 'https://images.soco.id/230-58.jpg.jpeg',
+        'ig' => $content['groom_ig'] ?? '',
+        'label' => 'The Groom',
+        'gender_text' => 'Putra',
+    ];
+
+    $bride = [
+        'name' => $content['bride_name'] ?? 'Juliet Capulet',
+        'nickname' => $content['bride_nickname'] ?? 'Juliet',
+        'father' => $content['bride_father'] ?? 'Bapak Capulet',
+        'mother' => $content['bride_mother'] ?? 'Ibu Capulet',
+        'photo' => !empty($content['bride_photo']) ? asset('storage/' . $content['bride_photo']) : 'https://images.pexels.com/photos/157757/wedding-dresses-fashion-character-bride-157757.jpeg',
+        'ig' => $content['bride_ig'] ?? '',
+        'label' => 'The Bride',
+        'gender_text' => 'Putri',
+    ];
+
+    $firstPerson = $groomFirst ? $groom : $bride;
+    $secondPerson = $groomFirst ? $bride : $groom;
+
+    // 3. Waktu & Countdown
+    $akadDate = $content['akad_date'] ?? date('Y-m-d');
+    $akadTime = $content['akad_time'] ?? '08:00';
+    $weddingTimestamp = 0;
+    $coverDateDisplay = '- . - . -';
+
+    if (!empty($content['events']) && is_array($content['events']) && count($content['events']) > 0) {
+        $firstEvent = collect($content['events'])->first();
+        if (!empty($firstEvent['date'])) {
+            $coverDateDisplay = \Carbon\Carbon::parse($firstEvent['date'])->format('d . m . Y');
+            $eventTime = !empty($firstEvent['time']) ? $firstEvent['time'] : '00:00:00';
+            $weddingTimestamp = \Carbon\Carbon::parse($firstEvent['date'] . ' ' . $eventTime)->timestamp * 1000;
+        }
+    }
+
+    $coverImage = !empty($content['cover_image']) ? asset('storage/' . $content['cover_image']) : 'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?q=80&w=2000&auto=format&fit=crop';
+
+    // 4. Helper Live Streaming
+    $platformIcons = [
+        'youtube' => ['icon' => 'fa-brands fa-youtube', 'title' => 'YouTube Live'],
+        'instagram' => ['icon' => 'fa-brands fa-instagram', 'title' => 'Instagram Live'],
+        'tiktok' => ['icon' => 'fa-brands fa-tiktok', 'title' => 'TikTok Live'],
+        'zoom' => ['icon' => 'fa-solid fa-video', 'title' => 'Zoom Meeting'],
+        'gmeet' => ['icon' => 'fa-solid fa-camera-retro', 'title' => 'Google Meet'],
+    ];
+
+    // 5. Ambil data Bank
+    $masterLogos = \DB::table('banks')->pluck('logo', 'name')->toArray();
+    $masterLogos = array_change_key_case($masterLogos, CASE_LOWER);
+
+    // 6. Data RSVP & Wishes dari Database
+    $dbWishes = \DB::table('wishes_rsvps')->where('invitation_id', $invitation->id)->orderBy('created_at', 'desc')->get();
+    $totalAttendance = \DB::table('wishes_rsvps')->where('invitation_id', $invitation->id)->where('status_rsvp', 'hadir')->sum('pax') ?? 0;
+    $totalWishes = $dbWishes->count();
+@endphp
+
 <!DOCTYPE html>
 <html lang="id" class="scroll-smooth">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Undangan Pernikahan - {{ $content['groom_nickname'] ?? 'Romeo' }} &
-        {{ $content['bride_nickname'] ?? 'Juliet' }}</title>
+    <title>{{ $firstPerson['nickname'] }} & {{ $secondPerson['nickname'] }} - Original Series</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,400;1,600&family=Montserrat:wght@300;400;500;600&display=swap"
-        rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Custom Scrollbar for Netflix Feel */
+        .scroll-custom::-webkit-scrollbar { width: 5px; }
+        .scroll-custom::-webkit-scrollbar-track { background: transparent; }
+        .scroll-custom::-webkit-scrollbar-thumb { background: #e50914; border-radius: 10px; }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        .modal-open { overflow: hidden !important; }
+        .cover-locked { overflow-y: hidden !important; } /* PROTEKSI RSVP POPUP */
+
+        @keyframes slide-up {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+        .animate-slide-up { animation: slide-up 0.5s ease-out forwards; }
+        
+        @keyframes fade-in {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .animate-fade-in { animation: fade-in 1s ease-in-out forwards; }
+
+        @media (max-width: 360px) {
+            .text-8xl { font-size: 4rem; }
+            .text-5xl { font-size: 2.5rem; }
+        }
+
+        body {
+            background-color: #141414;
+            color: #E5E5E5;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .vignette { background: radial-gradient(circle at center, transparent 0%, #141414 100%); }
+        .bottom-gradient { background: linear-gradient(to top, #141414 0%, transparent 100%); }
+        .text-shadow { text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8); }
+        .episode-card:hover .episode-img { transform: scale(1.05); }
+        
+        .input-luxury {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            transition: all 0.3s ease;
+        }
+        .input-luxury:focus {
+            border-color: #E50914;
+            background: rgba(255, 255, 255, 0.1);
+            outline: none;
+        }
+
+        /* Hilangkan panah spinner input number */
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        input[type=number] {
+            -moz-appearance: textfield;
+        }
+    </style>
 
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
-                        theme: {
-                            bg: '#F9F8F3', // Warm white / Alabaster
-                            primary: '#5C715E', // Sage Green
-                            secondary: '#D4B59E', // Soft Terracotta / Peach
-                            text: '#2C352D', // Dark Green/Gray
-                            muted: '#8E9A90', // Muted Sage
-                            card: '#FFFFFF',
+                        netflix: {
+                            red: '#E50914',
+                            dark: '#141414',
+                            gray: '#808080',
+                            light: '#E5E5E5',
+                            darker: '#000000',
+                            hover: '#B81D24'
                         }
                     },
                     fontFamily: {
-                        serif: ['"Cormorant Garamond"', 'serif'],
-                        sans: ['"Montserrat"', 'sans-serif'],
+                        sans: ['"Inter"', 'sans-serif'],
+                        bebas: ['"Bebas Neue"', 'sans-serif'],
                     },
                     animation: {
-                        'slow-zoom': 'zoom 25s infinite alternate',
-                        'float': 'floating 4s ease-in-out infinite',
-                        'spin-slow': 'spin 8s linear infinite',
-                    },
-                    keyframes: {
-                        zoom: {
-                            '0%': { transform: 'scale(1)' },
-                            '100%': { transform: 'scale(1.15)' },
-                        },
-                        floating: {
-                            '0%, 100%': { transform: 'translateY(0)' },
-                            '50%': { transform: 'translateY(-12px)' },
-                        }
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
                     }
                 }
             }
         }
     </script>
-
-    <style>
-        ::-webkit-scrollbar {
-            width: 6px;
-            background: #F9F8F3;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #D4B59E;
-            border-radius: 10px;
-        }
-
-        body {
-            overflow-y: hidden;
-            background-color: #F9F8F3;
-            color: #2C352D;
-            -webkit-font-smoothing: antialiased;
-        }
-
-        .floating-nav {
-            background: rgba(255, 255, 255, 0.9);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border: 1px solid rgba(92, 113, 94, 0.15);
-            box-shadow: 0 10px 40px rgba(44, 53, 45, 0.08);
-        }
-
-        .text-protected {
-            text-shadow: 0 2px 15px rgba(255, 255, 255, 0.8);
-        }
-        
-        .text-protected-dark {
-            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.6);
-        }
-
-        @keyframes fade-in-up {
-            from { opacity: 0; transform: translateY(40px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .animate-fade-in-up {
-            animation: fade-in-up 1s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
-        }
-
-        .elegant-card {
-            background: #FFFFFF;
-            border: 1px solid rgba(92, 113, 94, 0.1);
-            box-shadow: 0 15px 35px rgba(92, 113, 94, 0.05);
-            transition: all 0.4s ease;
-        }
-
-        .elegant-card:hover {
-            box-shadow: 0 20px 45px rgba(92, 113, 94, 0.1);
-            transform: translateY(-5px);
-        }
-
-        .arch-shape {
-            border-radius: 999px 999px 20px 20px;
-        }
-
-        .input-rustic {
-            background: #F9F8F3;
-            border: 1px solid rgba(92, 113, 94, 0.2);
-            color: #2C352D;
-            transition: all 0.3s ease;
-        }
-
-        .input-rustic:focus {
-            border-color: #5C715E;
-            background: #FFFFFF;
-            box-shadow: 0 0 0 3px rgba(92, 113, 94, 0.1);
-            outline: none;
-        }
-
-        .scroll-custom::-webkit-scrollbar {
-            width: 4px;
-        }
-        .scroll-custom::-webkit-scrollbar-track {
-            background: rgba(92, 113, 94, 0.05);
-        }
-        .scroll-custom::-webkit-scrollbar-thumb {
-            background: #5C715E;
-            border-radius: 10px;
-        }
-
-        .leaf-pattern {
-            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M54.627 0l.83.83-28.285 28.284-.828-.828L54.627 0zm-16.97 0l2.485 2.485-26.87 26.87-2.485-2.485L37.657 0zm11.314 0l1.657 1.657-27.698 27.7-1.657-1.657L48.97 0zM12.204 0l3.314 3.314-25.213 25.213-3.314-3.314L12.204 0zm11.314 0l4.142 4.142-24.385 24.385-4.142-4.142L23.518 0zm-16.97 60l-.83-.83 28.285-28.284.828.828L6.548 60zm16.97 0l-2.485-2.485 26.87-26.87 2.485 2.485L23.518 60zm-11.314 0l-1.657-1.657 27.698-27.7 1.657 1.657L12.204 60zm25.456 0l-3.314-3.314 25.213-25.213 3.314 3.314L37.66 60zm-11.314 0l-4.142-4.142 24.385-24.385 4.142 4.142L26.346 60z' fill='%235c715e' fill-opacity='0.03' fill-rule='evenodd'/%3E%3C/svg%3E");
-        }
-    </style>
-
-    @php
-        // Ekstraksi Youtube ID agar iFrame berfungsi
-        function getYoutubeId($url)
-        {
-            preg_match(
-                '%(?:youtube(?:-nocookie)?\.com/(?:[^/]+/.+/|(?:v|e(?:mbed)?)/|.*[?&]v=)|youtu\.be/)([^"&?/\s]{11})%i',
-                $url,
-                $match,
-            );
-            return $match[1] ?? null;
-        }
-
-        // LOGIKA COVER IMAGE (Custom -> Gallery 1 -> Default)
-        $firstGallery = $invitation->galleries->where('type', 'photo')->first();
-        $coverImg = !empty($content['cover_image'])
-            ? asset('storage/' . $content['cover_image'])
-            : ($firstGallery
-                ? asset('storage/' . $firstGallery->file_path)
-                : (!empty($content['bride_photo'])
-                    ? asset('storage/' . $content['bride_photo'])
-                    : 'https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=2070&auto=format&fit=crop'));
-
-        $isGroomFirst = ($content['couple_order'] ?? 'groom_first') == 'groom_first';
-
-        // PETAKAN DATA ORANG PERTAMA (Akan tampil di kartu kiri)
-        $firstPerson = [
-            'name' => $isGroomFirst
-                ? $content['groom_name'] ?? 'Romeo Montague'
-                : $content['bride_name'] ?? 'Juliet Capulet',
-            'nickname' => $isGroomFirst
-                ? $content['groom_nickname'] ?? 'Romeo'
-                : $content['bride_nickname'] ?? 'Juliet',
-            'father' => $isGroomFirst ? $content['groom_father'] ?? 'Fulan' : $content['bride_father'] ?? 'Fulan',
-            'mother' => $isGroomFirst ? $content['groom_mother'] ?? 'Fulanah' : $content['bride_mother'] ?? 'Fulanah',
-            'ig' => $isGroomFirst ? $content['groom_ig'] ?? '' : $content['bride_ig'] ?? '',
-            'photo' => $isGroomFirst ? $content['groom_photo'] ?? '' : $content['bride_photo'] ?? '',
-            'label' => $isGroomFirst ? '- The Groom -' : '- The Bride -',
-            'default_img' => $isGroomFirst
-                ? 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=1887&auto=format&fit=crop'
-                : 'https://images.unsplash.com/photo-1550927407-50e2bd128b81?q=80&w=1887&auto=format&fit=crop',
-        ];
-
-        // PETAKAN DATA ORANG KEDUA (Akan tampil di kartu kanan)
-        $secondPerson = [
-            'name' => !$isGroomFirst
-                ? $content['groom_name'] ?? 'Romeo Montague'
-                : $content['bride_name'] ?? 'Juliet Capulet',
-            'nickname' => !$isGroomFirst
-                ? $content['groom_nickname'] ?? 'Romeo'
-                : $content['bride_nickname'] ?? 'Juliet',
-            'father' => !$isGroomFirst ? $content['groom_father'] ?? 'Fulan' : $content['bride_father'] ?? 'Fulan',
-            'mother' => !$isGroomFirst ? $content['groom_mother'] ?? 'Fulanah' : $content['bride_mother'] ?? 'Fulanah',
-            'ig' => !$isGroomFirst ? $content['groom_ig'] ?? '' : $content['bride_ig'] ?? '',
-            'photo' => !$isGroomFirst ? $content['groom_photo'] ?? '' : $content['bride_photo'] ?? '',
-            'label' => !$isGroomFirst ? '- The Groom -' : '- The Bride -',
-            'default_img' => !$isGroomFirst
-                ? 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=1887&auto=format&fit=crop'
-                : 'https://images.unsplash.com/photo-1550927407-50e2bd128b81?q=80&w=1887&auto=format&fit=crop',
-        ];
-
-        // Nama untuk di Cover
-        $pria = $content['groom_nickname'] ?? 'Romeo';
-        $wanita = $content['bride_nickname'] ?? 'Juliet';
-        $coupleNameCover = $isGroomFirst ? "$pria & $wanita" : "$wanita & $pria";
-
-        // ==========================================
-        // LOGIKA COUNTDOWN
-        // ==========================================
-        $countdownDate = '';
-        $rawTime = '';
-
-        if (!empty($content['events'][0]['date'])) {
-            $countdownDate = $content['events'][0]['date'];
-            $rawTime = $content['events'][0]['time'] ?? '';
-        } elseif (!empty($content['akad_date'])) {
-            $countdownDate = $content['akad_date'];
-            $rawTime = $content['akad_time'] ?? '';
-        }
-
-        $countdownTime = '00:00';
-        if (!empty($rawTime)) {
-            if (preg_match('/([0-9]{1,2}:[0-9]{2})/', $rawTime, $matches)) {
-                $countdownTime = str_pad($matches[1], 5, '0', STR_PAD_LEFT);
-            }
-        }
-
-        $coverDate = $countdownDate ? \Carbon\Carbon::parse($countdownDate)->format('d . m . Y') : 'TBA';
-        $countdownTarget = $countdownDate ? $countdownDate . 'T' . $countdownTime . ':00' : '';
-    @endphp
 </head>
 
-<body class="bg-theme-bg text-theme-text font-sans antialiased relative selection:bg-theme-secondary selection:text-white">
+<body class="bg-netflix-dark text-netflix-light font-sans selection:bg-netflix-red selection:text-white relative cover-locked">
 
     <audio id="bg-music" loop>
-        <source src="{{ !empty($invitation->music_id) ? asset('storage/' . $invitation->music->file_path) : 'https://cdn.pixabay.com/audio/2022/01/18/audio_d0a13f69d2.mp3' }}" type="audio/mpeg">
+        @if ($invitation->music_id && $invitation->music)
+            <source src="{{ asset('storage/' . $invitation->music->file_path) }}" type="audio/mpeg">
+        @else
+            <source src="https://cdn.pixabay.com/audio/2022/01/18/audio_d0a13f69d2.mp3" type="audio/mpeg">
+        @endif
     </audio>
 
-    {{-- COVER PAGE --}}
-    <div id="cover-page" class="fixed inset-0 z-50 flex items-center justify-center w-screen h-screen bg-theme-bg overflow-hidden transition-transform duration-1000 ease-in-out">
-        <div class="absolute inset-0 z-0">
-            <div class="absolute inset-0 bg-[url('{{ $coverImg }}')] bg-cover bg-center animate-slow-zoom"></div>
-            <div class="absolute inset-0 bg-gradient-to-t from-theme-bg/90 via-theme-bg/40 to-theme-bg/20 backdrop-blur-[1px]"></div>
+    <div id="cover-page" class="fixed inset-0 z-[100] flex flex-col items-center justify-center w-screen h-screen bg-netflix-dark transition-all duration-700">
+        <div class="absolute top-0 w-full p-6 flex justify-between items-center">
+            <h1 class="font-bebas text-netflix-red text-4xl md:text-5xl tracking-widest text-shadow">NikahNih</h1>
         </div>
 
-        <div class="hidden lg:block absolute inset-0 z-10 pointer-events-none p-8">
-            <div class="w-full h-full border border-theme-primary/20 rounded-3xl"></div>
-        </div>
-
-        <div class="relative z-20 w-full max-w-[90%] md:max-w-2xl lg:max-w-3xl px-6 py-12 flex flex-col items-center justify-center min-h-[600px] mt-24">
-            
-            <p class="text-[10px] md:text-xs tracking-[0.4em] uppercase text-theme-primary mb-4 font-medium text-center">
-                The Wedding Of
-            </p>
-
-            <div class="text-center mb-6">
-                <h1 class="text-6xl md:text-8xl lg:text-9xl font-serif text-theme-text tracking-tight leading-[0.9] flex flex-col md:flex-row items-center justify-center md:gap-6 text-protected">
-                    {{ $coupleNameCover }}
-                </h1>
-            </div>
-
-            <div class="flex items-center justify-center gap-4 mb-10 w-full max-w-sm">
-                <div class="h-[1px] flex-1 bg-theme-primary/30"></div>
-                <p class="text-xs md:text-sm font-sans tracking-[0.3em] text-theme-primary uppercase whitespace-nowrap font-medium">
-                    {{ $coverDate }}
-                </p>
-                <div class="h-[1px] flex-1 bg-theme-primary/30"></div>
-            </div>
-
-            <div class="elegant-card p-8 md:p-10 rounded-2xl mb-12 relative w-full max-w-md text-center">
-                <p class="text-xs text-theme-muted mb-3 tracking-widest uppercase italic">
-                    {{ $content['cover_greeting'] ?? 'Dear Bapak/Ibu/Saudara/i' }}
-                </p>
-                <h2 id="guest-name" class="text-2xl md:text-3xl font-serif text-theme-text mb-4 leading-tight">
-                    Tamu Undangan
-                </h2>
-                @if (!empty($content['akad_location']))
-                    <div class="flex items-center justify-center gap-2 text-[10px] text-theme-primary tracking-widest border-t border-theme-primary/10 pt-4">
-                        <i class="fa-solid fa-location-dot"></i>
-                        <span class="uppercase">{{ $content['akad_location'] }}</span>
+        <div class="flex flex-col items-center justify-center transform transition-transform duration-500">
+            <h2 class="text-3xl md:text-5xl font-medium text-white mb-10 text-center px-4">Who's watching?</h2>
+            <div class="flex flex-wrap justify-center gap-6 md:gap-10">
+                <button onclick="openInvitation()" class="group flex flex-col items-center gap-4 transition-transform hover:scale-105">
+                    <div class="w-24 h-24 md:w-36 md:h-36 rounded-md overflow-hidden border-2 border-transparent group-hover:border-white transition-colors relative">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/0/0b/Netflix-avatar.png" class="w-full h-full object-cover" alt="Profile">
+                        <div class="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors"></div>
                     </div>
-                @endif
+                    <span id="guest-name" class="text-netflix-gray group-hover:text-white transition-colors text-sm md:text-lg font-medium">Tamu Undangan</span>
+                </button>
             </div>
-
-            <button onclick="openInvitation()" class="relative px-10 py-4 bg-theme-primary text-white rounded-full transition-all duration-500 hover:-translate-y-1 hover:shadow-xl active:scale-95 flex items-center justify-center gap-3 overflow-hidden group">
-                <div class="absolute inset-0 bg-theme-text opacity-0 group-hover:opacity-20 transition-opacity"></div>
-                <i class="fa-solid fa-envelope-open text-sm relative z-10"></i>
-                <span class="font-medium uppercase tracking-[0.2em] text-xs relative z-10">Buka Undangan</span>
+            <button onclick="openInvitation()" class="mt-16 px-6 py-2 border border-netflix-gray text-netflix-gray hover:text-white hover:border-white uppercase tracking-widest text-xs font-medium transition-colors">
+                Buka Undangan
             </button>
         </div>
     </div>
 
-    <main id="main-content" class="min-h-screen pb-28 opacity-0 transition-opacity duration-1000 leaf-pattern bg-theme-bg">
+    <main id="main-content" class="min-h-screen opacity-0 transition-opacity duration-1000 pb-20">
 
-        {{-- HOME / QUOTES --}}
-        <section id="home" class="min-h-screen flex flex-col items-center justify-center text-center p-6 md:p-12 relative overflow-hidden">
-            
-            <div class="relative z-10 max-w-4xl w-full mt-10">
-                <div class="mb-16 md:mb-24 animate-fade-in flex flex-col items-center">
-                    <i class="fa-brands fa-pagelines text-4xl text-theme-secondary mb-6 opacity-80"></i>
-                    <h3 class="font-serif italic text-2xl md:text-4xl text-theme-text mb-6 leading-relaxed max-w-3xl">
-                        "{{ $content['quotes'] ?? 'Dan di antara tanda-tanda kekuasaan-Nya ialah Dia menciptakan untukmu isteri-isteri dari jenismu sendiri, supaya kamu cenderung dan merasa tenteram kepadanya, dan dijadikan-Nya diantaramu rasa kasih dan sayang.' }}"
-                    </h3>
-                    <div class="w-16 h-[1px] bg-theme-secondary mb-6"></div>
-                    <p class="text-sm text-theme-muted max-w-lg mx-auto leading-loose tracking-wide font-light px-4">
-                        Dengan memohon rahmat dan ridho Allah SWT, kami mengundang Bapak/Ibu/Saudara/i untuk menghadiri momen bahagia pernikahan kami.
+        <nav class="fixed top-0 w-full z-50 bg-gradient-to-b from-black/80 to-transparent p-6 flex justify-between items-center transition-all duration-300" id="main-nav">
+            <h1 class="font-bebas text-netflix-red text-3xl md:text-4xl tracking-widest drop-shadow-md">NikahNih</h1>
+            <div class="flex items-center gap-4">
+                <i class="fa-solid fa-magnifying-glass text-white cursor-pointer hover:text-netflix-gray transition-colors"></i>
+                <div class="w-8 h-8 rounded-sm overflow-hidden">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/0/0b/Netflix-avatar.png" alt="User">
+                </div>
+            </div>
+        </nav>
+
+        <section id="home" class="relative h-[85vh] md:h-screen flex items-center justify-start px-6 md:px-16 pt-20">
+            <div class="absolute inset-0 z-0">
+                <img src="{{ $coverImage }}" class="w-full h-full object-cover" alt="Hero">
+                <div class="absolute inset-0 vignette"></div>
+                <div class="absolute inset-x-0 bottom-0 h-1/2 bottom-gradient"></div>
+                <div class="absolute inset-0 bg-black/30"></div>
+            </div>
+
+            <div class="relative z-10 max-w-2xl mt-12 md:mt-0">
+                <div class="flex items-center gap-2 mb-4">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/0/08/Netflix_2015_logo.svg" class="h-4 brightness-0 invert" alt="N">
+                    <span class="text-[10px] md:text-xs font-bold tracking-[0.3em] text-white/80 uppercase">Original Event</span>
+                </div>
+
+                <h2 class="text-6xl md:text-8xl font-bebas text-white tracking-wider mb-4 text-shadow leading-none">
+                    {{ strtoupper($firstPerson['nickname']) }} <span class="text-netflix-red">&</span> {{ strtoupper($secondPerson['nickname']) }}
+                </h2>
+
+                <div class="flex items-center gap-3 text-xs md:text-sm font-semibold mb-6">
+                    <span class="text-green-500">99% Match</span>
+                    <span class="text-white">
+                        {{ !empty($content['events'][0]['date']) ? \Carbon\Carbon::parse($content['events'][0]['date'])->format('Y') : \Carbon\Carbon::parse($akadDate)->format('Y') }}
+                    </span>
+                    <span class="px-2 py-0.5 border border-gray-500 text-white rounded-sm text-[10px]">SU</span>
+                    
+                    <span class="text-white">
+                        {{ !empty($content['events'][0]['date']) ? \Carbon\Carbon::parse($content['events'][0]['date'])->translatedFormat('d F') : \Carbon\Carbon::parse($akadDate)->translatedFormat('d F') }}
+                    </span>
+
+                    <span class="px-1.5 py-0.5 border border-gray-500 text-white rounded-sm text-[10px] flex items-center gap-1"><i class="fa-solid fa-closed-captioning"></i> HD</span>
+                </div>
+
+                <p class="text-sm md:text-base text-white/90 leading-relaxed mb-8 max-w-lg text-shadow font-light">
+                    {!! nl2br(e($content['quotes'] ?? 'Dengan memohon rahmat Tuhan, dua pemeran utama kami bersiap mengikat janji suci. Sebuah perayaan cinta abadi yang tayang perdana secara eksklusif. Jadilah saksi di hari paling bahagia mereka.')) !!}
+                </p>
+
+                <div class="flex flex-col sm:flex-row gap-4">
+                    <a href="javascript:void(0)" onclick="openRSVP()" class="px-6 py-3 bg-white text-black rounded font-bold flex items-center justify-center gap-3 hover:bg-white/80 transition-colors">
+                        <i class="fa-solid fa-play text-xl"></i> RSVP Now
+                    </a>
+                    <a href="#cerita" class="px-6 py-3 bg-gray-500/50 text-white rounded font-bold flex items-center justify-center gap-3 hover:bg-gray-500/70 transition-colors backdrop-blur-sm">
+                        <i class="fa-solid fa-circle-info text-xl"></i> More Info
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <section id="cast" class="px-6 md:px-16 py-12 relative z-10 -mt-20">
+            <h3 class="text-2xl font-bold text-white mb-6">Starring Cast</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
+                
+                <div class="flex gap-6 items-center group {{ $groomFirst ? 'order-1' : 'order-2' }}">
+                    <div class="w-32 h-44 md:w-40 md:h-56 shrink-0 rounded-md overflow-hidden relative border border-white/10">
+                        <img src="{{ $firstPerson['photo'] }}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" alt="Groom">
+                        <div class="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors"></div>
+                    </div>
+                    <div>
+                        <p class="text-netflix-gray text-xs uppercase tracking-widest mb-1 font-bold">{{ $firstPerson['label'] }}</p>
+                        <h4 class="text-2xl md:text-3xl font-bebas text-white tracking-wide mb-2">{{ $firstPerson['name'] }}</h4>
+                        <p class="text-sm text-netflix-gray font-light">{{ $firstPerson['gender_text'] }} dari Bapak {{ $firstPerson['father'] }} & Ibu {{ $firstPerson['mother'] }}</p>
+                       @if (!empty($firstPerson['ig']))
+                            <a href="https://instagram.com/{{ str_replace('@', '', $firstPerson['ig']) }}" target="_blank" class="inline-flex items-center gap-2 mt-2 text-netflix-gray hover:text-white transition-colors">
+                                <i class="fa-brands fa-instagram text-lg"></i> <span>{{ $firstPerson['ig'] }}</span>
+                            </a>
+                        @endif
+                    </div>
+                </div>
+
+                <div class="flex gap-6 items-center group {{ $groomFirst ? 'order-2' : 'order-1' }}">
+                    <div class="w-32 h-44 md:w-40 md:h-56 shrink-0 rounded-md overflow-hidden relative border border-white/10">
+                        <img src="{{ $secondPerson['photo'] }}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" alt="Bride">
+                        <div class="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors"></div>
+                    </div>
+                    <div>
+                        <p class="text-netflix-gray text-xs uppercase tracking-widest mb-1 font-bold">{{ $secondPerson['label'] }}</p>
+                        <h4 class="text-2xl md:text-3xl font-bebas text-white tracking-wide mb-2">{{ $secondPerson['name'] }}</h4>
+                        <p class="text-sm text-netflix-gray font-light">{{ $secondPerson['gender_text'] }} dari Bapak {{ $secondPerson['father'] }} & Ibu {{ $secondPerson['mother'] }}</p>
+                        @if (!empty($secondPerson['ig']))
+                            <a href="https://instagram.com/{{ str_replace('@', '', $secondPerson['ig']) }}" target="_blank" class="inline-flex items-center gap-2 mt-2 text-netflix-gray hover:text-white transition-colors">
+                                <i class="fa-brands fa-instagram text-lg"></i> <span>{{ $secondPerson['ig'] }}</span>
+                            </a>
+                        @endif
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        @if (($content['is_story_active'] ?? false) && !empty($content['love_stories']))
+        <section id="cerita" class="px-6 md:px-16 py-12 border-t border-netflix-gray/20 mt-8">
+            <div class="flex items-end justify-between mb-8">
+                <h3 class="text-2xl font-bold text-white">Episodes</h3>
+                <span class="text-netflix-gray text-sm font-medium">Limited Series</span>
+            </div>
+
+            <div class="space-y-6">
+                @foreach ($content['love_stories'] as $index => $story)
+                <div class="episode-card flex flex-col md:flex-row gap-4 md:gap-6 items-start md:items-center p-4 hover:bg-white/5 rounded-lg transition-colors cursor-pointer border-b border-white/5 pb-6">
+                    <h4 class="text-4xl font-bebas text-netflix-gray/50 hidden md:block">{{ $index + 1 }}</h4>
+                    <div class="w-full md:w-48 h-28 shrink-0 rounded overflow-hidden relative episode-img-container border border-white/10">
+                        @if(!empty($story['image']))
+                            <img src="{{ asset('storage/' . $story['image']) }}" class="episode-img w-full h-full object-cover transition-transform duration-500" alt="Ep {{ $index + 1 }}">
+                        @else
+                            <div class="w-full h-full bg-[#333] flex items-center justify-center"><i class="fa-solid fa-heart text-netflix-gray/30 text-3xl"></i></div>
+                        @endif
+                        <div class="absolute inset-0 flex items-center justify-center opacity-0 hover:opacity-100 bg-black/40 transition-opacity">
+                            <i class="fa-regular fa-circle-play text-3xl text-white"></i>
+                        </div>
+                    </div>
+                    <div class="flex-1">
+                        <div class="flex justify-between items-start mb-2">
+                            <h5 class="font-bold text-white text-base">{{ $story['title'] ?? 'Our Journey' }}</h5>
+                            <span class="text-xs text-netflix-gray font-medium">{{ $story['year'] ?? '' }}</span>
+                        </div>
+                        <p class="text-sm text-netflix-gray font-light leading-relaxed line-clamp-3">
+                            {!! nl2br(e($story['description'] ?? '')) !!}
+                        </p>
+                    </div>
+                </div>
+                @endforeach
+            </div>
+        </section>
+        @endif
+
+        @if ($content['is_gallery_active'] ?? false)
+        <section id="gallery" class="py-12 border-t border-white/5">
+            <div class="px-6 md:px-16 flex items-center gap-8 border-b border-netflix-gray/30 mb-8">
+                <h3 class="text-xl md:text-2xl font-bold text-white border-b-4 border-netflix-red pb-4">Trailers & More</h3>
+            </div>
+
+            @if (!empty($content['youtube_links'][0]))
+                @php
+                    preg_match('%(?:youtube(?:-nocookie)?\.com/(?:[^/]+/.+/|(?:v|e(?:mbed)?)/|.*[?&]v=)|youtu\.be/)([^"&?/\s]{11})%i', $content['youtube_links'][0], $match);
+                    $youtube_id = $match[1] ?? '';
+                @endphp
+                @if ($youtube_id)
+                <div class="px-6 md:px-16 mb-12">
+                    <p class="text-xs font-bold text-netflix-red uppercase tracking-widest mb-4">Official Trailer</p>
+                    <div class="relative w-full aspect-video rounded-md overflow-hidden bg-black shadow-2xl border border-white/10">
+                        <iframe class="absolute inset-0 w-full h-full" src="https://www.youtube.com/embed/{{ $youtube_id }}?autoplay=0&controls=1" frameborder="0" allowfullscreen></iframe>
+                    </div>
+                </div>
+                @endif
+            @endif
+
+            @if (isset($invitation->galleries) && $invitation->galleries->count() > 0)
+            <div class="relative group">
+                <div class="flex overflow-x-auto gap-4 px-6 md:px-16 pb-8 snap-x snap-mandatory hide-scrollbar scroll-smooth">
+                    @foreach ($invitation->galleries as $index => $gallery)
+                    <div class="w-[70vw] md:w-[25vw] shrink-0 snap-start group/card cursor-pointer" onclick="openLightbox({{ $index }})">
+                        <div class="relative aspect-video rounded overflow-hidden border border-white/10">
+                            <img src="{{ asset('storage/' . $gallery->file_path) }}" class="gallery-img w-full h-full object-cover transition-transform duration-500 group-hover/card:scale-110">
+                            <div class="absolute inset-0 bg-black/60 opacity-0 group-hover/card:opacity-100 transition-opacity flex items-center justify-center">
+                                <i class="fa-solid fa-play text-white text-3xl"></i>
+                            </div>
+                        </div>
+                    </div>
+                    @endforeach
+                </div>
+            </div>
+            @endif
+        </section>
+        @endif
+
+        @if ($content['is_event_active'] ?? false)
+        <section id="lokasi" class="px-6 md:px-16 py-12 border-t border-white/5">
+            <h3 class="text-2xl font-bold text-white mb-6">Premiere Locations</h3>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-[#181818] p-8 rounded-md border border-white/5 hover:border-netflix-red/50 transition-colors">
+                    <div class="flex justify-between items-start mb-6">
+                        <div>
+                            <span class="text-netflix-red text-xs font-bold uppercase tracking-widest block mb-1">Part 1</span>
+                            <h4 class="text-2xl font-bebas tracking-wide text-white">Akad Nikah</h4>
+                        </div>
+                        <i class="fa-solid fa-ring text-2xl text-netflix-gray"></i>
+                    </div>
+
+                    <ul class="space-y-4 mb-8 text-sm text-netflix-light">
+                        <li class="flex items-center gap-3"><i class="fa-regular fa-calendar text-netflix-gray w-5"></i> 
+                            {{ \Carbon\Carbon::parse($akadDate)->translatedFormat('l, d F Y') }}</li>
+                        <li class="flex items-center gap-3"><i class="fa-regular fa-clock text-netflix-gray w-5"></i> 
+                            {{ $akadTime }} - {{ $content['akad_time_end'] ?? 'Selesai' }}</li>
+                        <li class="flex items-start gap-3"><i class="fa-solid fa-location-dot text-netflix-gray w-5 mt-1"></i> 
+                            <span>{{ $content['akad_location'] ?? 'Lokasi Akad' }}<br><span class="text-netflix-gray text-xs">{{ $content['akad_address'] ?? '' }}</span></span>
+                        </li>
+                    </ul>
+
+                    @if(!empty($content['akad_map']))
+                    <a href="{{ $content['akad_map'] }}" target="_blank" class="block w-full py-3 bg-white/10 hover:bg-white/20 text-white text-center rounded text-sm font-semibold transition-colors">
+                        <i class="fa-solid fa-map-location-dot mr-2"></i> Get Directions
+                    </a>
+                    @endif
+                </div>
+
+                @foreach ($content['events'] ?? [] as $idx => $event)
+                <div class="bg-[#181818] p-8 rounded-md border border-white/5 hover:border-netflix-red/50 transition-colors">
+                    <div class="flex justify-between items-start mb-6">
+                        <div>
+                            <span class="text-netflix-red text-xs font-bold uppercase tracking-widest block mb-1">Part {{ $idx + 2 }}</span>
+                            <h4 class="text-2xl font-bebas tracking-wide text-white">{{ $event['title'] ?? 'Resepsi' }}</h4>
+                        </div>
+                        <i class="fa-solid fa-champagne-glasses text-2xl text-netflix-gray"></i>
+                    </div>
+
+                    <ul class="space-y-4 mb-8 text-sm text-netflix-light">
+                        <li class="flex items-center gap-3"><i class="fa-regular fa-calendar text-netflix-gray w-5"></i> 
+                            {{ \Carbon\Carbon::parse($event['date'])->translatedFormat('l, d F Y') }}</li>
+                        <li class="flex items-center gap-3"><i class="fa-regular fa-clock text-netflix-gray w-5"></i> 
+                            {{ $event['time'] }} - {{ $event['time_end'] ?? 'Selesai' }}</li>
+                        <li class="flex items-start gap-3"><i class="fa-solid fa-location-dot text-netflix-gray w-5 mt-1"></i> 
+                            <span>{{ $event['location'] ?? 'Lokasi Resepsi' }}<br><span class="text-netflix-gray text-xs">{{ $event['address'] ?? '' }}</span></span>
+                        </li>
+                    </ul>
+
+                    @if(!empty($event['map']))
+                    <a href="{{ $event['map'] }}" target="_blank" class="block w-full py-3 bg-netflix-red hover:bg-netflix-hover text-white text-center rounded text-sm font-semibold transition-colors">
+                        <i class="fa-solid fa-map-location-dot mr-2"></i> Get Directions
+                    </a>
+                    @endif
+                </div>
+                @endforeach
+            </div>
+        </section>
+        @endif
+
+        @if (($content['is_livestream_active'] ?? false) && !empty($content['live_streams']))
+        <section id="live-streaming" class="py-24 px-6 md:px-16 bg-[#141414] relative overflow-hidden border-t border-white/5">
+            <div class="absolute top-0 right-0 w-[500px] h-[500px] bg-red-600/5 blur-[120px] rounded-full pointer-events-none"></div>
+
+            <div class="max-w-5xl mx-auto relative z-10">
+                <div class="text-left mb-10">
+                    <div class="flex items-center gap-3 mb-4">
+                        <span class="relative flex h-3 w-3">
+                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-600 opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-3 w-3 bg-red-600"></span>
+                        </span>
+                        <span class="text-sm font-bold uppercase tracking-[0.3em] text-red-600">Live Virtual Wedding</span>
+                    </div>
+                    <h2 class="text-3xl md:text-5xl font-bold text-white mb-4">Siaran Langsung</h2>
+                </div>
+
+                @php $firstStream = $content['live_streams'][0]; @endphp
+                <div class="relative group">
+                    <div id="streaming-display" class="relative aspect-video w-full rounded-xl bg-black overflow-hidden border border-white/10 shadow-2xl transition-all duration-700">
+                        <div class="absolute inset-0 bg-cover bg-center transition-all duration-1000 opacity-40 group-hover:scale-105" style="background-image: url('{{ $coverImage }}');"></div>
+                        <div class="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent"></div>
+
+                        <div class="relative h-full flex flex-col items-center justify-center p-6 text-white text-center">
+                            <div class="mb-6 group-hover:scale-110 transition-transform duration-500">
+                                <i id="platform-icon" class="{{ $platformIcons[$firstStream['platform']]['icon'] ?? 'fa-solid fa-video' }} text-6xl md:text-8xl text-white drop-shadow-[0_0_20px_rgba(255,255,255,0.3)]"></i>
+                            </div>
+
+                            <h3 id="platform-title" class="text-2xl md:text-4xl font-bold mb-2 tracking-tight">{{ $platformIcons[$firstStream['platform']]['title'] ?? ucfirst($firstStream['platform']) }}</h3>
+                            <p id="platform-desc" class="text-netflix-gray text-sm md:text-lg mb-8 font-medium">Online Streaming</p>
+
+                            <a id="platform-link" href="{{ $firstStream['link'] }}" target="_blank" class="flex items-center gap-3 px-8 md:px-10 py-3 md:py-4 bg-white text-black rounded font-bold text-sm md:text-lg hover:bg-white/80 transition-all active:scale-95 shadow-lg">
+                                <i class="fa-solid fa-play"></i> <span>Putar Sekarang</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-12 {{ count($content['live_streams']) <= 1 ? 'hidden' : '' }}">
+                    <h4 class="text-white font-bold text-lg mb-6 flex items-center gap-2">
+                        <span class="w-1 h-5 bg-red-600"></span> Pilih Platform Lainnya
+                    </h4>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        @foreach ($content['live_streams'] as $stream)
+                            @php $pData = $platformIcons[$stream['platform']] ?? ['icon' => 'fa-solid fa-video', 'title' => ucfirst($stream['platform'])]; @endphp
+                            <button onclick="switchPlatform('{{ $pData['title'] }}', 'Online Streaming', '{{ $pData['icon'] }}', '{{ $stream['link'] }}')"
+                                class="platform-btn flex flex-col bg-[#2F2F2F] hover:bg-[#3F3F3F] p-4 rounded transition-all group text-left border-b-4 border-transparent hover:border-red-600">
+                                <i class="{{ $pData['icon'] }} text-2xl text-red-600 mb-3"></i>
+                                <span class="text-white font-bold text-xs uppercase tracking-wider mb-1">{{ $stream['platform'] }}</span>
+                                <span class="text-netflix-gray text-[10px]">Tonton Live</span>
+                            </button>
+                        @endforeach
+                    </div>
+                </div>
+            </div>
+        </section>
+        @endif
+
+        @if ($content['is_wishes_active'] ?? false)
+        <section id="guest-stats" class="py-24 px-6 md:px-16 bg-[#141414] relative overflow-hidden border-t border-white/5">
+            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-red-600/5 rounded-full blur-[120px] pointer-events-none"></div>
+
+            <div class="max-w-5xl mx-auto relative z-10">
+                <div class="mb-16 text-center md:text-left">
+                    <h2 class="text-3xl md:text-5xl font-bold text-white mb-4">Kehadiran & Doa</h2>
+                    <div class="flex items-center justify-center md:justify-start gap-2">
+                        <span class="w-8 h-1 bg-red-600"></span>
+                        <p class="text-netflix-gray text-xs md:text-sm font-bold uppercase tracking-[0.3em]">Trending Now</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-10 mb-16">
+                    <div class="flex items-center gap-4 group">
+                        <div class="relative">
+                            <span class="text-8xl md:text-9xl font-black text-black leading-none" style="-webkit-text-stroke: 2px #555;">1</span>
+                        </div>
+                        <div class="bg-netflix-gray/10 p-6 rounded-lg border border-white/5 flex-1 group-hover:bg-netflix-gray/20 transition-all">
+                            <h4 id="total-attendance" class="text-4xl md:text-5xl font-bold text-white mb-1">{{ $totalAttendance }}</h4>
+                            <p class="text-[10px] uppercase tracking-[0.2em] text-red-600 font-bold">Tamu Akan Hadir</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-4 group">
+                        <div class="relative">
+                            <span class="text-8xl md:text-9xl font-black text-black leading-none" style="-webkit-text-stroke: 2px #555;">2</span>
+                        </div>
+                        <div class="bg-netflix-gray/10 p-6 rounded-lg border border-white/5 flex-1 group-hover:bg-netflix-gray/20 transition-all">
+                            <h4 id="total-wishes" class="text-4xl md:text-5xl font-bold text-white mb-1">{{ $totalWishes }}</h4>
+                            <p class="text-[10px] uppercase tracking-[0.2em] text-red-600 font-bold">Ucapan Hangat</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-black/40 rounded-xl border border-white/10 overflow-hidden shadow-2xl relative">
+                    <div class="flex items-center justify-between p-6 border-b border-white/10 bg-netflix-gray/5 relative z-10">
+                        <div class="flex items-center gap-3">
+                            <i class="fa-solid fa-layer-group text-red-600"></i>
+                            <span class="text-sm font-bold uppercase tracking-widest text-white">Wishes Wall</span>
+                        </div>
+                        <span class="text-[10px] text-netflix-gray uppercase font-bold">Scroll to read</span>
+                    </div>
+
+                    <div id="wishes-container" class="max-h-[500px] overflow-y-auto scroll-custom p-4 md:p-8 space-y-4 relative z-10">
+                        </div>
+                    
+                    <div class="absolute bottom-0 left-0 w-full h-16 bg-gradient-to-t from-black to-transparent pointer-events-none z-20"></div>
+                </div>
+            </div>
+        </section>
+        @endif
+
+        @if ($content['is_gift_active'] ?? false)
+        <section id="hadiah" class="py-24 px-6 md:px-16 bg-[#141414] relative overflow-hidden border-t border-white/5">
+            <div class="absolute top-1/2 left-0 w-[500px] h-[500px] bg-red-600/5 blur-[120px] rounded-full pointer-events-none"></div>
+
+            <div class="max-w-5xl mx-auto relative z-10">
+                <div class="mb-16 md:text-center text-center">
+                    <div class="flex items-center justify-center gap-3 mb-4">
+                        <span class="w-8 h-[2px] bg-red-600"></span>
+                        <span class="text-[10px] tracking-[0.5em] uppercase text-gray-400 font-black">Gift Registry</span>
+                        <span class="w-8 h-[2px] bg-red-600"></span>
+                    </div>
+                    <h2 class="text-4xl md:text-6xl font-black text-white mb-6 uppercase tracking-tighter">Kirim Kado</h2>
+                    <p class="text-sm md:text-base text-gray-400 font-medium leading-relaxed max-w-2xl mx-auto">
+                        Kehadiran Anda adalah kado terbesar. Namun bagi Anda yang ingin mengirimkan tanda kasih fisik, kami telah menyediakan alamat pengiriman dan daftar kebutuhan kami.
                     </p>
                 </div>
 
-                <div class="elegant-card md:max-w-3xl mx-auto p-8 md:p-12 rounded-[2rem] relative overflow-hidden">
-                    <p class="text-[10px] md:text-xs tracking-[0.4em] uppercase text-theme-primary mb-10 font-semibold">Menuju Hari Bahagia</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 mb-10">
+                    @foreach ($content['banks'] ?? [] as $index => $bank)
+                        @php
+                            $bNameRaw = trim($bank['name'] ?? '');
+                            $bNameLower = strtolower($bNameRaw);
+                            $logoPath = $masterLogos[$bNameLower] ?? null;
+                        @endphp
+                        <div class="group relative bg-[#181818] rounded-xl overflow-hidden border border-white/5 transition-all duration-500 hover:scale-[1.03] hover:border-red-600/50 hover:shadow-[0_20px_40px_rgba(0,0,0,0.6)]">
+                            <div class="p-8 md:p-10">
+                                <div class="flex justify-between items-center mb-12 h-10">
+                                    @if ($logoPath)
+                                        @if (str_starts_with($logoPath, 'http'))
+                                            <img src="{{ $logoPath }}" class="h-6 md:h-8 object-contain brightness-0 invert opacity-60 group-hover:opacity-100 transition-all" alt="Bank Logo">
+                                        @else
+                                            <img src="{{ asset('storage/' . $logoPath) }}" class="h-6 md:h-8 object-contain brightness-0 invert opacity-60 group-hover:opacity-100 transition-all" alt="Bank Logo">
+                                        @endif
+                                    @else
+                                        <i class="fa-solid fa-building-columns text-3xl text-gray-500 group-hover:text-white transition-colors"></i>
+                                    @endif
+                                    <i class="fa-solid fa-circle-check text-red-600 opacity-0 group-hover:opacity-100 transition-all text-xl"></i>
+                                </div>
 
-                    <div class="flex flex-row justify-center items-center gap-6 md:gap-12">
-                        <div class="flex flex-col items-center">
-                            <div class="w-16 h-16 md:w-24 md:h-24 rounded-full border border-theme-secondary/50 flex items-center justify-center bg-theme-secondary/5 mb-3">
-                                <span id="days" class="text-2xl md:text-4xl font-serif text-theme-primary">00</span>
-                            </div>
-                            <span class="text-[9px] uppercase tracking-[0.2em] text-theme-muted">Hari</span>
-                        </div>
+                                <div class="space-y-1 mb-10">
+                                    <p class="text-[10px] uppercase tracking-widest text-gray-500 font-bold">Nomor Rekening</p>
+                                    <h3 id="rek-{{ $index }}" class="text-3xl md:text-4xl font-black text-white tracking-tight">{{ $bank['account_number'] }}</h3>
+                                    <p class="text-sm text-gray-400 font-medium uppercase tracking-wide">a.n {{ $bank['account_name'] }}</p>
+                                </div>
 
-                        <div class="flex flex-col items-center">
-                            <div class="w-16 h-16 md:w-24 md:h-24 rounded-full border border-theme-secondary/50 flex items-center justify-center bg-theme-secondary/5 mb-3">
-                                <span id="hours" class="text-2xl md:text-4xl font-serif text-theme-primary">00</span>
+                                <button onclick="copyToClipboard('rek-{{ $index }}', this)" class="w-full py-4 bg-white text-black rounded font-black text-[11px] uppercase tracking-[0.2em] transition-all hover:bg-red-600 hover:text-white flex items-center justify-center gap-3">
+                                    <i class="fa-regular fa-copy"></i> <span>Salin Nomor</span>
+                                </button>
                             </div>
-                            <span class="text-[9px] uppercase tracking-[0.2em] text-theme-muted">Jam</span>
+                            <div class="absolute bottom-0 left-0 h-1 w-0 bg-red-600 transition-all duration-500 group-hover:w-full"></div>
                         </div>
-
-                        <div class="flex flex-col items-center">
-                            <div class="w-16 h-16 md:w-24 md:h-24 rounded-full border border-theme-secondary/50 flex items-center justify-center bg-theme-secondary/5 mb-3">
-                                <span id="minutes" class="text-2xl md:text-4xl font-serif text-theme-primary">00</span>
-                            </div>
-                            <span class="text-[9px] uppercase tracking-[0.2em] text-theme-muted">Menit</span>
-                        </div>
-                    </div>
+                    @endforeach
                 </div>
-            </div>
-        </section>
 
-        {{-- MEMPELAI --}}
-        <section id="mempelai" class="py-24 px-6 relative overflow-hidden">
-            <div class="max-w-6xl mx-auto relative z-10">
-                <div class="flex flex-col items-center mb-20 text-center">
-                    <span class="text-[10px] tracking-[0.4em] uppercase text-theme-secondary mb-3 font-semibold">The Bride & Groom</span>
-                    <h2 class="text-4xl md:text-6xl font-serif text-theme-text italic">Mempelai</h2>
-                    <i class="fa-brands fa-pagelines text-2xl text-theme-primary mt-6 opacity-60"></i>
-                </div>
-
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-20 lg:gap-16 items-center">
-
-                    {{-- KARTU KIRI --}}
-                    <div class="flex flex-col md:flex-row items-center gap-8 lg:pr-8 group">
-                        <div class="relative w-64 h-80 md:w-72 md:h-[26rem] order-1 md:order-2 flex-shrink-0">
-                            <div class="absolute inset-0 border border-theme-primary/30 translate-x-3 translate-y-3 arch-shape z-0 transition-transform group-hover:translate-x-4 group-hover:translate-y-4"></div>
-                            <div class="absolute inset-0 overflow-hidden arch-shape shadow-xl z-10 bg-theme-card">
-                                <img src="{{ !empty($firstPerson['photo']) ? asset('storage/' . $firstPerson['photo']) : $firstPerson['default_img'] }}"
-                                    class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105">
-                            </div>
+                @if (!empty($content['alamat_kado']))
+                <div class="flex flex-col items-center gap-8">
+                    <div class="group relative p-10 bg-[#181818] rounded-2xl border border-white/5 max-w-2xl w-full transition-all duration-500 hover:border-red-600/30 hover:scale-[1.01] shadow-2xl">
+                        <div class="w-14 h-14 bg-red-600/10 rounded-full flex items-center justify-center mx-auto mb-8 transition-transform group-hover:scale-110">
+                            <i class="fa-solid fa-truck-fast text-red-600 text-xl"></i>
                         </div>
-                        <div class="text-center md:text-right order-2 md:order-1 flex-1">
-                            <p class="text-theme-secondary font-serif italic text-2xl mb-2">{{ $firstPerson['label'] }}</p>
-                            <h3 class="text-4xl md:text-5xl font-serif text-theme-text mb-6 leading-tight">{{ $firstPerson['name'] }}</h3>
-                            <div class="space-y-2">
-                                <p class="uppercase text-[9px] tracking-[0.2em] text-theme-muted font-semibold">Putra/i Tercinta dari</p>
-                                <p class="text-theme-text text-sm md:text-base">Bapak {{ $firstPerson['father'] }}</p>
-                                <p class="text-theme-text text-sm md:text-base">& Ibu {{ $firstPerson['mother'] }}</p>
-                            </div>
-                            @if (!empty($firstPerson['ig']))
-                                <a href="https://instagram.com/{{ $firstPerson['ig'] }}" target="_blank"
-                                    class="inline-flex items-center gap-2 mt-6 text-theme-primary hover:text-theme-secondary transition-colors text-xs font-medium tracking-widest uppercase bg-white px-4 py-2 rounded-full border border-theme-primary/10 shadow-sm">
-                                    <i class="fa-brands fa-instagram"></i> {{ $firstPerson['ig'] }}
-                                </a>
-                            @endif
+                        <p class="text-[10px] text-center uppercase tracking-[0.4em] text-red-600 mb-4 font-black">Alamat Pengiriman</p>
+                        <div id="alamat-kado" class="text-xl md:text-2xl text-white font-bold text-center leading-tight mb-10 tracking-tight">
+                            {!! nl2br(e($content['alamat_kado'])) !!}
                         </div>
-                    </div>
-
-                    {{-- KARTU KANAN --}}
-                    <div class="flex flex-col md:flex-row items-center gap-8 lg:pl-8 group lg:mt-24">
-                        <div class="relative w-64 h-80 md:w-72 md:h-[26rem] flex-shrink-0">
-                            <div class="absolute inset-0 border border-theme-primary/30 -translate-x-3 translate-y-3 arch-shape z-0 transition-transform group-hover:-translate-x-4 group-hover:translate-y-4"></div>
-                            <div class="absolute inset-0 overflow-hidden arch-shape shadow-xl z-10 bg-theme-card">
-                                <img src="{{ !empty($secondPerson['photo']) ? asset('storage/' . $secondPerson['photo']) : $secondPerson['default_img'] }}"
-                                    class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105">
-                            </div>
-                        </div>
-                        <div class="text-center md:text-left flex-1">
-                            <p class="text-theme-secondary font-serif italic text-2xl mb-2">{{ $secondPerson['label'] }}</p>
-                            <h3 class="text-4xl md:text-5xl font-serif text-theme-text mb-6 leading-tight">{{ $secondPerson['name'] }}</h3>
-                            <div class="space-y-2">
-                                <p class="uppercase text-[9px] tracking-[0.2em] text-theme-muted font-semibold">Putra/i Tercinta dari</p>
-                                <p class="text-theme-text text-sm md:text-base">Bapak {{ $secondPerson['father'] }}</p>
-                                <p class="text-theme-text text-sm md:text-base">& Ibu {{ $secondPerson['mother'] }}</p>
-                            </div>
-                            @if (!empty($secondPerson['ig']))
-                                <a href="https://instagram.com/{{ $secondPerson['ig'] }}" target="_blank"
-                                    class="inline-flex items-center gap-2 mt-6 text-theme-primary hover:text-theme-secondary transition-colors text-xs font-medium tracking-widest uppercase bg-white px-4 py-2 rounded-full border border-theme-primary/10 shadow-sm">
-                                    <i class="fa-brands fa-instagram"></i> {{ $secondPerson['ig'] }}
-                                </a>
+                        <div class="flex flex-col sm:flex-row justify-center gap-4">
+                            <button onclick="copyToClipboardText('alamat-kado', this)" class="px-8 py-4 bg-white text-black rounded font-black text-[11px] uppercase tracking-widest transition-all hover:bg-gray-200 active:scale-95 flex items-center justify-center gap-2">
+                                <i class="fa-regular fa-copy"></i> Salin Alamat
+                            </button>
+                            @if (!empty($content['gifts']))
+                            <button onclick="toggleGiftModal(true)" class="px-8 py-4 bg-red-600 text-white rounded font-black text-[11px] uppercase tracking-widest transition-all hover:bg-red-700 active:scale-95 shadow-lg shadow-red-600/20 flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-list-ul"></i> Daftar Kebutuhan
+                            </button>
                             @endif
                         </div>
                     </div>
                 </div>
+                @endif
 
-                {{-- TURUT MENGUNDANG --}}
-                @if (!empty($content['is_turut_mengundang_active']) && !empty($content['turut_mengundang']))
-                    <div class="mt-32 max-w-4xl mx-auto elegant-card rounded-3xl p-10 text-center relative">
-                        <div class="absolute -top-6 left-1/2 -translate-x-1/2 bg-theme-bg px-4 py-2 text-[10px] tracking-[0.4em] uppercase text-theme-primary font-semibold border border-theme-primary/20 rounded-full">
-                            Turut Mengundang
+                @if (!empty($content['gifts']))
+                <div id="gift-modal" class="fixed inset-0 z-[500] hidden flex items-center justify-center p-4">
+                    <div class="absolute inset-0 bg-black/90 backdrop-blur-md" onclick="toggleGiftModal(false)"></div>
+                    <div class="relative bg-[#181818] w-full max-w-lg rounded-xl border border-white/10 overflow-hidden shadow-2xl flex flex-col max-h-[85vh] animate-slide-up">
+                        <div class="p-8 border-b border-white/5 bg-[#181818] sticky top-0 z-20">
+                            <div class="flex justify-between items-center">
+                                <div>
+                                    <h3 class="text-2xl font-black text-white uppercase tracking-tighter">Wishlist Kami</h3>
+                                    <p class="text-[10px] text-red-600 uppercase tracking-widest mt-1 font-black">Wedding Registry</p>
+                                </div>
+                                <button onclick="toggleGiftModal(false)" class="w-10 h-10 flex items-center justify-center rounded-full bg-white/5 text-white hover:bg-white/10 transition-all">
+                                    <i class="fa-solid fa-xmark"></i>
+                                </button>
+                            </div>
                         </div>
-                        <div class="flex flex-wrap justify-center gap-x-8 gap-y-4 mt-4">
-                            @foreach ($content['turut_mengundang'] as $nama)
-                                @if (trim($nama) !== '')
-                                    <span class="text-theme-text text-sm font-medium">{{ trim($nama) }}</span>
-                                @endif
+
+                        <div class="flex-1 overflow-y-auto p-6 custom-scrollbar space-y-4">
+                            @foreach ($content['gifts'] as $index => $gift)
+                            <div id="item-{{ $index }}" class="p-5 rounded-lg border border-white/5 bg-white/5 flex items-center justify-between gap-4 transition-all hover:bg-white/10 group">
+                                <div>
+                                    <h4 class="text-sm font-black text-white uppercase tracking-wide group-hover:text-red-600 transition-colors">{{ $gift['item_name'] }}</h4>
+                                    <p class="text-[10px] text-gray-500 font-bold mt-1 uppercase tracking-widest">{{ $gift['description'] ?? '' }}</p>
+                                </div>
+                                <button onclick="confirmGift('item-{{ $index }}', '{{ $gift['item_name'] }}')" class="shrink-0 px-5 py-2.5 bg-red-600 text-white rounded text-[9px] font-black uppercase tracking-widest hover:bg-red-700 transition-all">
+                                    Pilih
+                                </button>
+                            </div>
                             @endforeach
                         </div>
+
+                        <div class="p-6 bg-black/40 text-center border-t border-white/5">
+                            <p class="text-[9px] text-gray-500 font-black uppercase tracking-[0.3em]">Thank You for Your Kindness</p>
+                        </div>
                     </div>
+                </div>
                 @endif
-            </div>
-        </section>
 
-        {{-- STORY MEMPELAI --}}
-        @if (!empty($content['is_story_active']) && !empty($content['love_stories']))
-            <section id="story" class="py-24 px-6 relative overflow-hidden bg-white/50">
-                <div class="max-w-5xl mx-auto relative z-10">
-                    <div class="text-center mb-20 flex flex-col items-center">
-                        <span class="text-[10px] tracking-[0.4em] uppercase text-theme-secondary mb-3 font-semibold">Our Journey</span>
-                        <h2 class="text-4xl md:text-5xl font-serif italic text-theme-text">Kisah Cinta Kami</h2>
-                        <div class="h-[1px] w-16 bg-theme-primary/30 mt-6"></div>
-                    </div>
+                <div id="confirm-modal" class="fixed inset-0 z-[600] hidden flex items-center justify-center p-6">
+                    <div class="absolute inset-0 bg-black/95 backdrop-blur-xl" onclick="closeConfirmModal()"></div>
+                    <div class="relative bg-[#181818] w-full max-w-sm rounded-xl p-8 text-center shadow-2xl border border-white/10 animate-slide-up">
+                        <div class="w-16 h-16 bg-red-600/20 text-red-600 rounded-full flex items-center justify-center mx-auto mb-6">
+                            <i class="fa-solid fa-heart text-2xl"></i>
+                        </div>
+                        <h4 class="text-xl font-black text-white uppercase mb-2">Niat Baik Anda</h4>
+                        <p id="confirm-text" class="text-xs text-gray-400 font-medium leading-relaxed mb-6"></p>
 
-                    <div class="relative space-y-16 md:space-y-24">
-                        <div class="hidden md:block absolute left-1/2 -translate-x-1/2 top-0 bottom-0 w-[1px] bg-theme-primary/20"></div>
-
-                        @foreach ($content['love_stories'] as $index => $story)
-                            @php $isEven = $index % 2 == 0; @endphp
-
-                            <div class="relative grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16 items-center group {{ $index > 2 ? 'hidden extra-story' : '' }}">
-                                <div class="hidden md:flex absolute left-1/2 -translate-x-1/2 z-20 w-8 h-8 rounded-full bg-theme-bg border border-theme-primary items-center justify-center transition-transform duration-500">
-                                    <div class="w-2 h-2 rounded-full bg-theme-secondary"></div>
-                                </div>
-
-                                <div class="relative {{ $isEven ? 'order-1 md:order-1 flex justify-center md:justify-end' : 'order-1 md:order-2 flex justify-center md:justify-start' }}">
-                                    @if (!empty($story['image']))
-                                        <div class="relative w-full max-w-[320px] aspect-[4/5] rounded-[2rem] overflow-hidden shadow-lg border border-theme-primary/10">
-                                            <img src="{{ asset('storage/' . $story['image']) }}" class="w-full h-full object-cover hover:scale-105 transition-transform duration-700" alt="Momen">
-                                        </div>
-                                    @endif
-                                </div>
-
-                                <div class="{{ $isEven ? 'order-2 md:order-2 text-center md:text-left flex flex-col items-center md:items-start' : 'order-2 md:order-1 text-center md:text-right flex flex-col items-center md:items-end' }}">
-                                    <span class="text-[10px] font-semibold tracking-[0.2em] text-theme-bg bg-theme-primary px-4 py-1.5 rounded-full inline-block mb-4">{{ $story['year'] }}</span>
-                                    <h4 class="text-2xl md:text-3xl font-serif text-theme-text mb-4">{{ $story['title'] }}</h4>
-                                    <p class="text-sm text-theme-text/80 leading-relaxed font-light max-w-sm">
-                                        {{ $story['description'] }}
-                                    </p>
-                                </div>
+                        <div class="text-left space-y-4 mb-8">
+                            <div>
+                                <label class="block text-[10px] uppercase tracking-widest text-netflix-gray font-bold mb-2">Nama Anda</label>
+                                <input type="text" id="input-gift-name" class="input-luxury w-full p-3 rounded text-sm placeholder-white/20" placeholder="Masukkan nama Anda">
                             </div>
-                        @endforeach
-                    </div>
+                            <div>
+                                <label class="block text-[10px] uppercase tracking-widest text-netflix-gray font-bold mb-2">Jumlah Hadir (Opsional)</label>
+                                <input type="number" id="input-gift-pax" min="0" value="0" class="input-luxury w-full p-3 rounded text-sm placeholder-white/20 text-center" placeholder="0">
+                                <p class="text-[9px] text-gray-600 mt-1 italic">*Isi 0 jika hanya mengirim kado</p>
+                            </div>
+                        </div>
 
-                    @if (count($content['love_stories']) > 3)
-                        <div class="mt-20 text-center">
-                            <button id="btn-read-more" onclick="toggleStories()" class="px-8 py-3 bg-white border border-theme-primary/30 text-theme-primary rounded-full text-xs font-semibold uppercase tracking-widest hover:bg-theme-primary hover:text-white transition-colors duration-300 shadow-sm">
-                                Baca Selengkapnya
+                        <div class="flex flex-col gap-3">
+                            <button id="final-confirm-btn" class="w-full py-4 bg-red-600 text-white rounded font-black text-[11px] uppercase tracking-widest transition-all hover:bg-red-700 shadow-lg shadow-red-600/20">
+                                Kirim Konfirmasi
+                            </button>
+                            <button onclick="closeConfirmModal()" class="w-full py-4 bg-transparent text-gray-500 font-black text-[10px] uppercase tracking-widest hover:text-white transition-all">
+                                Batalkan
                             </button>
                         </div>
-                    @endif
-                </div>
-            </section>
-        @endif
-
-        {{-- LOKASI DAN WAKTU --}}
-        @if (!empty($content['is_event_active']))
-            <section id="lokasi" class="py-24 px-6 relative overflow-hidden">
-                <div class="max-w-6xl mx-auto relative z-10">
-                    <div class="text-center mb-16 flex flex-col items-center">
-                        <span class="text-[10px] tracking-[0.4em] uppercase text-theme-secondary mb-3 font-semibold">The Celebration</span>
-                        <h2 class="text-4xl md:text-5xl font-serif italic text-theme-text">Waktu & Tempat</h2>
-                        <i class="fa-brands fa-pagelines text-2xl text-theme-primary mt-6 opacity-60"></i>
-                    </div>
-
-                    <div class="grid grid-cols-1 {{ count($content['events'] ?? []) > 0 ? 'md:grid-cols-2' : '' }} gap-8 lg:gap-10 items-stretch">
-
-                        {{-- AKAD NIKAH --}}
-                        @if (!empty($content['akad_location']))
-                            <div class="elegant-card p-10 md:p-12 rounded-[2.5rem] flex flex-col items-center text-center h-full relative overflow-hidden">
-                                <div class="absolute top-0 left-0 w-full h-2 bg-theme-secondary/50"></div>
-                                
-                                <div class="w-16 h-16 rounded-full bg-theme-bg flex items-center justify-center mb-6 border border-theme-primary/10 text-theme-primary text-2xl shadow-sm">
-                                    <i class="fa-solid fa-ring"></i>
-                                </div>
-
-                                <h3 class="text-3xl font-serif text-theme-text mb-1">Akad Nikah</h3>
-                                <p class="text-theme-secondary text-[9px] tracking-[0.3em] uppercase font-semibold mb-8">Sacred Union</p>
-
-                                <div class="space-y-6 mb-10 flex-1 w-full">
-                                    <div class="flex flex-col items-center p-4 bg-theme-bg/50 rounded-2xl">
-                                        <i class="fa-regular fa-calendar text-theme-primary mb-2"></i>
-                                        <p class="text-theme-text text-sm font-medium">
-                                            {{ \Carbon\Carbon::parse($content['akad_date'])->translatedFormat('l, d F Y') }}
-                                        </p>
-                                    </div>
-                                    <div class="flex flex-col items-center p-4 bg-theme-bg/50 rounded-2xl">
-                                        <i class="fa-regular fa-clock text-theme-primary mb-2"></i>
-                                        <p class="text-theme-text text-sm font-medium">{{ $content['akad_time'] }}</p>
-                                    </div>
-                                    <div class="flex flex-col items-center p-4 bg-theme-bg/50 rounded-2xl">
-                                        <i class="fa-solid fa-location-dot text-theme-primary mb-2"></i>
-                                        <p class="text-theme-text/80 text-xs md:text-sm leading-relaxed">
-                                            <span class="font-bold text-theme-text block mb-1">{{ $content['akad_location'] }}</span>
-                                            {{ $content['akad_address'] }}
-                                        </p>
-                                    </div>
-                                </div>
-
-                                @if (!empty($content['akad_map']))
-                                    <a href="{{ $content['akad_map'] }}" target="_blank" class="w-full py-3.5 bg-theme-primary text-white rounded-full text-xs font-semibold uppercase tracking-widest hover:bg-theme-text transition-colors shadow-md flex items-center justify-center gap-2">
-                                        <i class="fa-solid fa-map-location-dot"></i> Buka Google Maps
-                                    </a>
-                                @endif
-                            </div>
-                        @endif
-
-                        {{-- RESEPSI --}}
-                        @if (!empty($content['events']))
-                            @foreach ($content['events'] as $event)
-                                <div class="elegant-card p-10 md:p-12 rounded-[2.5rem] flex flex-col items-center text-center h-full relative overflow-hidden">
-                                    <div class="absolute top-0 left-0 w-full h-2 bg-theme-primary/50"></div>
-                                    
-                                    <div class="w-16 h-16 rounded-full bg-theme-bg flex items-center justify-center mb-6 border border-theme-primary/10 text-theme-primary text-2xl shadow-sm">
-                                        <i class="fa-solid fa-champagne-glasses"></i>
-                                    </div>
-
-                                    <h3 class="text-3xl font-serif text-theme-text mb-1">{{ $event['title'] }}</h3>
-                                    <p class="text-theme-secondary text-[9px] tracking-[0.3em] uppercase font-semibold mb-8">Grand Celebration</p>
-
-                                    <div class="space-y-6 mb-10 flex-1 w-full">
-                                        <div class="flex flex-col items-center p-4 bg-theme-bg/50 rounded-2xl">
-                                            <i class="fa-regular fa-calendar text-theme-primary mb-2"></i>
-                                            <p class="text-theme-text text-sm font-medium">
-                                                {{ \Carbon\Carbon::parse($event['date'])->translatedFormat('l, d F Y') }}
-                                            </p>
-                                        </div>
-                                        <div class="flex flex-col items-center p-4 bg-theme-bg/50 rounded-2xl">
-                                            <i class="fa-regular fa-clock text-theme-primary mb-2"></i>
-                                            <p class="text-theme-text text-sm font-medium">{{ $event['time'] }}</p>
-                                        </div>
-                                        <div class="flex flex-col items-center p-4 bg-theme-bg/50 rounded-2xl">
-                                            <i class="fa-solid fa-building text-theme-primary mb-2"></i>
-                                            <p class="text-theme-text/80 text-xs md:text-sm leading-relaxed">
-                                                <span class="font-bold text-theme-text block mb-1">{{ $event['location'] }}</span>
-                                                {{ $event['address'] }}
-                                            </p>
-                                        </div>
-                                    </div>
-
-                                    @if (!empty($event['map']))
-                                        <a href="{{ $event['map'] }}" target="_blank" class="w-full py-3.5 bg-theme-primary text-white rounded-full text-xs font-semibold uppercase tracking-widest hover:bg-theme-text transition-colors shadow-md flex items-center justify-center gap-2">
-                                            <i class="fa-solid fa-map-location-dot"></i> Buka Google Maps
-                                        </a>
-                                    @endif
-                                </div>
-                            @endforeach
-                        @endif
                     </div>
                 </div>
-            </section>
-        @endif
 
-        {{-- GUEST INFO --}}
-        @if (!empty($content['is_guest_info_active']))
-            <section class="py-16 px-6 relative">
-                <div class="max-w-3xl mx-auto elegant-card rounded-[2rem] p-10 md:p-12 text-center relative border-t-4 border-theme-secondary">
-                    <i class="fa-solid fa-circle-info text-2xl text-theme-secondary mb-4"></i>
-                    <h4 class="text-2xl font-serif text-theme-text mb-6 italic">Informasi Tambahan</h4>
-
-                    @if (!empty($content['enable_dresscode']) && !empty($content['dresscode']))
-                        <div class="mb-8">
-                            <p class="text-[10px] uppercase tracking-widest text-theme-muted font-bold mb-2">Dresscode</p>
-                            <p class="text-sm font-medium text-theme-text bg-theme-bg py-2 px-4 rounded-lg inline-block">{{ $content['dresscode'] }}</p>
-                        </div>
-                    @endif
-
-                    @if (!empty($content['enable_health_protocol']))
-                        <div class="pt-6 border-t border-theme-primary/10 w-full mx-auto">
-                            <p class="text-[10px] uppercase tracking-widest text-theme-muted font-bold mb-6">Protokol Kesehatan</p>
-                            <div class="flex justify-center gap-10 text-theme-primary text-2xl">
-                                <div class="flex flex-col items-center gap-2"><i class="fa-solid fa-head-side-mask"></i><span class="text-[9px] text-theme-text uppercase tracking-widest font-medium">Masker</span></div>
-                                <div class="flex flex-col items-center gap-2"><i class="fa-solid fa-hands-bubbles"></i><span class="text-[9px] text-theme-text uppercase tracking-widest font-medium">Cuci Tangan</span></div>
-                                <div class="flex flex-col items-center gap-2"><i class="fa-solid fa-people-arrows"></i><span class="text-[9px] text-theme-text uppercase tracking-widest font-medium">Jaga Jarak</span></div>
-                            </div>
-                        </div>
-                    @endif
+                <div id="gift-toast" class="fixed bottom-10 left-1/2 -translate-x-1/2 z-[700] px-10 py-4 bg-red-600 text-white rounded shadow-2xl text-[11px] font-black uppercase tracking-[0.2em] opacity-0 transition-all duration-500 pointer-events-none text-center">
+                    Terima kasih!
                 </div>
-            </section>
+            </div>
+        </section>
         @endif
 
-        {{-- GALERI --}}
-        @if (!empty($content['is_gallery_active']))
-            <section id="gallery" class="py-24 px-6 relative overflow-hidden bg-white/40">
-                <div class="max-w-6xl mx-auto relative z-10">
-                    <div class="text-center mb-16">
-                        <span class="text-[10px] tracking-[0.4em] uppercase text-theme-secondary mb-3 font-semibold">Captured Moments</span>
-                        <h2 class="text-4xl md:text-5xl font-serif italic text-theme-text">Galeri Foto</h2>
-                        <div class="h-[1px] w-12 bg-theme-primary/30 mx-auto mt-6"></div>
+        @if ($content['enable_qr_attendance'] ?? false)
+        <section id="qr-tamu" class="py-24 px-6 md:px-16 bg-[#141414] relative overflow-hidden border-t border-white/5">
+            <div class="max-w-4xl mx-auto text-center relative z-10">
+                <div class="mb-16">
+                    <h2 class="text-4xl md:text-5xl font-black text-white uppercase tracking-tighter mb-4">Akses Undangan</h2>
+                    <p class="text-gray-400 text-sm font-medium leading-relaxed max-w-lg mx-auto">
+                        Tunjukkan QR Code ini kepada petugas untuk proses verifikasi.
+                    </p>
+                </div>
+                <div class="flex justify-center">
+                    <div class="group relative p-10 bg-[#181818] rounded-xl border border-white/5 transition-all duration-700 hover:border-red-600/50 max-w-sm w-full mx-auto">
+                        <div class="relative bg-white p-6 rounded-md mb-8 inline-block shadow-[0_0_30px_rgba(229,9,20,0.1)]">
+                            <img id="qr-image" src="" class="w-44 h-44 object-contain" alt="QR Code Tamu">
+                        </div>
+                        <div class="space-y-2 mb-6 text-center">
+                            <span class="text-[10px] uppercase tracking-[0.5em] text-red-600 font-black block">Guest Identity</span>
+                            <h3 id="guest-name-qr" class="text-2xl font-black text-white tracking-tighter uppercase leading-none">Tamu Undangan</h3>
+                        </div>
+                        <div class="w-full py-3 bg-white/5 rounded border border-dashed border-white/10 text-center">
+                            <p class="text-[9px] uppercase tracking-[0.3em] font-bold text-gray-500">E-Invitation Only</p>
+                        </div>
                     </div>
-
-                    @if (!empty($content['youtube_links']))
-                        @foreach ($content['youtube_links'] as $yt)
-                            @php $ytId = getYoutubeId($yt); @endphp
-                            @if ($ytId)
-                                <div class="mb-12">
-                                    <div class="relative w-full max-w-4xl mx-auto pb-[56.25%] rounded-3xl overflow-hidden shadow-lg border border-theme-primary/10">
-                                        <iframe class="absolute top-0 left-0 w-full h-full" src="https://www.youtube.com/embed/{{ $ytId }}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-                                    </div>
-                                </div>
-                            @endif
-                        @endforeach
-                    @endif
-
-                    @if ($invitation->galleries->count() > 0)
-                        <div class="columns-2 md:columns-3 lg:columns-4 gap-4 space-y-4" id="photo-grid">
-                            @foreach ($invitation->galleries->where('type', 'photo') as $idx => $photo)
-                                <div class="break-inside-avoid relative rounded-xl overflow-hidden cursor-pointer shadow-sm border border-theme-primary/5 group" onclick="openLightbox({{ $idx }})">
-                                    <img src="{{ asset('storage/' . $photo->file_path) }}" class="gallery-img w-full h-auto object-cover transition-transform duration-700 group-hover:scale-105" alt="Gallery">
-                                    <div class="absolute inset-0 bg-theme-text/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                                        <i class="fa-solid fa-expand text-white text-xl drop-shadow-md"></i>
-                                    </div>
-                                </div>
-                            @endforeach
-                        </div>
-                    @endif
                 </div>
-            </section>
+            </div>
+        </section>
+        @endif
 
-            <div id="lightbox" class="fixed inset-0 z-[200] hidden flex-col items-center justify-center bg-theme-bg/95 backdrop-blur-sm p-4 transition-all duration-300">
-                <button onclick="closeLightbox()" class="absolute top-6 right-6 text-theme-text hover:text-theme-primary transition-colors text-3xl z-[110] w-12 h-12 bg-white rounded-full shadow-md flex items-center justify-center">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
-                <div class="relative w-full max-w-5xl flex items-center justify-center group">
-                    <button onclick="prevImg()" class="absolute left-2 md:-left-16 text-theme-text hover:text-theme-primary transition-all text-2xl w-10 h-10 bg-white rounded-full shadow-md z-10"><i class="fa-solid fa-chevron-left"></i></button>
-                    <img id="lightbox-img" src="" class="max-h-[85vh] max-w-full rounded-lg shadow-2xl border border-theme-primary/20 transition-opacity duration-300" alt="Zoomed Photo">
-                    <button onclick="nextImg()" class="absolute right-2 md:-right-16 text-theme-text hover:text-theme-primary transition-all text-2xl w-10 h-10 bg-white rounded-full shadow-md z-10"><i class="fa-solid fa-chevron-right"></i></button>
+        <footer class="py-20 px-6 bg-[#141414] border-t border-white/10 text-center relative overflow-hidden">
+            <div class="max-w-4xl mx-auto relative z-10">
+                <div class="mb-12 flex flex-col items-center">
+                    <h2 class="text-4xl md:text-6xl font-black text-white uppercase tracking-tighter select-none">NikahNih</h2>
                 </div>
-                <p class="mt-6 text-theme-text tracking-[0.2em] text-[10px] uppercase font-bold bg-white px-4 py-1.5 rounded-full shadow-sm">
-                    Image <span id="current-count">1</span> / <span id="total-count">5</span>
+                <div class="mb-16">
+                    <p class="text-sm md:text-base font-medium text-netflix-gray leading-relaxed max-w-2xl mx-auto italic">
+                        "Merupakan suatu kehormatan apabila Bapak/Ibu/Saudara/i berkenan hadir dan memberikan doa restu."
+                    </p>
+                </div>
+                <div class="mb-16 space-y-2">
+                    <p class="text-[10px] text-netflix-gray uppercase font-bold tracking-[0.3em]">Starring</p>
+                    <h3 class="text-3xl font-bebas text-white tracking-wide">{{ strtoupper($firstPerson['nickname']) }} & {{ strtoupper($secondPerson['nickname']) }}</h3>
+                </div>
+                <div class="flex justify-center mb-8">
+                    <a href="https://www.instagram.com/ruangrestu.undangan" target="_blank" class="text-[10px] font-bold text-netflix-gray hover:text-white uppercase tracking-widest transition-colors flex items-center gap-2">
+                        <i class="fa-brands fa-instagram"></i> @ruangrestu.undangan
+                    </a>
+                </div>
+                <p class="text-[9px] text-netflix-gray font-bold tracking-[0.3em] uppercase opacity-40">
+                    &copy; 2026 {{ $firstPerson['nickname'] }} & {{ $secondPerson['nickname'] }}. All Rights Reserved.
                 </p>
             </div>
-        @endif
+        </footer>
 
-        {{-- HADIAH --}}
-        @if (!empty($content['is_gift_active']) && !empty($content['banks']))
-            <section id="hadiah" class="py-24 px-6 relative overflow-hidden">
-                <div class="max-w-3xl mx-auto text-center relative z-10">
-                    <div class="mb-14">
-                        <span class="text-[10px] tracking-[0.4em] uppercase text-theme-secondary font-semibold mb-3 block">Wedding Gift</span>
-                        <h2 class="text-4xl md:text-5xl font-serif italic text-theme-text">Tanda Kasih</h2>
-                        <i class="fa-brands fa-pagelines text-2xl text-theme-primary mt-4 opacity-60 block"></i>
-                        <p class="text-sm text-theme-text/70 font-light leading-relaxed max-w-md mx-auto mt-6">
-                            Doa restu Anda adalah karunia terindah. Namun jika Anda ingin memberikan tanda kasih, dapat melalui:
-                        </p>
-                    </div>
+    </main>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
-                        @foreach ($content['banks'] as $idx => $bank)
-                            <div class="elegant-card p-8 rounded-[2rem] transition-transform duration-300 hover:-translate-y-2 relative overflow-hidden">
-                                <div class="absolute -right-4 -bottom-4 opacity-5 text-theme-primary text-9xl"><i class="fa-solid fa-building-columns"></i></div>
-                                
-                                <div class="relative z-10 flex flex-col items-center">
-                                    <p class="text-sm uppercase tracking-widest text-theme-text mb-6 font-bold">{{ $bank['name'] }}</p>
-                                    <p class="text-[9px] uppercase tracking-[0.3em] text-theme-muted mb-2 font-semibold">Nomor Rekening</p>
-                                    <h3 id="rek-{{ $idx }}" class="text-2xl font-sans font-semibold text-theme-primary mb-2 tracking-wider">{{ $bank['account_number'] }}</h3>
-                                    <p class="text-xs text-theme-text/60 mb-8 font-medium">a.n {{ $bank['account_name'] }}</p>
+    <div id="fab-container" class="fixed right-5 bottom-28 flex flex-col gap-4 z-40 opacity-0 transition-opacity duration-1000 pointer-events-none">
+        <button id="btn-music" onclick="toggleMusic()" class="w-11 h-11 bg-white text-black rounded-full flex items-center justify-center shadow-xl hover:scale-110 transition-transform pointer-events-auto">
+            <i class="fa-solid fa-music animate-pulse-slow" id="icon-music"></i>
+        </button>
+        <button id="btn-scroll" onclick="toggleAutoScroll()" class="w-11 h-11 bg-[#333] text-white rounded-full flex items-center justify-center shadow-xl hover:scale-110 transition-transform pointer-events-auto">
+            <i class="fa-solid fa-angles-down" id="icon-scroll"></i>
+        </button>
+    </div>
 
-                                    <button onclick="copyToClipboard('rek-{{ $idx }}', this)" class="w-full py-3 bg-theme-bg border border-theme-primary/30 text-theme-primary rounded-xl text-xs font-semibold uppercase tracking-widest transition-all hover:bg-theme-primary hover:text-white flex items-center justify-center gap-2">
-                                        <i class="fa-regular fa-copy"></i> Salin Nomor
-                                    </button>
-                                </div>
-                            </div>
-                        @endforeach
-                    </div>
+    <nav id="bottom-nav" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-[90] transition-all duration-700 translate-y-32">
+        <div class="bg-black/90 backdrop-blur-xl border border-white/10 rounded-xl shadow-[0_20px_50px_rgba(0,0,0,0.8)]">
+            <ul class="flex justify-around items-center h-16 w-[320px] md:w-[420px] px-2">
+                <li class="relative group">
+                    <a href="#home" class="nav-link flex flex-col items-center justify-center w-16 h-full text-netflix-gray hover:text-white transition-all">
+                        <i class="fa-solid fa-house text-lg"></i><span class="text-[8px] uppercase font-bold tracking-tighter mt-1">Home</span>
+                    </a>
+                </li>
+                @if ($content['is_gallery_active'] ?? false)
+                <li class="relative group">
+                    <a href="#gallery" class="nav-link flex flex-col items-center justify-center w-16 h-full text-netflix-gray hover:text-white transition-all">
+                        <i class="fa-solid fa-clapperboard text-lg"></i><span class="text-[8px] uppercase font-bold tracking-tighter mt-1">Gallery</span>
+                    </a>
+                </li>
+                @endif
+                <li class="relative group">
+                    <a href="#lokasi" class="nav-link flex flex-col items-center justify-center w-16 h-full text-netflix-gray hover:text-white transition-all">
+                        <i class="fa-solid fa-location-dot text-lg"></i><span class="text-[8px] uppercase font-bold tracking-tighter mt-1">Venue</span>
+                    </a>
+                </li>
+                @if ($content['is_wishes_active'] ?? false)
+                <li class="relative">
+                    <a href="javascript:void(0)" onclick="openRSVP()" class="flex flex-col items-center justify-center w-20 h-14 bg-netflix-red rounded transition-all duration-300 hover:bg-red-700 active:scale-95 shadow-lg">
+                        <i class="fa-solid fa-paper-plane text-lg text-white"></i>
+                        <span class="text-[8px] uppercase font-black tracking-tighter mt-1 text-white">RSVP</span>
+                    </a>
+                </li>
+                @endif
+            </ul>
+        </div>
+    </nav>
 
-                    <div id="copy-toast" class="fixed bottom-28 left-1/2 -translate-x-1/2 z-[300] px-6 py-3 bg-theme-text text-white text-xs rounded-full tracking-widest uppercase font-semibold opacity-0 translate-y-10 transition-all duration-500 shadow-xl flex items-center gap-2">
-                        <i class="fa-solid fa-check-circle text-theme-secondary"></i> Tersalin!
-                    </div>
+    <section id="rsvp-modal" class="fixed inset-0 z-[1000] invisible transition-all duration-500 overflow-hidden flex items-end md:items-center justify-center">
+        <div onclick="closeRSVP()" class="absolute inset-0 bg-black/95 backdrop-blur-sm opacity-0 transition-opacity duration-500" id="rsvp-overlay"></div>
+
+        <div id="rsvp-content" class="relative w-full md:max-w-xl lg:max-w-2xl h-[92vh] md:h-auto max-h-[95vh] bg-[#181818] rounded-t-2xl md:rounded-2xl border-t md:border border-white/10 shadow-2xl transform translate-y-full transition-transform duration-500 ease-out flex flex-col">
+            
+            <div class="overflow-y-auto px-6 pb-10 pt-4 custom-scrollbar">
+                <div class="w-12 h-1 bg-white/10 rounded-full mx-auto mb-8 md:hidden"></div>
+
+                <div class="mb-8 text-center md:text-left">
+                    <h2 class="text-3xl font-black text-white uppercase tracking-tighter mb-2">RSVP & Ucapan</h2>
+                    <p class="text-netflix-gray text-xs font-medium">Sampaikan kehadiran dan doa restu Anda.</p>
                 </div>
-            </section>
-        @endif
 
-        {{-- UCAPAN & DOA --}}
-        @if (!empty($content['is_wishes_active']))
-            <section id="guest-stats" class="py-24 px-6 relative bg-white/60 border-t border-theme-primary/10">
-                <div class="max-w-4xl mx-auto relative z-10">
-                    <div class="text-center mb-14">
-                        <span class="text-[10px] tracking-[0.4em] uppercase text-theme-secondary mb-3 font-semibold">Guest Book</span>
-                        <h2 class="text-4xl md:text-5xl font-serif italic text-theme-text">Kehadiran & Doa</h2>
-                        <div class="h-[1px] w-12 bg-theme-primary/30 mx-auto mt-6"></div>
+                <form id="form-rsvp" class="space-y-6">
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Nama Lengkap</label>
+                        <input type="text" id="input-nama-rsvp" placeholder="Masukkan nama Anda" class="input-luxury w-full p-4 rounded text-sm outline-none" required>
                     </div>
 
-                    <div class="grid grid-cols-2 gap-4 md:gap-8 mb-10">
-                        <div class="elegant-card p-6 md:p-8 rounded-3xl flex flex-col items-center text-center">
-                            <div class="w-12 h-12 bg-theme-bg rounded-full flex items-center justify-center mb-4 text-theme-primary text-xl">
-                                <i class="fa-solid fa-user-check"></i>
-                            </div>
-                            <h4 id="total-attendance" class="text-3xl md:text-4xl font-serif font-bold text-theme-text mb-1">0</h4>
-                            <p class="text-[9px] uppercase tracking-[0.2em] text-theme-muted font-semibold">Tamu Hadir</p>
-                        </div>
-
-                        <div class="elegant-card p-6 md:p-8 rounded-3xl flex flex-col items-center text-center">
-                            <div class="w-12 h-12 bg-theme-bg rounded-full flex items-center justify-center mb-4 text-theme-primary text-xl">
-                                <i class="fa-solid fa-envelope-open-text"></i>
-                            </div>
-                            <h4 id="total-wishes" class="text-3xl md:text-4xl font-serif font-bold text-theme-text mb-1">0</h4>
-                            <p class="text-[9px] uppercase tracking-[0.2em] text-theme-muted font-semibold">Ucapan</p>
-                        </div>
-                    </div>
-
-                    <div class="elegant-card rounded-[2rem] overflow-hidden">
-                        <div class="bg-theme-bg py-4 px-6 border-b border-theme-primary/10 flex justify-between items-center">
-                            <span class="text-[10px] font-bold uppercase tracking-[0.2em] text-theme-text">Dinding Ucapan</span>
-                            <i class="fa-solid fa-message text-theme-muted text-sm"></i>
-                        </div>
-
-                        <div id="wishes-container" class="max-h-[450px] overflow-y-auto scroll-custom p-6 md:p-8 space-y-4 bg-white">
-                            {{-- Diisi Oleh Script JS --}}
-                        </div>
-
-                        <div class="p-6 text-center border-t border-theme-primary/10 bg-theme-bg/50">
-                            <button id="btn-load-more" onclick="loadMoreWishes()" class="px-6 py-2.5 bg-white border border-theme-primary/20 text-theme-text rounded-full text-[10px] font-bold uppercase tracking-widest hover:bg-theme-primary hover:text-white transition-colors shadow-sm">
-                                Lihat Lebih Banyak
+                    <div class="space-y-3">
+                        <label class="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Konfirmasi Kehadiran</label>
+                        <input type="hidden" id="input-status" value="Hadir">
+                        <div class="grid grid-cols-2 gap-3">
+                            <button type="button" onclick="selectAttendance('Hadir')" id="btn-hadir" class="py-3.5 rounded border border-red-600 text-xs font-bold uppercase tracking-widest transition-all bg-red-600 text-white">
+                                <i class="fa-solid fa-check mr-2"></i> Hadir
+                            </button>
+                            <button type="button" onclick="selectAttendance('Tidak Hadir')" id="btn-absen" class="py-3.5 rounded border border-white/20 text-xs font-bold uppercase tracking-widest transition-all bg-transparent text-white hover:border-white/50">
+                                <i class="fa-solid fa-xmark mr-2"></i> Absen
                             </button>
                         </div>
                     </div>
-                </div>
-            </section>
-        @endif
 
-        {{-- FORM RSVP MODAL --}}
-        <section id="rsvp-modal" class="fixed inset-0 z-[100] invisible transition-all duration-500 overflow-hidden">
-            <div onclick="closeRSVP()" class="absolute inset-0 bg-theme-text/40 backdrop-blur-sm opacity-0 transition-opacity duration-500" id="rsvp-overlay"></div>
-
-            <div id="rsvp-content" class="absolute bottom-0 left-0 right-0 bg-white rounded-t-[2.5rem] shadow-[0_-10px_40px_rgba(0,0,0,0.1)] transform translate-y-full transition-transform duration-700 ease-[cubic-bezier(0.2,0.8,0.2,1)] px-6 pb-12 pt-4 max-w-2xl mx-auto">
-                <div class="w-16 h-1.5 bg-theme-bg rounded-full mx-auto mb-8"></div>
-
-                <div class="text-center mb-8">
-                    <h2 class="text-3xl font-serif text-theme-text italic">Konfirmasi Kehadiran</h2>
-                    <p class="text-xs text-theme-muted mt-2">Bantu kami mempersiapkan yang terbaik untuk Anda.</p>
-                </div>
-
-                <form id="rsvpForm" class="space-y-5 text-left" onsubmit="submitRSVP(event)">
-                    <div>
-                        <label class="text-[10px] uppercase tracking-widest text-theme-text font-bold ml-2 mb-2 block">Nama Lengkap</label>
-                        <input type="text" id="input-nama-rsvp" name="name" placeholder="Tulis nama Anda..." class="input-rustic w-full p-4 rounded-xl text-sm placeholder-theme-muted/50" required>
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-3">
-                        <button type="button" onclick="selectAttendance('Hadir')" id="btn-hadir" class="py-3.5 rounded-xl border border-theme-primary/20 text-xs font-semibold uppercase tracking-widest transition-all bg-theme-bg text-theme-muted hover:border-theme-primary">
-                            Hadir
-                        </button>
-                        <button type="button" onclick="selectAttendance('Tidak Hadir')" id="btn-absen" class="py-3.5 rounded-xl border border-theme-primary/20 text-xs font-semibold uppercase tracking-widest transition-all bg-theme-bg text-theme-muted hover:border-theme-primary">
-                            Maaf, Absen
-                        </button>
-                        <input type="hidden" name="status" id="input-status" required>
-                    </div>
-
-                    <div id="guest-selection" class="hidden animate-slide-up bg-theme-bg p-5 rounded-xl border border-theme-primary/10">
-                        <label class="text-[10px] uppercase tracking-widest text-theme-text mb-3 block font-bold text-center">Jumlah Tamu (Termasuk Anda)</label>
-                        <div class="flex gap-2">
-                            <button type="button" onclick="selectGuestCount(1, this)" class="guest-btn flex-1 py-2.5 rounded-lg border border-theme-primary/20 bg-white text-xs text-theme-text hover:bg-theme-primary hover:text-white transition-all">1 Orang</button>
-                            <button type="button" onclick="selectGuestCount(2, this)" class="guest-btn flex-1 py-2.5 rounded-lg border border-theme-primary/20 bg-white text-xs text-theme-text hover:bg-theme-primary hover:text-white transition-all">2 Orang</button>
-                            <button type="button" onclick="selectGuestCount(3, this)" class="guest-btn flex-1 py-2.5 rounded-lg border border-theme-primary/20 bg-white text-xs text-theme-text hover:bg-theme-primary hover:text-white transition-all">3+ Orang</button>
-                            <input type="hidden" name="guest_count" id="input-guest-count" value="1">
+                    <input type="hidden" id="input-guest-count" value="1">
+                    <div id="guest-selection" class="bg-white/5 p-5 rounded-lg border border-white/5 transition-all duration-300">
+                        <label class="text-[10px] uppercase tracking-widest text-gray-400 mb-3 block font-bold">Jumlah Tamu</label>
+                        <div class="flex gap-2 mb-3">
+                            <button type="button" onclick="setGuestCount(1)" class="guest-btn flex-1 py-3 rounded bg-red-600 text-sm text-white font-bold transition-all">1</button>
+                            <button type="button" onclick="setGuestCount(2)" class="guest-btn flex-1 py-3 rounded bg-[#333] text-sm text-white font-bold hover:bg-[#444] transition-all">2</button>
+                            <button type="button" onclick="setGuestCount(3)" class="guest-btn flex-1 py-3 rounded bg-[#333] text-sm text-white font-bold hover:bg-[#444] transition-all">3</button>
+                            <button type="button" onclick="setGuestCount('custom')" class="guest-btn flex-1 py-3 rounded bg-[#333] text-sm text-white font-bold hover:bg-[#444] transition-all">3+</button>
+                        </div>
+                        <div id="custom-pax-container" class="hidden">
+                            <input type="number" id="custom-pax-input" min="4" placeholder="Ketik jumlah spesifik..." class="input-luxury w-full p-3 rounded text-sm text-center outline-none">
                         </div>
                     </div>
 
-                    <div>
-                        <label class="text-[10px] uppercase tracking-widest text-theme-text font-bold ml-2 mb-2 block">Pesan & Doa</label>
-                        <textarea id="input-pesan-rsvp" name="message" rows="3" placeholder="Berikan doa terbaik Anda..." class="input-rustic w-full p-4 rounded-xl text-sm placeholder-theme-muted/50 resize-none" required></textarea>
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Pesan</label>
+                        <textarea id="input-pesan-rsvp" rows="3" placeholder="Tulis doa restu Anda..." class="input-luxury w-full p-4 rounded text-sm outline-none resize-none" required></textarea>
                     </div>
 
-                    <div class="flex gap-3 pt-2">
-                        <button type="button" onclick="closeRSVP()" class="w-1/3 py-4 bg-theme-bg text-theme-text rounded-xl font-bold text-[10px] uppercase tracking-widest hover:bg-gray-200 transition-all">Batal</button>
-                        <button type="submit" id="btnSubmitRsvp" class="w-2/3 py-4 bg-theme-primary hover:bg-theme-text text-white rounded-xl font-bold text-[11px] uppercase tracking-widest transition-all shadow-md">
+                    <div class="flex flex-col gap-3 pt-2">
+                        <button type="submit" class="w-full py-4 bg-red-600 text-white rounded font-black text-xs uppercase tracking-widest shadow-lg shadow-red-600/20 active:scale-95 transition-transform">
                             Kirim Konfirmasi
+                        </button>
+                        <button type="button" onclick="closeRSVP()" class="w-full py-3 bg-transparent text-gray-500 rounded font-bold text-[10px] uppercase tracking-widest hover:text-white transition-colors">
+                            Kembali
                         </button>
                     </div>
                 </form>
             </div>
         </section>
 
-        <footer class="py-12 px-6 bg-theme-bg border-t border-theme-primary/10 text-center relative">
-            <i class="fa-brands fa-pagelines text-3xl text-theme-primary mb-6 opacity-40"></i>
-            <div class="max-w-md mx-auto">
-                <div class="mb-4 font-serif text-theme-text text-2xl italic">
-                    {{ $pria }} & {{ $wanita }}
-                </div>
-
-                <p class="text-[9px] tracking-[0.3em] uppercase text-theme-muted mb-8 font-medium">
-                    Terima kasih atas doa & restu Anda
-                </p>
-
-                <div class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white border border-theme-primary/10 shadow-sm">
-                    <span class="text-[9px] text-theme-muted uppercase tracking-widest font-semibold">Created with love by</span>
-                    <a href="https://instagram.com/ruangrestu.undangan" target="_blank" rel="noopener noreferrer" class="text-[10px] font-bold text-theme-primary hover:text-theme-secondary transition-colors flex items-center gap-1">
-                        <i class="fa-brands fa-instagram text-sm"></i> ruangrestu
-                    </a>
-                </div>
+        <div id="lightbox" class="fixed inset-0 z-[2000] hidden flex-col items-center justify-center bg-[#141414] p-4 transition-all duration-500">
+            <div class="w-full flex justify-between items-center p-6 absolute top-0 left-0 z-10">
+                <span class="text-white font-bold tracking-widest text-sm"><span id="current-count">1</span> / <span id="total-count">4</span></span>
+                <button onclick="closeLightbox()" class="text-white hover:text-netflix-red transition-colors text-3xl"><i class="fa-solid fa-xmark"></i></button>
             </div>
-        </footer>
+            <div class="relative w-full max-w-5xl flex items-center justify-center h-[80vh]">
+                <img id="lightbox-img" src="" class="max-h-full max-w-full object-contain transition-opacity duration-300 shadow-2xl" alt="Zoomed">
+            </div>
+            <div class="absolute bottom-10 flex gap-6 z-10">
+                <button onclick="prevImg()" class="w-12 h-12 rounded-full border border-white text-white hover:bg-white hover:text-black flex items-center justify-center transition-colors"><i class="fa-solid fa-chevron-left"></i></button>
+                <button onclick="nextImg()" class="w-12 h-12 rounded-full border border-white text-white hover:bg-white hover:text-black flex items-center justify-center transition-colors"><i class="fa-solid fa-chevron-right"></i></button>
+            </div>
+        </div>
 
-    </main>
-
-    <div id="fab-container" class="fixed right-4 bottom-28 flex flex-col gap-3 z-40 opacity-0 transition-opacity duration-1000">
-        <button id="btn-music" onclick="toggleMusic()" class="w-12 h-12 bg-white backdrop-blur border border-theme-primary/20 rounded-full flex items-center justify-center text-theme-primary shadow-lg hover:bg-theme-primary hover:text-white transition-all">
-            <i class="fa-solid fa-music animate-spin-slow" id="icon-music"></i>
-        </button>
-
-        <button id="btn-scroll" onclick="toggleAutoScroll()" class="w-12 h-12 bg-white backdrop-blur border border-theme-primary/20 rounded-full flex items-center justify-center text-theme-primary shadow-lg hover:bg-theme-primary hover:text-white transition-all">
-            <i class="fa-solid fa-angles-down" id="icon-scroll"></i>
-        </button>
-    </div>
-
-    <nav id="bottom-nav" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 floating-nav rounded-full transition-all duration-1000 translate-y-32">
-        <ul class="flex justify-around items-center h-16 w-[320px] md:w-[400px] px-2">
-            <li><a href="#home" class="nav-link flex flex-col items-center text-[9px] uppercase tracking-[0.1em] font-semibold gap-1 text-theme-muted hover:text-theme-primary transition-colors p-2"><i class="fa-solid fa-house text-base"></i><span class="hidden md:block">Home</span></a></li>
-            @if (!empty($content['is_gallery_active']))
-                <li><a href="#gallery" class="nav-link flex flex-col items-center text-[9px] uppercase tracking-[0.1em] font-semibold gap-1 text-theme-muted hover:text-theme-primary transition-colors p-2"><i class="fa-regular fa-images text-base"></i><span class="hidden md:block">Gallery</span></a></li>
-            @endif
-            @if (!empty($content['is_event_active']))
-                <li><a href="#lokasi" class="nav-link flex flex-col items-center text-[9px] uppercase tracking-[0.1em] font-semibold gap-1 text-theme-muted hover:text-theme-primary transition-colors p-2"><i class="fa-solid fa-map-pin text-base"></i><span class="hidden md:block">Venue</span></a></li>
-            @endif
-            <li>
-                <a href="javascript:void(0)" onclick="openRSVP()" class="nav-link flex flex-col items-center text-[9px] uppercase tracking-[0.1em] font-semibold gap-1 text-theme-primary p-2">
-                    <div class="w-10 h-10 -mt-6 bg-theme-secondary text-white rounded-full flex items-center justify-center shadow-lg border-[3px] border-[#F9F8F3]">
-                        <i class="fa-solid fa-envelope text-sm"></i>
-                    </div>
-                    <span class="hidden md:block">RSVP</span>
-                </a>
-            </li>
-        </ul>
-    </nav>
+        @if (session('success'))
+            <div id="success-toast" class="fixed top-10 left-1/2 -translate-x-1/2 z-[3000] px-8 py-4 bg-green-600 text-white rounded font-bold shadow-2xl text-sm transition-all duration-500 flex items-center gap-3 animate-slide-up">
+                <i class="fa-solid fa-check-circle"></i> {{ session('success') }}
+            </div>
+            <script>
+                setTimeout(() => {
+                    const toast = document.getElementById('success-toast');
+                    if(toast) {
+                        toast.style.opacity = '0';
+                        toast.style.transform = 'translate(-50%, -20px)';
+                        setTimeout(() => toast.remove(), 500);
+                    }
+                }, 4000);
+            </script>
+        @endif
 
     <script>
+        // 1. Inisialisasi Nama Tamu
         const urlParams = new URLSearchParams(window.location.search);
-        let guestName = urlParams.get('to');
-        if (guestName) {
-            guestName = decodeURIComponent(guestName);
-        } else {
-            guestName = 'Tamu Undangan';
-        }
-
-        const guestNameEl = document.getElementById('guest-name');
-        if (guestNameEl) guestNameEl.innerText = guestName;
-
+        let guestName = urlParams.get('to') ? decodeURIComponent(urlParams.get('to')) : 'Tamu Undangan';
+        document.querySelectorAll('#guest-name, #guest-name-qr').forEach(el => el.innerText = guestName);
+        
+        const qrImage = document.getElementById('qr-image');
+        if (qrImage) qrImage.src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&color=e50914&bgcolor=ffffff&data=${encodeURIComponent(guestName)}`;
+        
         const inputRSVP = document.getElementById('input-nama-rsvp');
-        if (inputRSVP) {
-            inputRSVP.value = guestName !== 'Tamu Undangan' ? guestName : '';
-        }
+        if (inputRSVP && guestName !== 'Tamu Undangan') inputRSVP.value = guestName;
 
+        // 2. Play Music & Buka Cover
         const audio = document.getElementById('bg-music');
         let isMusicPlaying = false;
         let isAutoScrolling = false;
         let scrollInterval;
+        let hasShownRSVPAtEnd = false;
 
         function openInvitation() {
-            const cover = document.getElementById('cover-page');
-            if (cover) {
-                cover.classList.add('-translate-y-full');
-                document.body.style.overflowY = 'auto';
-                document.getElementById('main-content').classList.remove('opacity-0');
-                document.getElementById('fab-container').classList.remove('opacity-0');
-                document.getElementById('bottom-nav').classList.remove('translate-y-32');
-
-                toggleMusic(true);
-                toggleAutoScroll(true);
-            }
+            document.getElementById('cover-page').classList.add('-translate-y-full');
+            document.body.classList.remove('cover-locked'); // LEPASKAN KUNCI SCROLL COVER
+            document.body.style.overflowY = 'auto';
+            document.getElementById('main-content').classList.remove('opacity-0');
+            document.getElementById('fab-container').classList.remove('opacity-0', 'pointer-events-none');
+            document.getElementById('bottom-nav').classList.remove('translate-y-32');
+            toggleMusic(true);
+            toggleAutoScroll(true);
         }
 
         function toggleMusic(forcePlay = false) {
@@ -882,16 +924,14 @@
             if (isMusicPlaying && !forcePlay) {
                 audio.pause();
                 isMusicPlaying = false;
-                icon.classList.remove('fa-music', 'animate-spin-slow');
-                icon.classList.add('fa-volume-xmark');
+                icon.classList.replace('fa-music', 'fa-volume-xmark');
+                icon.classList.remove('animate-pulse-slow');
             } else {
                 audio.play().then(() => {
                     isMusicPlaying = true;
-                    icon.classList.remove('fa-volume-xmark');
-                    icon.classList.add('fa-music', 'animate-spin-slow');
-                }).catch(() => {
-                    console.log("Autoplay dicegah browser.");
-                });
+                    icon.classList.replace('fa-volume-xmark', 'fa-music');
+                    icon.classList.add('animate-pulse-slow');
+                }).catch(() => console.log("Autoplay dicegah browser."));
             }
         }
 
@@ -901,16 +941,14 @@
             if (isAutoScrolling && !forceStart) {
                 clearInterval(scrollInterval);
                 isAutoScrolling = false;
-                btn.classList.remove('bg-theme-primary', 'text-white');
-                btn.classList.add('bg-white', 'text-theme-primary');
-                icon.classList.remove('fa-pause');
-                icon.classList.add('fa-angles-down');
+                btn.classList.replace('bg-white', 'bg-[#333]');
+                btn.classList.replace('text-black', 'text-white');
+                icon.classList.replace('fa-pause', 'fa-angles-down');
             } else {
                 isAutoScrolling = true;
-                btn.classList.remove('bg-white', 'text-theme-primary');
-                btn.classList.add('bg-theme-primary', 'text-white');
-                icon.classList.remove('fa-angles-down');
-                icon.classList.add('fa-pause');
+                btn.classList.replace('bg-[#333]', 'bg-white');
+                btn.classList.replace('text-white', 'text-black');
+                icon.classList.replace('fa-angles-down', 'fa-pause');
                 scrollInterval = setInterval(() => {
                     window.scrollBy({ top: 1, behavior: 'auto' });
                     if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) toggleAutoScroll();
@@ -921,211 +959,290 @@
         window.addEventListener('wheel', () => { if (isAutoScrolling) toggleAutoScroll(); }, { passive: true });
         window.addEventListener('touchmove', () => { if (isAutoScrolling) toggleAutoScroll(); }, { passive: true });
 
-        // COUNTDOWN
-        const targetDateStr = "{{ $countdownTarget }}";
-        if (targetDateStr.length > 10) {
-            const weddingDate = new Date(targetDateStr).getTime();
-            if (!isNaN(weddingDate)) {
-                const countdownFunction = setInterval(function() {
-                    const now = new Date().getTime();
-                    const distance = weddingDate - now;
-                    if (distance < 0) {
-                        clearInterval(countdownFunction);
-                        document.getElementById("days").innerText = "00";
-                        document.getElementById("hours").innerText = "00";
-                        document.getElementById("minutes").innerText = "00";
-                        return;
-                    }
-                    const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-                    const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                    const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-                    document.getElementById("days").innerText = days < 10 ? "0" + days : days;
-                    document.getElementById("hours").innerText = hours < 10 ? "0" + hours : hours;
-                    document.getElementById("minutes").innerText = minutes < 10 ? "0" + minutes : minutes;
-                }, 1000);
-            }
+        // 3. Countdown
+        const weddingDate = {{ $weddingTimestamp }};
+        if (weddingDate > 0) {
+            const countdownFunction = setInterval(function () {
+                const distance = weddingDate - new Date().getTime();
+                if (distance <= 0) { clearInterval(countdownFunction); return; }
+                document.getElementById("days").innerText = String(Math.floor(distance / (1000 * 60 * 60 * 24))).padStart(2, '0');
+                document.getElementById("hours").innerText = String(Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))).padStart(2, '0');
+                document.getElementById("minutes").innerText = String(Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60))).padStart(2, '0');
+            }, 1000);
         }
 
-        function toggleStories() {
-            const extraStories = document.querySelectorAll('.extra-story');
-            const btn = document.getElementById('btn-read-more');
-            let isHidden = false;
-            extraStories.forEach(story => {
-                if (story.classList.contains('hidden')) {
-                    story.classList.remove('hidden');
-                    story.classList.add('animate-fade-in-up');
-                    isHidden = true;
-                } else {
-                    story.classList.add('hidden');
-                    story.classList.remove('animate-fade-in-up');
-                }
-            });
-            btn.innerText = isHidden ? 'Sembunyikan' : 'Baca Selengkapnya';
-        }
-
-        // COPY TO CLIPBOARD
-        function copyToClipboard(elementId, btnElement) {
-            const textToCopy = document.getElementById(elementId).innerText;
-            navigator.clipboard.writeText(textToCopy).then(() => {
-                const toast = document.getElementById('copy-toast');
-                toast.classList.remove('opacity-0', 'translate-y-10');
-                toast.classList.add('opacity-100', 'translate-y-0');
-                
-                const originalText = btnElement.innerHTML;
-                btnElement.innerHTML = '<i class="fa-solid fa-check"></i> Tersalin';
-                btnElement.classList.add('bg-theme-primary', 'text-white');
-                
-                setTimeout(() => {
-                    toast.classList.remove('opacity-100', 'translate-y-0');
-                    toast.classList.add('opacity-0', 'translate-y-10');
-                    btnElement.innerHTML = originalText;
-                    btnElement.classList.remove('bg-theme-primary', 'text-white');
-                }, 2500);
-            });
-        }
-
-        // RSVP & UCAPAN
-        let countAttendance = {{ $invitation->rsvps->where('status_rsvp', 'hadir')->count() }};
-        let countWishes = {{ $invitation->rsvps->count() }};
-
-        const totalHadirEl = document.getElementById('total-attendance');
-        const totalUcapanEl = document.getElementById('total-wishes');
-        if (totalHadirEl) totalHadirEl.innerText = countAttendance;
-        if (totalUcapanEl) totalUcapanEl.innerText = countWishes;
-
-        function submitRSVP(event) {
-            event.preventDefault();
-            const status = document.getElementById('input-status').value;
-            const nama = document.getElementById('input-nama-rsvp').value;
-            const pesan = document.querySelector('textarea[name="message"]').value;
-            const guestCount = document.getElementById('input-guest-count').value;
-
-            if (!status || !nama || !pesan) return alert('Mohon lengkapi data Anda.');
-
-            const btn = document.getElementById('btnSubmitRsvp');
-            btn.innerHTML = 'MENGIRIM...';
-            btn.disabled = true;
-
-            const formData = {
-                guest_name: nama,
-                status_rsvp: status === 'Hadir' ? 'hadir' : (status === 'Tidak Hadir' ? 'tidak_hadir' : 'ragu'),
-                pax: guestCount,
-                message: pesan,
-                _token: document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-            };
-
-            fetch("{{ route('rsvp.store', $invitation->slug) }}", {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-                body: JSON.stringify(formData)
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    countWishes++;
-                    if (status === "Hadir") countAttendance++;
-                    if (totalHadirEl) totalHadirEl.innerText = countAttendance;
-                    if (totalUcapanEl) totalUcapanEl.innerText = countWishes;
-                    alert('Terima kasih, RSVP Anda telah tersimpan!');
-                    closeRSVP();
-                    addNewWishCard(nama, pesan, 'Baru saja');
-                } else {
-                    alert('Gagal mengirim RSVP.');
-                }
-            })
-            .catch(() => { alert('Terjadi kesalahan server.'); })
-            .finally(() => {
-                btn.innerHTML = 'Kirim Konfirmasi';
-                btn.disabled = false;
-                document.getElementById('rsvpForm').reset();
-            });
-        }
-
-        function addNewWishCard(nama, pesan, waktu) {
-            const container = document.getElementById('wishes-container');
-            if (!container) return;
-            const card = document.createElement('div');
-            card.className = 'bg-theme-bg p-5 rounded-2xl border border-theme-primary/10 animate-fade-in-up';
-            card.innerHTML = `<div class="flex justify-between items-start mb-2"><div class="flex items-center gap-3"><div class="w-8 h-8 rounded-full bg-white flex items-center justify-center border border-theme-primary/20"><i class="fa-solid fa-user text-[10px] text-theme-primary"></i></div><h5 class="text-sm font-semibold text-theme-text">${nama}</h5></div><span class="text-[9px] text-theme-muted font-medium">${waktu}</span></div><p class="text-sm text-theme-text/80 leading-relaxed font-light mt-3 pl-11">${pesan}</p>`;
-            container.prepend(card);
-        }
-
-        const allWishes = [
-            @foreach ($invitation->rsvps()->latest()->get() as $wish)
-                { nama: "{{ addslashes($wish->guest_name) }}", pesan: "{{ addslashes(trim(preg_replace('/\s\s+/', ' ', $wish->message))) }}", waktu: "{{ $wish->created_at->diffForHumans() }}" },
+        // 4. Data Wishes API (Wishes Wall & Stats)
+        let allWishes = [
+            @foreach ($dbWishes as $wish)
+                { nama: "{{ addslashes($wish->guest_name) }}", pesan: "{{ preg_replace("/\r|\n/", ' ', addslashes($wish->message)) }}", waktu: "{{ \Carbon\Carbon::parse($wish->created_at)->diffForHumans() }}" },
             @endforeach
         ];
-
-        let displayedCount = 0;
+        let countAttendance = {{ $totalAttendance }};
+        let countWishes = {{ $totalWishes }};
 
         function renderWishes() {
             const container = document.getElementById('wishes-container');
-            const btnLoadMore = document.getElementById('btn-load-more');
             if (!container) return;
-            if (displayedCount === 0) container.innerHTML = '';
-            let nextLimit = displayedCount + 4;
-            const wishesToDisplay = allWishes.slice(displayedCount, nextLimit);
-            wishesToDisplay.forEach(wish => { addNewWishCard(wish.nama, wish.pesan, wish.waktu); });
-            displayedCount = Math.min(nextLimit, allWishes.length);
-            if (displayedCount >= allWishes.length && btnLoadMore) btnLoadMore.style.display = 'none';
-        }
+            container.innerHTML = ''; 
 
-        function selectAttendance(status) {
-            const btnHadir = document.getElementById('btn-hadir');
-            const btnAbsen = document.getElementById('btn-absen');
-            const guestDiv = document.getElementById('guest-selection');
-            document.getElementById('input-status').value = status;
-            
-            [btnHadir, btnAbsen].forEach(btn => {
-                btn.classList.remove('bg-theme-primary', 'text-white', 'border-theme-primary');
-                btn.classList.add('bg-theme-bg', 'text-theme-muted', 'border-theme-primary/20');
-            });
-
-            if (status === 'Hadir') {
-                btnHadir.classList.replace('bg-theme-bg', 'bg-theme-primary');
-                btnHadir.classList.replace('text-theme-muted', 'text-white');
-                guestDiv.classList.remove('hidden');
-            } else {
-                btnAbsen.classList.replace('bg-theme-bg', 'bg-theme-primary');
-                btnAbsen.classList.replace('text-theme-muted', 'text-white');
-                guestDiv.classList.add('hidden');
+            if (allWishes.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-10 opacity-50 flex flex-col items-center">
+                        <i class="fa-solid fa-comment-slash text-4xl text-netflix-gray mb-4"></i>
+                        <p class="text-sm font-bold text-white uppercase tracking-widest">Belum Ada Ucapan</p>
+                        <p class="text-[10px] text-netflix-gray mt-2">Jadilah yang pertama memberikan doa restu.</p>
+                    </div>`;
+                return;
             }
-        }
 
-        function selectGuestCount(count, btnElement) {
-            document.getElementById('input-guest-count').value = count;
-            document.querySelectorAll('.guest-btn').forEach(btn => {
-                btn.classList.remove('bg-theme-primary', 'text-white', 'border-theme-primary');
-                btn.classList.add('bg-white', 'text-theme-text');
+            allWishes.forEach(wish => {
+                const card = document.createElement('div');
+                card.className = 'flex flex-col md:flex-row gap-4 p-4 rounded-lg bg-netflix-gray/5 border border-transparent hover:bg-netflix-gray/10 hover:border-white/10 transition-all';
+                card.innerHTML = `
+                    <div class="w-12 h-12 bg-red-600/20 rounded shrink-0 flex items-center justify-center border border-red-600/30">
+                        <i class="fa-solid fa-user text-red-600"></i>
+                    </div>
+                    <div class="flex-1">
+                        <div class="flex justify-between items-start mb-1">
+                            <h5 class="font-bold text-white text-sm">${wish.nama}</h5>
+                            <span class="text-[9px] text-netflix-gray font-bold uppercase tracking-widest">${wish.waktu}</span>
+                        </div>
+                        <p class="text-xs text-netflix-gray font-light leading-relaxed">"${wish.pesan}"</p>
+                    </div>
+                `;
+                container.appendChild(card);
             });
-            btnElement.classList.remove('bg-white', 'text-theme-text');
-            btnElement.classList.add('bg-theme-primary', 'text-white', 'border-theme-primary');
+        }
+        document.addEventListener('DOMContentLoaded', renderWishes);
+
+        async function sendRsvpData(data) {
+            const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+            try {
+                const response = await fetch("{{ route('rsvp.store', $invitation->slug) }}", {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken, 'Accept': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                if (response.ok) {
+                    allWishes.unshift({ nama: data.guest_name, pesan: data.message, waktu: "Baru saja" });
+                    countWishes++;
+                    if(data.status_rsvp === 'hadir') countAttendance += parseInt(data.pax);
+                    
+                    const elAtt = document.getElementById('total-attendance');
+                    const elWish = document.getElementById('total-wishes');
+                    if(elAtt) { elAtt.innerText = countAttendance; elAtt.classList.add('text-red-600'); setTimeout(()=>elAtt.classList.remove('text-red-600'), 500); }
+                    if(elWish) { elWish.innerText = countWishes; elWish.classList.add('text-red-600'); setTimeout(()=>elWish.classList.remove('text-red-600'), 500); }
+                    
+                    renderWishes();
+                    showCopyToast("RSVP Berhasil Dikirim!");
+                }
+            } catch (error) { console.error(error); }
         }
 
+        // 5. Logika RSVP Form
         function openRSVP() {
             const modal = document.getElementById('rsvp-modal');
-            if (modal) {
-                modal.classList.remove('invisible');
-                document.getElementById('rsvp-overlay').classList.replace('opacity-0', 'opacity-100');
-                document.getElementById('rsvp-content').classList.replace('translate-y-full', 'translate-y-0');
-            }
+            const overlay = document.getElementById('rsvp-overlay');
+            const content = document.getElementById('rsvp-content');
+            modal.classList.remove('invisible');
+            document.body.style.overflow = 'hidden';
+            setTimeout(() => {
+                overlay.classList.replace('opacity-0', 'opacity-100');
+                content.classList.replace('translate-y-full', 'translate-y-0');
+            }, 10);
         }
 
         function closeRSVP() {
-            document.getElementById('rsvp-overlay').classList.replace('opacity-100', 'opacity-0');
-            document.getElementById('rsvp-content').classList.replace('translate-y-0', 'translate-y-full');
-            setTimeout(() => document.getElementById('rsvp-modal').classList.add('invisible'), 500);
+            const overlay = document.getElementById('rsvp-overlay');
+            const content = document.getElementById('rsvp-content');
+            const modal = document.getElementById('rsvp-modal');
+            overlay.classList.replace('opacity-100', 'opacity-0');
+            content.classList.replace('translate-y-0', 'translate-y-full');
+            document.body.style.overflow = 'auto';
+            setTimeout(() => modal.classList.add('invisible'), 500);
         }
 
-        document.addEventListener('DOMContentLoaded', () => { renderWishes(); });
-        function loadMoreWishes() { renderWishes(); }
+        function selectAttendance(status) {
+            document.getElementById('input-status').value = status;
+            const btnHadir = document.getElementById('btn-hadir');
+            const btnAbsen = document.getElementById('btn-absen');
+            const guestDiv = document.getElementById('guest-selection');
 
-        // LIGHTBOX
-        const images = Array.from(document.querySelectorAll('.gallery-img')).map(img => img.src);
+            [btnHadir, btnAbsen].forEach(b => b.className = 'py-3.5 rounded border border-white/20 text-xs font-bold uppercase tracking-widest transition-all bg-transparent text-white hover:border-white/50 active:scale-95');
+
+            if (status === 'Hadir') {
+                btnHadir.className = 'py-3.5 rounded border border-red-600 text-xs font-bold uppercase tracking-widest transition-all bg-red-600 text-white shadow-lg shadow-red-600/20 active:scale-95';
+                guestDiv.classList.remove('hidden');
+                document.getElementById('input-guest-count').value = 1;
+                setGuestCount(1);
+            } else {
+                btnAbsen.className = 'py-3.5 rounded border border-red-600 text-xs font-bold uppercase tracking-widest transition-all bg-red-600 text-white shadow-lg shadow-red-600/20 active:scale-95';
+                guestDiv.classList.add('hidden');
+                document.getElementById('input-guest-count').value = 0;
+            }
+        }
+
+        function setGuestCount(count) {
+            const customContainer = document.getElementById('custom-pax-container');
+            const customInput = document.getElementById('custom-pax-input');
+            const hiddenInputCount = document.getElementById('input-guest-count');
+
+            if (count === 'custom') {
+                customContainer.classList.remove('hidden');
+                hiddenInputCount.value = customInput.value || 4; 
+                customInput.focus();
+            } else {
+                customContainer.classList.add('hidden');
+                hiddenInputCount.value = count;
+            }
+
+            document.querySelectorAll('.guest-btn').forEach(btn => {
+                if (btn.innerText == count || (count === 'custom' && btn.innerText === '3+')) {
+                    btn.classList.replace('bg-[#333]', 'bg-red-600');
+                } else {
+                    btn.classList.replace('bg-red-600', 'bg-[#333]');
+                }
+            });
+        }
+
+        document.getElementById('form-rsvp').onsubmit = function(e) {
+            e.preventDefault();
+            const statusHadir = document.getElementById('input-status').value === 'Hadir' ? 'hadir' : 'tidak_hadir';
+            
+            let paxVal = 0;
+            if (statusHadir === 'hadir') {
+                const customContainer = document.getElementById('custom-pax-container');
+                if (!customContainer.classList.contains('hidden')) {
+                    const customInputVal = document.getElementById('custom-pax-input').value;
+                    paxVal = parseInt(customInputVal) > 0 ? parseInt(customInputVal) : 4;
+                } else {
+                    paxVal = parseInt(document.getElementById('input-guest-count').value);
+                }
+            }
+
+            const data = {
+                guest_name: document.getElementById('input-nama-rsvp').value || 'Hamba Allah',
+                status_rsvp: statusHadir,
+                pax: paxVal,
+                message: document.getElementById('input-pesan-rsvp').value || 'Selamat Berbahagia!'
+            };
+            sendRsvpData(data);
+            closeRSVP();
+        };
+
+        // Scroll to RSVP Auto Popup
+        window.addEventListener('scroll', () => {
+            // 🔥 PROTEKSI: Jangan jalan jika halaman cover masih ada (dilock)
+            if(document.body.classList.contains('cover-locked')) return;
+
+            if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 50) {
+                if (!hasShownRSVPAtEnd) {
+                    openRSVP();
+                    hasShownRSVPAtEnd = true;
+                    if (isAutoScrolling) toggleAutoScroll();
+                }
+            }
+        }, { passive: true });
+
+        // 6. Logic Kirim Kado
+        let currentGiftId = null;
+        let currentGiftName = '';
+
+        function toggleGiftModal(show) {
+            const modal = document.getElementById('gift-modal');
+            if (show) { modal.classList.remove('hidden'); document.body.style.overflow = 'hidden'; } 
+            else { modal.classList.add('hidden'); document.body.style.overflow = 'auto'; }
+        }
+
+        function confirmGift(id, name) {
+            currentGiftId = id;
+            currentGiftName = name;
+            document.getElementById('confirm-text').innerHTML = `Silakan isi data diri untuk konfirmasi kado <b>${name}</b>`;
+            
+            const inputNameEl = document.getElementById('input-gift-name');
+            if (inputNameEl && guestName !== 'Tamu Undangan') inputNameEl.value = guestName;
+            const inputPaxEl = document.getElementById('input-gift-pax');
+            if (inputPaxEl) inputPaxEl.value = 0;
+
+            document.getElementById('confirm-modal').classList.remove('hidden');
+
+            document.getElementById('final-confirm-btn').onclick = function() {
+                let finalName = inputNameEl ? inputNameEl.value.trim() : '';
+                if (!finalName) finalName = guestName !== 'Tamu Undangan' ? guestName : 'Hamba Allah';
+                let finalPax = inputPaxEl ? parseInt(inputPaxEl.value) : 0;
+                if (isNaN(finalPax) || finalPax < 0) finalPax = 0;
+
+                processClaimGift(finalName, name, finalPax);
+            };
+        }
+
+        function closeConfirmModal() { document.getElementById('confirm-modal').classList.add('hidden'); }
+
+        function processClaimGift(senderName, giftName, giftPax) {
+            closeConfirmModal();
+            const btn = document.getElementById(currentGiftId).querySelector('button');
+            if(btn) { btn.outerHTML = `<div class="text-[9px] text-green-500 uppercase tracking-widest font-bold flex items-center gap-2"><i class="fa-solid fa-check-circle"></i> Terpilih</div>`; }
+
+            sendRsvpData({
+                guest_name: senderName,
+                status_rsvp: giftPax > 0 ? 'hadir' : 'tidak_hadir',
+                pax: giftPax,
+                message: `Telah memberikan tanda kasih berupa: ${giftName} 🎁`
+            });
+
+            const toast = document.getElementById('gift-toast');
+            if(toast) {
+                toast.innerHTML = `Terima kasih ${senderName}! Kado tercatat.`;
+                toast.classList.replace('opacity-0', 'opacity-100');
+                setTimeout(() => { 
+                    toast.classList.replace('opacity-100', 'opacity-0');
+                    setTimeout(()=> toggleGiftModal(false), 500); 
+                }, 3000);
+            }
+        }
+
+        // 7. Utilitas Copy Text
+        function showCopyToast(msg = "Tersalin ke Clipboard") {
+            const toast = document.getElementById('copy-toast');
+            if(toast) {
+                toast.innerHTML = `<i class="fa-solid fa-check-circle"></i> ${msg}`;
+                toast.classList.remove('opacity-0', 'translate-y-10');
+                toast.classList.add('opacity-100', 'translate-y-0');
+                setTimeout(() => {
+                    toast.classList.add('opacity-0', 'translate-y-10');
+                    toast.classList.remove('opacity-100', 'translate-y-0');
+                }, 2500);
+            }
+        }
+
+        function copyToClipboardText(elementOrText, btn) {
+            let textToCopy = elementOrText;
+            const el = document.getElementById(elementOrText);
+            if (el) textToCopy = el.innerText.trim();
+
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                const originalHTML = btn.innerHTML;
+                btn.innerHTML = '<i class="fa-solid fa-check mr-2"></i> Tersalin';
+                btn.classList.add('bg-white', 'text-black');
+                showCopyToast();
+                setTimeout(() => {
+                    btn.innerHTML = originalHTML;
+                    btn.classList.remove('bg-white', 'text-black');
+                }, 2000);
+            });
+        }
+        function copyToClipboard(id, btn) { copyToClipboardText(id, btn); }
+
+        // 8. Lightbox Gallery
+        const images = [
+            @if (isset($invitation->galleries))
+                @foreach ($invitation->galleries as $gallery)
+                    "{{ asset('storage/' . $gallery->file_path) }}",
+                @endforeach
+            @endif
+        ];
         let currentIndex = 0;
-
         function openLightbox(index) {
-            if (images.length === 0) return;
             currentIndex = index;
             updateLightbox();
             const modal = document.getElementById('lightbox');
@@ -1133,47 +1250,44 @@
             modal.classList.add('flex');
             document.body.style.overflow = 'hidden';
         }
-
         function closeLightbox() {
             const modal = document.getElementById('lightbox');
             modal.classList.add('hidden');
             modal.classList.remove('flex');
             document.body.style.overflow = 'auto';
         }
-
         function updateLightbox() {
             const imgElement = document.getElementById('lightbox-img');
+            if(document.getElementById('current-count')) document.getElementById('current-count').innerText = currentIndex + 1;
+            if(document.getElementById('total-count')) document.getElementById('total-count').innerText = images.length;
             imgElement.style.opacity = '0';
             setTimeout(() => {
                 imgElement.src = images[currentIndex];
                 imgElement.style.opacity = '1';
-                document.getElementById('current-count').innerText = currentIndex + 1;
-                document.getElementById('total-count').innerText = images.length;
             }, 200);
         }
+        function nextImg() { if(images.length > 0) { currentIndex = (currentIndex + 1) % images.length; updateLightbox(); } }
+        function prevImg() { if(images.length > 0) { currentIndex = (currentIndex - 1 + images.length) % images.length; updateLightbox(); } }
+        document.addEventListener('keydown', (e) => {
+            if (document.getElementById('lightbox').classList.contains('hidden')) return;
+            if (e.key === "ArrowRight") nextImg();
+            if (e.key === "ArrowLeft") prevImg();
+            if (e.key === "Escape") closeLightbox();
+        });
 
-        function prevImg() {
-            currentIndex = (currentIndex > 0) ? currentIndex - 1 : images.length - 1;
-            updateLightbox();
+        // 9. Live Streaming Platform Switch
+        function switchPlatform(title, desc, iconClass, link) {
+            const display = document.getElementById('streaming-display');
+            display.style.opacity = '0';
+            display.style.transform = 'scale(0.98) translateY(10px)';
+            setTimeout(() => {
+                document.getElementById('platform-title').innerText = title;
+                document.getElementById('platform-icon').className = iconClass + ' text-6xl md:text-8xl text-white drop-shadow-[0_0_20px_rgba(255,255,255,0.3)]';
+                document.getElementById('platform-link').href = link;
+                display.style.opacity = '1';
+                display.style.transform = 'scale(1) translateY(0)';
+            }, 400);
         }
-
-        function nextImg() {
-            currentIndex = (currentIndex < images.length - 1) ? currentIndex + 1 : 0;
-            updateLightbox();
-        }
-
-        let hasShownRSVPAtEnd = false;
-        window.addEventListener('scroll', () => {
-            const scrollPosition = window.innerHeight + window.scrollY;
-            const threshold = document.body.offsetHeight - 150;
-            if (scrollPosition >= threshold) {
-                if (!hasShownRSVPAtEnd) {
-                    openRSVP();
-                    hasShownRSVPAtEnd = true;
-                    if (typeof isAutoScrolling !== 'undefined' && isAutoScrolling) toggleAutoScroll();
-                }
-            }
-        }, { passive: true });
     </script>
 </body>
 </html>
