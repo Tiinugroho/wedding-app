@@ -1,0 +1,933 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ruangrestu.com - IKEA Style Wedding</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Oswald:wght@900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        bg: '#f5f5f5', 
+                        surface: '#ffffff',
+                        primary: '#0058a3', // IKEA Blue
+                        secondary: '#ffdb00', // IKEA Yellow
+                        dark: '#111111', 
+                        muted: '#999999',
+                        borderLight: '#dfdfdf'
+                    },
+                    fontFamily: {
+                        sans: ['"Noto Sans"', 'sans-serif'],
+                        display: ['"Oswald"', 'sans-serif'],
+                    },
+                    animation: {
+                        'pulse-fast': 'pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        html, body { 
+            max-width: 100vw; 
+            overflow-x: hidden; 
+            background-color: #f5f5f5; 
+            color: #111111;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Scrollbar IKEA */
+        ::-webkit-scrollbar { width: 8px; background: #f5f5f5; }
+        ::-webkit-scrollbar-thumb { background: #0058a3; border-radius: 0; }
+
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #f5f5f5; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #ffdb00; }
+
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        /* IKEA UI Elements */
+        .ikea-card {
+            background: #ffffff;
+            border: 1px solid #dfdfdf;
+            transition: all 0.3s ease;
+        }
+        .ikea-card:hover {
+            border-color: #0058a3;
+            box-shadow: 0 8px 24px rgba(0,88,163,0.1);
+        }
+
+        .price-tag {
+            background-color: #ffdb00;
+            color: #111111;
+            font-family: 'Oswald', sans-serif;
+            padding: 4px 12px;
+            display: inline-block;
+            box-shadow: 3px 3px 0px #0058a3;
+        }
+
+        .ikea-btn {
+            background-color: #0058a3;
+            color: #ffffff;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            transition: all 0.2s;
+            border-radius: 4px;
+        }
+        .ikea-btn:hover { background-color: #111111; }
+        .ikea-btn-yellow {
+            background-color: #ffdb00;
+            color: #111111;
+            font-weight: 700;
+            text-transform: uppercase;
+            transition: all 0.2s;
+            border-radius: 4px;
+        }
+        .ikea-btn-yellow:hover { background-color: #e5c500; }
+
+        /* Masonry Grid */
+        .masonry { column-count: 2; column-gap: 1rem; }
+        @media (min-width: 768px) { .masonry { column-count: 3; } }
+        .masonry-item { break-inside: avoid; margin-bottom: 1rem; }
+
+        .reveal { opacity: 0; transform: translateY(30px); transition: all 0.8s ease-out; }
+        .reveal.active { opacity: 1; transform: translateY(0); }
+    </style>
+</head>
+
+<body class="font-sans selection:bg-secondary selection:text-dark">
+
+    <audio id="bg-music" loop>
+        <source src="https://cdn.pixabay.com/audio/2022/01/18/audio_d0a13f69d2.mp3" type="audio/mpeg">
+    </audio>
+
+    <div id="music-tooltip" class="fixed right-20 md:right-24 bottom-28 z-[60] bg-primary text-white border-2 border-secondary p-3 px-5 shadow-[4px_4px_0px_#ffdb00] opacity-0 transition-all duration-500 pointer-events-none transform translate-x-4 flex items-center gap-3">
+        <div class="w-8 h-8 bg-secondary rounded-full flex items-center justify-center text-primary">
+            <i class="fa-solid fa-play text-xs"></i>
+        </div>
+        <div>
+            <p class="text-[9px] font-bold uppercase tracking-widest text-secondary leading-none">Soundtrack</p>
+            <p class="font-bold text-xs mt-1">Beautiful in White</p>
+        </div>
+    </div>
+
+    <div id="cover-page" class="fixed inset-0 z-[100] flex flex-col md:flex-row bg-white transition-transform duration-700 ease-in-out overflow-hidden">
+        
+        <div class="w-full md:w-2/3 h-1/2 md:h-full relative bg-bg">
+            <img src="https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=2000&q=80" class="w-full h-full object-cover">
+            <div class="absolute top-6 left-6 price-tag text-2xl">NEW COLLECTION</div>
+        </div>
+
+        <div class="w-full md:w-1/3 h-1/2 md:h-full bg-white p-8 md:p-12 flex flex-col justify-center relative z-10">
+            <div class="bg-primary w-20 h-10 flex items-center justify-center mb-8">
+                <span class="text-secondary font-display text-2xl tracking-tighter">LOVE</span>
+            </div>
+
+            <h1 class="text-5xl md:text-7xl font-display text-primary uppercase mb-2 leading-none">Romeo <br>& Juliet</h1>
+            <p class="font-bold text-xs uppercase tracking-widest text-muted mb-10">The Wedding Catalog 2026</p>
+            
+            <div class="border-t-2 border-primary pt-6 mb-10">
+                <p class="text-[10px] text-muted uppercase font-bold tracking-widest mb-1">Designed For:</p>
+                <p id="guest-name" class="text-2xl font-bold text-dark uppercase">Tamu Undangan</p>
+            </div>
+
+            <button onclick="openInvitation()" class="ikea-btn-yellow w-full py-4 text-sm flex items-center justify-center gap-3 shadow-[4px_4px_0px_#0058a3]">
+                Buka Katalog <i class="fa-solid fa-arrow-right"></i>
+            </button>
+        </div>
+    </div>
+
+    <main id="main-content" class="min-h-screen opacity-0 transition-opacity duration-1000 pb-20 relative w-full overflow-hidden">
+
+        <nav class="fixed top-0 w-full z-50 bg-primary border-b-4 border-secondary p-4 md:px-8 flex justify-between items-center transition-all duration-300" id="main-nav">
+            <div class="flex items-center gap-3">
+                <div class="bg-secondary px-3 py-1 font-display text-primary text-xl">LOVE</div>
+                <h1 class="font-bold text-white text-xs tracking-widest uppercase hidden md:block">Wedding Catalog</h1>
+            </div>
+            <div class="flex items-center gap-4 text-secondary">
+                <i class="fa-solid fa-heart animate-pulse-fast text-xl"></i>
+            </div>
+        </nav>
+
+        <section id="home" class="min-h-screen pt-32 px-6 md:px-20 bg-white grid grid-cols-1 lg:grid-cols-2 gap-12 items-center border-b border-borderLight w-full">
+            <div class="order-2 lg:order-1 reveal">
+                <div class="price-tag text-2xl mb-6">18.07.2026</div>
+                <h2 class="text-6xl md:text-8xl font-display text-primary mb-6 leading-none uppercase">Perfectly <br>Together.</h2>
+                <p class="text-lg font-medium text-gray-600 mb-10 max-w-md">Koleksi momen terbaik untuk memulai hidup baru. Bergabunglah merayakan hari bahagia kami.</p>
+                
+                <div class="flex flex-wrap gap-4">
+                    <button onclick="openRSVP()" class="ikea-btn px-10 py-4 text-sm shadow-[4px_4px_0px_#ffdb00]">
+                        RSVP Sekarang
+                    </button>
+                    <div class="bg-bg border border-borderLight px-6 py-4 font-bold text-xs uppercase flex items-center gap-2">
+                        <i class="fa-solid fa-location-dot text-primary"></i> Bandung
+                    </div>
+                </div>
+            </div>
+            
+            <div class="order-1 lg:order-2 reveal relative">
+                <div class="w-full aspect-[4/5] bg-bg border border-borderLight p-4 relative">
+                    <div class="absolute top-2 left-2 text-[10px] font-bold text-muted uppercase">Art. 001/HOME</div>
+                    <img src="https://images.unsplash.com/photo-1522673607200-164d1b6ce486?auto=format&fit=crop&w=800&q=80" class="w-full h-full object-cover">
+                </div>
+            </div>
+        </section>
+
+        <section id="cast" class="py-24 px-6 md:px-20 bg-bg w-full">
+            <div class="max-w-6xl mx-auto relative z-10">
+                <div class="mb-16 reveal flex flex-col md:flex-row justify-between items-end border-b-4 border-primary pb-4">
+                    <h3 class="text-4xl md:text-5xl font-display text-primary uppercase">The Mempelai</h3>
+                    <p class="font-bold text-xs uppercase tracking-widest text-muted hidden md:block">Product Details</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-10 lg:gap-16">
+                    <div class="ikea-card p-6 md:p-8 flex flex-col group reveal">
+                        <div class="w-full aspect-square bg-bg mb-6 relative overflow-hidden">
+                            <span class="absolute top-3 right-3 bg-white px-2 py-1 text-[10px] font-bold border border-borderLight z-10">GROOM</span>
+                            <img src="https://images.soco.id/230-58.jpg.jpeg" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Groom">
+                        </div>
+                        <div class="flex-1">
+                            <p class="text-[10px] font-bold text-muted uppercase tracking-widest mb-1">002.RMO.26</p>
+                            <h4 class="text-3xl font-display text-dark uppercase mb-2">Romeo Montague</h4>
+                            <p class="text-sm text-gray-600 font-medium">Putra pertama dari Bapak Montague & Ibu Montague</p>
+                        </div>
+                    </div>
+
+                    <div class="ikea-card p-6 md:p-8 flex flex-col group reveal">
+                        <div class="w-full aspect-square bg-bg mb-6 relative overflow-hidden">
+                            <span class="absolute top-3 right-3 bg-white px-2 py-1 text-[10px] font-bold border border-borderLight z-10">BRIDE</span>
+                            <img src="https://images.pexels.com/photos/157757/wedding-dresses-fashion-character-bride-157757.jpeg" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Bride">
+                        </div>
+                        <div class="flex-1">
+                            <p class="text-[10px] font-bold text-muted uppercase tracking-widest mb-1">003.JLT.26</p>
+                            <h4 class="text-3xl font-display text-dark uppercase mb-2">Juliet Capulet</h4>
+                            <p class="text-sm text-gray-600 font-medium">Putri pertama dari Bapak Capulet & Ibu Capulet</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="cerita" class="py-24 px-6 bg-white border-y border-borderLight w-full">
+            <div class="max-w-4xl mx-auto">
+                <div class="text-center mb-16 reveal">
+                    <span class="price-tag text-sm mb-4">ASSEMBLY GUIDE</span>
+                    <h3 class="text-4xl md:text-5xl font-display text-primary uppercase">Kisah Perjalanan</h3>
+                </div>
+
+                <div class="space-y-12 relative before:absolute before:inset-0 before:left-8 md:before:left-1/2 before:-translate-x-px before:h-full before:w-1 before:bg-borderLight">
+                    
+                    <div class="relative flex flex-col md:flex-row gap-6 items-center reveal">
+                        <div class="absolute left-8 md:left-1/2 w-8 h-8 bg-secondary border-4 border-white rounded-full transform -translate-x-1/2 flex items-center justify-center font-black text-xs">1</div>
+                        <div class="w-full md:w-1/2 md:pr-12 md:text-right pl-20 md:pl-0">
+                            <span class="text-[10px] font-bold tracking-widest uppercase text-muted block mb-1">Des 2022</span>
+                            <h5 class="text-2xl font-display text-primary uppercase mb-2">Pertemuan</h5>
+                            <p class="text-sm text-gray-600 font-medium bg-bg p-4 border border-borderLight md:bg-transparent md:border-0 md:p-0">Di sebuah perpustakaan kota, obrolan ringan tentang buku berubah menjadi awal kisah panjang.</p>
+                        </div>
+                        <div class="w-full md:w-1/2 pl-20 md:pl-12 hidden md:block">
+                            <img src="https://images.unsplash.com/photo-1519741497674-611481863552?w=500" class="w-full h-40 object-cover border border-borderLight p-2 bg-white">
+                        </div>
+                    </div>
+
+                    <div class="relative flex flex-col md:flex-row gap-6 items-center reveal">
+                        <div class="absolute left-8 md:left-1/2 w-8 h-8 bg-secondary border-4 border-white rounded-full transform -translate-x-1/2 flex items-center justify-center font-black text-xs">2</div>
+                        <div class="w-full md:w-1/2 md:text-right md:pr-12 hidden md:block">
+                            <img src="https://images.unsplash.com/photo-1510154221590-ff63e90a136f?w=500" class="w-full h-40 object-cover border border-borderLight p-2 bg-white">
+                        </div>
+                        <div class="w-full md:w-1/2 md:pl-12 pl-20">
+                            <span class="text-[10px] font-bold tracking-widest uppercase text-muted block mb-1">Mar 2024</span>
+                            <h5 class="text-2xl font-display text-primary uppercase mb-2">Komitmen</h5>
+                            <p class="text-sm text-gray-600 font-medium bg-bg p-4 border border-borderLight md:bg-transparent md:border-0 md:p-0">Melewati rintangan bersama, kami memutuskan untuk melanjutkan cerita ini berdua.</p>
+                        </div>
+                    </div>
+
+                    <div class="relative flex flex-col md:flex-row gap-6 items-center reveal">
+                        <div class="absolute left-8 md:left-1/2 w-8 h-8 bg-secondary border-4 border-white rounded-full transform -translate-x-1/2 flex items-center justify-center font-black text-xs">3</div>
+                        <div class="w-full md:w-1/2 md:pr-12 md:text-right pl-20 md:pl-0">
+                            <span class="text-[10px] font-bold tracking-widest uppercase text-muted block mb-1">Jan 2026</span>
+                            <h5 class="text-2xl font-display text-primary uppercase mb-2">Satu Langkah</h5>
+                            <p class="text-sm text-gray-600 font-medium bg-bg p-4 border border-borderLight md:bg-transparent md:border-0 md:p-0">Di hadapan keluarga besar, janji diucapkan untuk melangkah ke babak akhir masa lajang.</p>
+                        </div>
+                        <div class="w-full md:w-1/2 pl-20 md:pl-12 hidden md:block">
+                            <img src="https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?w=500" class="w-full h-40 object-cover border border-borderLight p-2 bg-white">
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <section id="gallery" class="py-24 bg-bg w-full border-b border-borderLight">
+            <div class="px-6 md:px-20 max-w-6xl mx-auto">
+                <div class="flex flex-col md:flex-row justify-between items-end mb-12 gap-6 reveal border-b-4 border-primary pb-4">
+                    <h3 class="text-4xl md:text-5xl font-display text-primary uppercase leading-none">Inspiration <br>Gallery</h3>
+                    <p class="text-xs font-bold text-muted uppercase tracking-widest">Koleksi Momen Bahagia</p>
+                </div>
+
+                <div class="mb-12 reveal">
+                    <div class="w-full aspect-video bg-white border border-borderLight p-2 shadow-md">
+                        <iframe class="w-full h-full" src="https://www.youtube.com/embed/k1gj5wCLAhc?autoplay=0&mute=1&controls=1&rel=0" frameborder="0" allowfullscreen></iframe>
+                    </div>
+                </div>
+
+                <div class="masonry reveal">
+                    <div class="masonry-item ikea-card p-2 cursor-pointer relative group" onclick="openLightbox(0)">
+                        <span class="absolute top-4 right-4 bg-secondary text-dark px-2 py-1 text-[8px] font-black uppercase z-10 shadow-sm opacity-0 group-hover:opacity-100 transition-opacity">View</span>
+                        <img src="https://images.unsplash.com/photo-1522673607200-164d1b6ce486?w=600" class="gallery-img w-full h-auto object-cover">
+                    </div>
+                    <div class="masonry-item ikea-card p-2 cursor-pointer relative group" onclick="openLightbox(1)">
+                        <img src="https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?w=600" class="gallery-img w-full h-auto object-cover">
+                    </div>
+                    <div class="masonry-item ikea-card p-2 cursor-pointer relative group" onclick="openLightbox(2)">
+                        <img src="https://images.unsplash.com/photo-1606800052052-a08af7148866?w=600" class="gallery-img w-full h-auto object-cover">
+                    </div>
+                    <div class="masonry-item ikea-card p-2 cursor-pointer relative group" onclick="openLightbox(3)">
+                        <img src="https://images.unsplash.com/photo-1591604466107-ec97de577aff?w=600" class="gallery-img w-full h-auto object-cover">
+                    </div>
+                    <div class="masonry-item ikea-card p-2 cursor-pointer relative group" onclick="openLightbox(4)">
+                        <img src="https://images.unsplash.com/photo-1537274942065-eda9d00a6293?w=600" class="gallery-img w-full h-auto object-cover">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="lokasi" class="py-24 px-6 bg-white w-full">
+            <div class="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12">
+                <div class="reveal">
+                    <h3 class="text-5xl font-display uppercase text-primary mb-2">Store Locations</h3>
+                    <p class="font-bold text-muted text-xs uppercase tracking-widest mb-10">Tempat Pelaksanaan Acara</p>
+                    
+                    <div class="space-y-6">
+                        <div class="ikea-card p-8 flex flex-col sm:flex-row gap-6 items-start">
+                            <div class="bg-bg w-16 h-16 flex items-center justify-center border border-borderLight shrink-0">
+                                <i class="fa-solid fa-ring text-2xl text-primary"></i>
+                            </div>
+                            <div class="flex-1 w-full">
+                                <h4 class="text-2xl font-display uppercase text-dark mb-4">Akad Nikah</h4>
+                                <div class="space-y-2 text-sm font-medium text-gray-600 mb-6">
+                                    <p><i class="fa-regular fa-calendar text-primary w-5"></i> 18 Juli 2026</p>
+                                    <p><i class="fa-regular fa-clock text-primary w-5"></i> 08:00 - 10:00 WIB</p>
+                                    <p><i class="fa-solid fa-location-dot text-primary w-5"></i> Kediaman Mempelai</p>
+                                </div>
+                                <a href="#" class="ikea-btn w-full block text-center py-3 text-[10px]">Petunjuk Arah</a>
+                            </div>
+                        </div>
+
+                        <div class="ikea-card p-8 flex flex-col sm:flex-row gap-6 items-start">
+                            <div class="bg-bg w-16 h-16 flex items-center justify-center border border-borderLight shrink-0">
+                                <i class="fa-solid fa-champagne-glasses text-2xl text-primary"></i>
+                            </div>
+                            <div class="flex-1 w-full">
+                                <h4 class="text-2xl font-display uppercase text-dark mb-4">Resepsi</h4>
+                                <div class="space-y-2 text-sm font-medium text-gray-600 mb-6">
+                                    <p><i class="fa-regular fa-calendar text-primary w-5"></i> 18 Juli 2026</p>
+                                    <p><i class="fa-regular fa-clock text-primary w-5"></i> 11:00 - Selesai</p>
+                                    <p><i class="fa-solid fa-location-dot text-primary w-5"></i> Grand Ballroom Hotel</p>
+                                </div>
+                                <a href="#" class="ikea-btn-yellow w-full block text-center py-3 text-[10px]">Petunjuk Arah</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="reveal h-full min-h-[400px]">
+                    <div class="w-full h-full ikea-card p-2 bg-white">
+                        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d126748.56347862248!2d107.57311709235512!3d-6.903444341687889!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e68e6398252477f%3A0x146a1f93d3e815b2!2sBandung%2C%20Bandung%20City%2C%20West%20Java!5e0!3m2!1sen!2sid!4v1700000000000!5m2!1sen!2sid" class="w-full h-full min-h-[400px]" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="live-streaming" class="py-24 px-6 bg-primary text-white w-full">
+            <div class="max-w-4xl mx-auto text-center reveal">
+                <div class="price-tag text-sm mb-6 inline-block">VIRTUAL SHOWROOM</div>
+                <h2 class="text-4xl md:text-5xl font-display uppercase mb-6">Siaran Langsung</h2>
+                <p class="text-white/80 font-medium mb-12">Saksikan momen sakral kami secara virtual melalui platform pilihan Anda.</p>
+
+                <div id="streaming-display" class="bg-white p-2 border-4 border-secondary shadow-[8px_8px_0px_#111] max-w-2xl mx-auto transition-transform duration-500 hover:-translate-y-1">
+                    <div class="bg-bg text-dark p-12 flex flex-col items-center">
+                        <i id="platform-icon" class="fa-brands fa-youtube text-6xl text-primary mb-4"></i>
+                        <h3 id="platform-title" class="text-3xl font-display uppercase mb-2">YouTube Live</h3>
+                        <p id="platform-desc" class="text-muted font-bold text-[10px] uppercase tracking-widest mb-8">Mulai Pukul 09.00 WIB</p>
+                        <a id="platform-link" href="#" class="ikea-btn px-10 py-4">Tonton Sekarang</a>
+                    </div>
+                </div>
+
+                <div class="mt-12">
+                    <p class="text-[10px] uppercase font-bold tracking-widest text-white/50 mb-4">Pilih Platform</p>
+                    <div class="flex justify-center gap-3">
+                        <button onclick="switchPlatform('youtube', 'YouTube Live', 'Mulai Pukul 09.00 WIB', 'fa-brands fa-youtube', '#')" class="w-12 h-12 bg-white text-primary rounded-sm hover:bg-secondary hover:text-dark flex items-center justify-center text-xl transition-all"><i class="fa-brands fa-youtube"></i></button>
+                        <button onclick="switchPlatform('instagram', 'IG Live', '@AkunMempelai', 'fa-brands fa-instagram', '#')" class="w-12 h-12 bg-white text-primary rounded-sm hover:bg-secondary hover:text-dark flex items-center justify-center text-xl transition-all"><i class="fa-brands fa-instagram"></i></button>
+                        <button onclick="switchPlatform('tiktok', 'TikTok Live', 'Live Wedding', 'fa-brands fa-tiktok', '#')" class="w-12 h-12 bg-white text-primary rounded-sm hover:bg-secondary hover:text-dark flex items-center justify-center text-xl transition-all"><i class="fa-brands fa-tiktok"></i></button>
+                        <button onclick="switchPlatform('zoom', 'Zoom', 'ID: 123 456', 'fa-solid fa-video', '#')" class="w-12 h-12 bg-white text-primary rounded-sm hover:bg-secondary hover:text-dark flex items-center justify-center text-lg transition-all"><i class="fa-solid fa-video"></i></button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="guest-stats" class="py-24 px-6 bg-bg w-full border-b border-borderLight">
+            <div class="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12">
+                <div class="reveal">
+                    <h3 class="text-5xl font-display uppercase text-primary mb-4">Stock Info</h3>
+                    <p class="font-bold text-muted text-xs uppercase tracking-widest mb-10">Kehadiran & Doa Restu</p>
+                    
+                    <div class="grid grid-cols-2 gap-6">
+                        <div class="ikea-card p-8 text-center shadow-sm">
+                            <h4 id="total-attendance" class="text-6xl font-display text-primary mb-2">0</h4>
+                            <p class="text-[10px] font-bold uppercase tracking-widest border-t border-borderLight pt-4">Tamu Hadir</p>
+                        </div>
+                        <div class="ikea-card p-8 text-center shadow-[4px_4px_0px_#0058a3] border-primary relative overflow-hidden">
+                            <div class="absolute top-0 right-0 bg-secondary w-8 h-8 rounded-bl-full"></div>
+                            <h4 id="total-wishes" class="text-6xl font-display text-primary mb-2">0</h4>
+                            <p class="text-[10px] font-bold uppercase tracking-widest border-t border-borderLight pt-4">Ucapan Doa</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="ikea-card p-6 h-[500px] flex flex-col reveal shadow-md">
+                    <div class="flex items-center justify-between border-b-2 border-primary pb-4 mb-4">
+                        <span class="font-bold uppercase tracking-widest text-[10px] text-primary"><i class="fa-solid fa-comments mr-2"></i> Product Reviews</span>
+                        <button id="btn-load-more" onclick="loadMoreWishes()" class="text-[10px] font-bold uppercase hover:text-primary transition-colors"><i class="fa-solid fa-rotate-right"></i> Refresh</button>
+                    </div>
+                    
+                    <div id="wishes-container" class="flex-1 overflow-y-auto pr-2 space-y-3 custom-scrollbar">
+                        <div class="bg-bg border border-borderLight p-4 flex gap-4 items-start">
+                            <div class="w-8 h-8 bg-white border border-borderLight rounded-full shrink-0 flex items-center justify-center text-muted"><i class="fa-solid fa-user text-xs"></i></div>
+                            <div class="flex-1 space-y-2 w-full">
+                                <div class="h-2 bg-borderLight w-1/3 animate-pulse"></div>
+                                <div class="h-2 bg-borderLight w-full animate-pulse"></div>
+                                <div class="h-2 bg-borderLight w-2/3 animate-pulse"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="hadiah" class="py-24 px-6 bg-white w-full border-b border-borderLight">
+            <div class="max-w-5xl mx-auto">
+                <div class="text-center mb-16 reveal">
+                    <span class="price-tag text-sm mb-4">PAYMENT OPTIONS</span>
+                    <h2 class="text-4xl md:text-5xl font-display uppercase text-primary">Tanda Kasih</h2>
+                    <p class="text-sm font-medium text-gray-600 mt-4 max-w-lg mx-auto">Doa restu adalah hadiah terbaik. Namun untuk tanda kasih digital, silakan gunakan metode pembayaran berikut.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="ikea-card p-8 text-center flex flex-col items-center justify-center reveal">
+                        <div class="bg-bg border border-borderLight px-6 py-2 mb-6 w-32 h-12 flex items-center justify-center">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/ad/Bank_Mandiri_logo_2016.svg/1200px-Bank_Mandiri_logo_2016.svg.png" class="h-4 object-contain grayscale">
+                        </div>
+                        <h3 id="rek-1" class="text-2xl font-display tracking-widest mb-1">1234567890</h3>
+                        <p class="text-[10px] font-bold text-muted uppercase tracking-widest mb-8">A.n Romeo Montague</p>
+                        <button onclick="copyToClipboard('rek-1', this)" class="ikea-btn w-full py-3 text-[10px]">Salin Nomor</button>
+                    </div>
+
+                    <div class="ikea-card p-8 text-center flex flex-col items-center justify-center reveal" style="transition-delay: 100ms;">
+                        <div class="bg-bg border border-borderLight px-6 py-2 mb-6 w-32 h-12 flex items-center justify-center">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5c/Bank_Central_Asia.svg/1200px-Bank_Central_Asia.svg.png" class="h-4 object-contain grayscale">
+                        </div>
+                        <h3 id="rek-2" class="text-2xl font-display tracking-widest mb-1">0987654321</h3>
+                        <p class="text-[10px] font-bold text-muted uppercase tracking-widest mb-8">A.n Juliet Capulet</p>
+                        <button onclick="copyToClipboard('rek-2', this)" class="ikea-btn w-full py-3 text-[10px]">Salin Nomor</button>
+                    </div>
+                </div>
+
+                <div id="copy-toast" class="fixed bottom-24 left-1/2 -translate-x-1/2 z-[300] bg-dark text-white px-6 py-3 font-bold text-[10px] uppercase tracking-widest flex items-center gap-2 opacity-0 translate-y-4 transition-all pointer-events-none shadow-lg">
+                    <i class="fa-solid fa-check text-secondary"></i> Tersalin!
+                </div>
+            </div>
+        </section>
+
+        <section id="kirim-kado" class="py-24 px-6 bg-bg border-b border-borderLight w-full">
+            <div class="max-w-4xl mx-auto ikea-card p-8 md:p-12 flex flex-col md:flex-row gap-10 items-center reveal shadow-[8px_8px_0px_#dfdfdf]">
+                <div class="w-full md:w-1/2 text-center md:text-left">
+                    <i class="fa-solid fa-box-open text-4xl text-primary mb-6"></i>
+                    <h2 class="text-3xl font-display uppercase text-dark mb-4">Delivery Service</h2>
+                    <p class="text-sm font-medium text-gray-600 mb-8">Layanan pengiriman kado fisik langsung ke gudang cinta kami, atau cek daftar belanja wishlist.</p>
+                    <button onclick="toggleGiftModal(true)" class="ikea-btn-yellow px-8 py-3 text-[10px] shadow-[3px_3px_0px_#0058a3]">Shopping List</button>
+                </div>
+                
+                <div class="w-full md:w-1/2 bg-white border border-borderLight p-6 md:p-8 text-center relative shadow-sm">
+                    <span class="absolute top-0 right-0 bg-primary text-white font-bold text-[8px] uppercase px-3 py-1">Delivery Address</span>
+                    <p id="alamat-kado" class="font-sans font-medium text-sm mb-8 text-dark pt-4">Jl. Gegerkalong Hilir No. 123,<br>Sukasari, Kota Bandung, 40153</p>
+                    
+                    <div class="flex flex-col sm:flex-row gap-3 justify-center">
+                        <button onclick="copyToClipboard('alamat-kado', this)" class="bg-bg border border-borderLight text-dark px-6 py-2.5 font-bold text-[10px] uppercase hover:bg-borderLight transition-all">
+                            <i class="fa-regular fa-copy mr-2"></i> Salin
+                        </button>
+                        <a href="https://maps.app.goo.gl/xxx" target="_blank" class="bg-dark text-white px-6 py-2.5 font-bold text-[10px] uppercase hover:bg-primary transition-all">
+                            <i class="fa-solid fa-map-location-dot mr-2"></i> Peta
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div id="gift-modal" class="fixed inset-0 z-[500] hidden flex items-center justify-center p-4">
+                <div class="absolute inset-0 bg-dark/80 backdrop-blur-sm" onclick="toggleGiftModal(false)"></div>
+                <div class="relative bg-bg w-full max-w-lg border border-borderLight flex flex-col max-h-[80vh] shadow-2xl">
+                    <div class="p-6 border-b border-borderLight flex justify-between items-center bg-white">
+                        <div>
+                            <h3 class="text-2xl font-display uppercase text-primary">Shopping List</h3>
+                            <p class="text-[10px] font-bold text-muted uppercase tracking-widest mt-1">Product Wishlist</p>
+                        </div>
+                        <button onclick="toggleGiftModal(false)" class="w-8 h-8 bg-ikeaGray text-dark flex items-center justify-center hover:bg-primary hover:text-white transition-colors"><i class="fa-solid fa-xmark"></i></button>
+                    </div>
+                    
+                    <div class="overflow-y-auto p-6 space-y-4 custom-scrollbar">
+                        <div id="item-1" class="ikea-card p-4 flex flex-col sm:flex-row justify-between gap-4 items-center">
+                            <div class="text-center sm:text-left"><h4 class="font-bold text-dark text-sm uppercase">Air Fryer Digital</h4><p class="text-[10px] text-gray-500 font-bold">Art No. 401.5L.WH</p></div>
+                            <button onclick="confirmGift('item-1', 'Air Fryer Digital')" class="ikea-btn px-6 py-2 text-[10px] w-full sm:w-auto">Add to Cart</button>
+                        </div>
+                        <div id="item-2" class="ikea-card p-4 flex flex-col sm:flex-row justify-between gap-4 items-center">
+                            <div class="text-center sm:text-left"><h4 class="font-bold text-dark text-sm uppercase">Set Sprei King</h4><p class="text-[10px] text-gray-500 font-bold">Art No. 802.KG.ET</p></div>
+                            <button onclick="confirmGift('item-2', 'Set Sprei King Size')" class="ikea-btn px-6 py-2 text-[10px] w-full sm:w-auto">Add to Cart</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="confirm-modal" class="fixed inset-0 z-[600] hidden flex items-center justify-center p-4">
+                <div class="absolute inset-0 bg-dark/80 backdrop-blur-sm"></div>
+                <div class="relative bg-white w-full max-w-sm p-8 text-center border-t-8 border-secondary shadow-2xl">
+                    <i class="fa-solid fa-cart-arrow-down text-4xl text-primary mb-4"></i>
+                    <h4 class="text-2xl font-display uppercase text-dark mb-2">Checkout Item</h4>
+                    <p id="confirm-text" class="text-xs font-medium text-gray-600 mb-8"></p>
+                    <div class="flex flex-col gap-3">
+                        <button id="final-confirm-btn" class="ikea-btn-yellow w-full py-3 text-[10px]">Confirm Order</button>
+                        <button onclick="closeConfirmModal()" class="bg-bg text-dark border border-borderLight w-full py-3 font-bold text-[10px] uppercase tracking-widest hover:bg-borderLight transition-all">Cancel</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="gift-toast" class="fixed bottom-20 left-1/2 -translate-x-1/2 z-[700] px-8 py-3 bg-dark text-white font-bold text-[10px] uppercase tracking-widest opacity-0 transition-all duration-500 text-center pointer-events-none shadow-xl border-l-4 border-secondary">
+                Item Added. Thank you!
+            </div>
+        </section>
+
+        <section id="guest-info" class="py-32 px-6 md:px-20 bg-white relative overflow-hidden w-full border-b-4 border-primary">
+            <div class="max-w-6xl mx-auto relative z-10">
+                <div class="flex flex-col md:flex-row justify-between items-end mb-16 gap-6 reveal border-b-4 border-secondary pb-4">
+                    <div>
+                        <h2 class="text-5xl font-display uppercase text-primary leading-none">Terms & Services</h2>
+                        <p class="text-sm font-bold text-muted uppercase tracking-widest mt-2">Panduan Informasi Tamu</p>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-2 text-[9px] font-black uppercase tracking-wider">
+                        <span class="bg-green-600 text-white px-2 py-1 shadow-sm">100% Quality Match</span>
+                        <span class="bg-bg border border-borderLight px-2 py-1 text-dark">Model 2026</span>
+                        <span class="bg-bg border border-borderLight px-2 py-1 text-dark">Age 17+</span>
+                        <span class="bg-bg border border-borderLight px-2 py-1 text-dark">1 Unit</span>
+                        <span class="bg-dark text-white px-2 py-1 shadow-sm">Premium 4K</span>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-10 w-full">
+                    
+                    <div class="lg:col-span-2 space-y-10">
+                        <div class="ikea-card p-8 bg-primary text-white reveal">
+                            <div class="flex items-center justify-between border-b border-white/20 pb-4 mb-4">
+                                <h4 class="uppercase tracking-widest text-[10px] font-bold text-secondary">Dresscode Specification</h4>
+                                <span class="bg-secondary text-primary px-2 py-0.5 text-[8px] font-black uppercase">Required</span>
+                            </div>
+                            <h3 class="text-2xl font-display uppercase mb-2">Formal & Elegant</h3>
+                            <p class="font-medium text-sm text-white/80 leading-relaxed">
+                                "Your presence is our greatest gift, your elegance completes our joy." Mohon hadir dengan busana terbaik bernuansa formal.
+                            </p>
+                        </div>
+
+                        <div class="reveal">
+                            <h5 class="text-dark text-xs font-black uppercase tracking-widest mb-6 inline-block bg-secondary px-3 py-1">Safety Guidelines (Prokes)</h5>
+                            <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                                <div id="protokol-cuci-tangan" class="ikea-card p-4 flex flex-col items-center text-center gap-2 hover:border-primary group">
+                                    <i class="fa-solid fa-hands-bubbles text-primary text-2xl group-hover:scale-110 transition-transform"></i>
+                                    <span class="text-[9px] font-bold uppercase tracking-widest text-muted group-hover:text-primary">Wash Hands</span>
+                                </div>
+                                <div id="protokol-pakai-masker" class="ikea-card p-4 flex flex-col items-center text-center gap-2 hover:border-primary group">
+                                    <i class="fa-solid fa-head-side-mask text-primary text-2xl group-hover:scale-110 transition-transform"></i>
+                                    <span class="text-[9px] font-bold uppercase tracking-widest text-muted group-hover:text-primary">Wear Mask</span>
+                                </div>
+                                <div id="protokol-jaga-jarak-1" class="ikea-card p-4 flex flex-col items-center text-center gap-2 hover:border-primary group">
+                                    <i class="fa-solid fa-people-arrows text-primary text-2xl group-hover:scale-110 transition-transform"></i>
+                                    <span class="text-[9px] font-bold uppercase tracking-widest text-muted group-hover:text-primary">Keep Distance</span>
+                                </div>
+                                <div id="protokol-hindari-kerumunan" class="ikea-card p-4 flex flex-col items-center text-center gap-2 hover:border-primary group">
+                                    <i class="fa-solid fa-users-slash text-primary text-2xl group-hover:scale-110 transition-transform"></i>
+                                    <span class="text-[9px] font-bold uppercase tracking-widest text-muted group-hover:text-primary">No Crowds</span>
+                                </div>
+                                <div id="protokol-cek-suhu" class="ikea-card p-4 flex flex-col items-center text-center gap-2 hover:border-primary group">
+                                    <i class="fa-solid fa-temperature-high text-primary text-2xl group-hover:scale-110 transition-transform"></i>
+                                    <span class="text-[9px] font-bold uppercase tracking-widest text-muted group-hover:text-primary">Temp Check</span>
+                                </div>
+                                <div id="protokol-desinfektan" class="ikea-card p-4 flex flex-col items-center text-center gap-2 hover:border-primary group">
+                                    <i class="fa-solid fa-spray-can-sparkles text-primary text-2xl group-hover:scale-110 transition-transform"></i>
+                                    <span class="text-[9px] font-bold uppercase tracking-widest text-muted group-hover:text-primary">Sanitize</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="ikea-card bg-bg h-full flex flex-col p-8 relative reveal">
+                        <div class="absolute top-0 right-0 w-16 h-16 bg-white border-l border-b border-borderLight flex items-center justify-center rounded-bl-full"><i class="fa-solid fa-info text-muted"></i></div>
+                        <h5 class="text-primary text-xl font-display uppercase tracking-widest flex items-center gap-2 mb-6 border-b-2 border-primary pb-2 w-max">
+                            Etiquette Manual
+                        </h5>
+                        <div class="space-y-4 overflow-y-auto pr-2 custom-scrollbar flex-1 max-h-[500px]">
+                            <div id="adab-sholat" class="flex gap-4 bg-white border border-borderLight p-4 items-center">
+                                <div class="text-primary text-lg w-6 shrink-0 text-center"><i class="fa-solid fa-mosque"></i></div>
+                                <div><p class="font-bold text-[10px] uppercase text-dark">Waktu Sholat</p><p class="text-[10px] text-gray-500 font-medium">Memperhatikan waktu ibadah saat acara.</p></div>
+                            </div>
+                            <div id="adab-makan-minum" class="flex gap-4 bg-white border border-borderLight p-4 items-center">
+                                <div class="text-primary text-lg w-6 shrink-0 text-center"><i class="fa-solid fa-utensils"></i></div>
+                                <div><p class="font-bold text-[10px] uppercase text-dark">Adab Makan</p><p class="text-[10px] text-gray-500 font-medium">Makan & minum dengan cara duduk.</p></div>
+                            </div>
+                            <div id="adab-mendoakan" class="flex gap-4 bg-white border border-borderLight p-4 items-center">
+                                <div class="text-primary text-lg w-6 shrink-0 text-center"><i class="fa-solid fa-hands-praying"></i></div>
+                                <div><p class="font-bold text-[10px] uppercase text-dark">Doa Restu</p><p class="text-[10px] text-gray-500 font-medium">Memberikan doa keberkahan bagi kami.</p></div>
+                            </div>
+                            <div id="adab-jaga-jarak-2" class="flex gap-4 bg-white border border-borderLight p-4 items-center">
+                                <div class="text-primary text-lg w-6 shrink-0 text-center"><i class="fa-solid fa-restroom"></i></div>
+                                <div><p class="font-bold text-[10px] uppercase text-dark">Jaga Jarak</p><p class="text-[10px] text-gray-500 font-medium">Menjaga batasan antara tamu pria & wanita.</p></div>
+                            </div>
+                            <div id="adab-pakaian-sopan" class="flex gap-4 bg-white border border-borderLight p-4 items-center">
+                                <div class="text-primary text-lg w-6 shrink-0 text-center"><i class="fa-solid fa-shirt"></i></div>
+                                <div><p class="font-bold text-[10px] uppercase text-dark">Baju Sopan</p><p class="text-[10px] text-gray-500 font-medium">Berbusana menutup aurat dan rapi.</p></div>
+                            </div>
+                            <div id="adab-larangan-foto" class="flex gap-4 bg-white border border-borderLight p-4 items-center">
+                                <div class="text-primary text-lg w-6 shrink-0 text-center"><i class="fa-solid fa-video-slash"></i></div>
+                                <div><p class="font-bold text-[10px] uppercase text-dark">Izin Foto</p><p class="text-[10px] text-gray-500 font-medium">Meminta izin sebelum mendokumentasikan.</p></div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <section id="qr-tamu" class="py-24 px-6 md:px-20 bg-bg w-full pb-40">
+            <div class="max-w-2xl mx-auto flex flex-col items-center ikea-card p-10 relative z-10 reveal shadow-[8px_8px_0px_#dfdfdf]">
+                <div class="text-center border-b-2 border-primary w-full pb-4 mb-8">
+                    <h2 class="text-3xl font-display text-primary uppercase">Member Card</h2>
+                    <p class="font-bold text-[10px] uppercase tracking-widest text-muted">Akses Gate Masuk</p>
+                </div>
+
+                <div class="border border-borderLight p-4 bg-white mb-6">
+                    <img id="qr-image" src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&color=0058a3&bgcolor=FFFFFF&data=Tamu" class="w-48 h-48" alt="QR">
+                </div>
+                
+                <div class="bg-gray-100 w-full p-4 border border-borderLight text-center">
+                    <p class="font-bold text-[9px] uppercase tracking-widest text-gray-500 mb-1">Customer Name</p>
+                    <h3 id="guest-name-qr" class="text-2xl font-black text-dark uppercase">Tamu Undangan</h3>
+                </div>
+            </div>
+        </section>
+
+        <footer class="py-16 px-6 bg-dark text-white text-center w-full relative z-10">
+            <div class="max-w-xl mx-auto flex flex-col items-center">
+                <div class="bg-primary px-3 py-1 mb-6">
+                    <h2 class="text-4xl font-display text-secondary italic tracking-tighter uppercase">LOVE</h2>
+                </div>
+                <h3 class="text-3xl font-display uppercase mb-2">Romeo & Juliet</h3>
+                <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest mb-10">Product of 2026</p>
+                
+                <a href="https://www.instagram.com/ruangrestu.undangan" target="_blank" class="border border-gray-600 px-6 py-2 flex items-center justify-center gap-3 hover:bg-white hover:text-dark transition-all text-xs font-bold uppercase tracking-widest mb-8">
+                    <i class="fa-brands fa-instagram text-lg"></i> Follow @ruangrestu
+                </a>
+                
+                <p class="font-sans text-[8px] font-bold uppercase text-gray-600 tracking-widest">© 2026. All Rights Reserved. Assembled with care.</p>
+            </div>
+        </footer>
+
+    </main>
+
+    <section id="rsvp-modal" class="fixed inset-0 z-[100] invisible transition-all duration-500 overflow-hidden flex items-end md:items-center justify-center">
+        <div onclick="closeRSVP()" class="absolute inset-0 bg-dark/60 backdrop-blur-sm opacity-0 transition-opacity duration-500" id="rsvp-overlay"></div>
+        
+        <div id="rsvp-content" class="relative w-full md:max-w-xl bg-white border-t-8 border-primary transform translate-y-full transition-transform duration-700 flex flex-col max-h-[90vh] p-2 shadow-2xl">
+            
+            <div class="overflow-y-auto p-6 md:p-8 custom-scrollbar relative w-full h-full">
+                <div class="w-12 h-1.5 bg-borderLight rounded-full mx-auto mb-6 md:hidden"></div>
+                <div class="w-full flex justify-end mb-2">
+                    <button onclick="closeRSVP()" class="w-8 h-8 bg-bg border border-borderLight flex items-center justify-center hover:bg-primary hover:text-white transition-colors"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+                
+                <div class="text-left mb-8 border-b-2 border-primary pb-4">
+                    <span class="price-tag text-[10px] mb-2 inline-block">CHECKOUT</span>
+                    <h2 class="text-4xl font-display text-primary uppercase">RSVP Form</h2>
+                </div>
+
+                <form id="form-rsvp" class="space-y-6 text-left">
+                    <div>
+                        <label class="font-bold text-[10px] uppercase tracking-widest text-dark mb-2 block">Full Name</label>
+                        <input type="text" id="input-nama-rsvp" class="w-full bg-bg border border-borderLight focus:border-primary p-3 text-sm font-bold outline-none transition-all">
+                    </div>
+                    
+                    <div>
+                        <label class="font-bold text-[10px] uppercase tracking-widest text-dark mb-2 block">Attendance</label>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <button type="button" onclick="selectAttendance('Hadir')" id="btn-hadir" class="w-full py-3 border border-borderLight bg-white text-dark text-xs font-bold uppercase hover:bg-bg transition-all"><i class="fa-solid fa-check mr-2 text-green-600"></i> Yes, Attend</button>
+                            <button type="button" onclick="selectAttendance('Tidak Hadir')" id="btn-absen" class="w-full py-3 border border-borderLight bg-white text-dark text-xs font-bold uppercase hover:bg-bg transition-all"><i class="fa-solid fa-xmark mr-2 text-red-600"></i> No, Reject</button>
+                        </div>
+                    </div>
+
+                    <div id="guest-selection" class="hidden">
+                        <div class="bg-bg border border-borderLight p-4 flex flex-col gap-2">
+                            <label class="font-bold text-[10px] uppercase tracking-widest text-dark mb-1 block">Quantity</label>
+                            <div class="flex gap-2">
+                                <button type="button" class="guest-btn flex-1 py-2 bg-white border border-borderLight font-bold text-xs hover:border-primary transition-colors">1</button>
+                                <button type="button" class="guest-btn flex-1 py-2 bg-white border border-borderLight font-bold text-xs hover:border-primary transition-colors">2</button>
+                                <button type="button" class="guest-btn flex-1 py-2 bg-white border border-borderLight font-bold text-xs hover:border-primary transition-colors">3+</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="font-bold text-[10px] uppercase tracking-widest text-dark mb-2 block">Wishes / Notes</label>
+                        <textarea id="input-pesan-rsvp" rows="3" class="w-full bg-bg border border-borderLight focus:border-primary p-3 text-sm font-medium outline-none resize-none transition-all"></textarea>
+                    </div>
+
+                    <div class="pt-4 flex flex-col gap-3">
+                        <button type="submit" class="ikea-btn w-full py-4 text-xs">Submit Form</button>
+                        <button type="button" onclick="closeRSVP()" class="w-full py-3 bg-white text-dark font-bold text-[10px] uppercase tracking-widest border border-borderLight hover:bg-bg transition-all">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <nav id="bottom-nav" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-[90] transition-all duration-700 translate-y-32">
+        <div class="bg-white border-2 border-dark shadow-[4px_4px_0px_#0058a3] p-1 flex">
+            <ul class="flex justify-around items-center h-12 w-[300px] md:w-[350px]">
+                <li class="h-full"><a href="#home" class="flex items-center justify-center w-12 h-full text-dark hover:bg-bg transition-colors"><i class="fa-solid fa-house"></i></a></li>
+                <li class="h-full"><a href="#gallery" class="flex items-center justify-center w-12 h-full text-dark hover:bg-bg transition-colors"><i class="fa-solid fa-image"></i></a></li>
+                <li class="h-full"><a href="#lokasi" class="flex items-center justify-center w-12 h-full text-dark hover:bg-bg transition-colors"><i class="fa-solid fa-location-dot"></i></a></li>
+                <li class="h-full px-1 flex items-center">
+                    <a href="javascript:void(0)" onclick="openRSVP()" class="flex items-center justify-center px-6 h-9 ikea-btn-yellow text-[10px]">RSVP</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <div id="fab-container" class="fixed right-4 md:right-6 bottom-24 flex flex-col gap-3 z-40 opacity-0 transition-opacity duration-1000">
+        
+        <div class="relative flex items-center group">
+            <button id="btn-music" onclick="toggleMusic()" class="w-10 h-10 md:w-12 md:h-12 bg-white border border-borderLight flex items-center justify-center text-primary shadow-md hover:bg-bg transition-colors">
+                <i class="fa-solid fa-music animate-spin-slow text-sm md:text-base" id="icon-music"></i>
+            </button>
+        </div>
+
+        <button id="btn-scroll" onclick="toggleAutoScroll()" class="w-10 h-10 md:w-12 md:h-12 bg-white border border-borderLight flex items-center justify-center text-dark shadow-md hover:bg-bg transition-colors">
+            <i class="fa-solid fa-angles-down text-sm md:text-base" id="icon-scroll"></i>
+        </button>
+    </div>
+
+    <div id="lightbox" class="fixed inset-0 z-[200] hidden flex-col items-center justify-center bg-dark/95 backdrop-blur-sm p-4 w-full h-full">
+        <div class="w-full flex justify-between items-center p-6 absolute top-0">
+            <span class="price-tag text-xs"><span id="current-count">1</span> / <span id="total-count">4</span></span>
+            <button onclick="closeLightbox()" class="w-10 h-10 bg-white text-dark flex justify-center items-center hover:bg-borderLight transition-colors"><i class="fa-solid fa-xmark text-lg"></i></button>
+        </div>
+        <div class="flex items-center justify-center w-full h-[70vh] px-4 mt-8">
+            <img id="lightbox-img" src="" class="max-h-full max-w-full border-4 border-white bg-white p-2 object-contain transition-opacity duration-300">
+        </div>
+        <div class="absolute bottom-8 flex gap-4">
+            <button onclick="prevImg()" class="w-12 h-12 bg-white border border-borderLight rounded-full text-dark flex items-center justify-center hover:bg-bg transition-all"><i class="fa-solid fa-arrow-left"></i></button>
+            <button onclick="nextImg()" class="w-12 h-12 bg-white border border-borderLight rounded-full text-dark flex items-center justify-center hover:bg-bg transition-all"><i class="fa-solid fa-arrow-right"></i></button>
+        </div>
+    </div>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        let guestName = urlParams.get('to') ? decodeURIComponent(urlParams.get('to')) : 'Tamu Undangan';
+        
+        if(document.getElementById('guest-name')) document.getElementById('guest-name').innerText = guestName;
+        if(document.getElementById('guest-name-qr')) document.getElementById('guest-name-qr').innerText = guestName;
+        if(document.getElementById('input-nama-rsvp')) document.getElementById('input-nama-rsvp').value = guestName !== 'Tamu Undangan' ? guestName : '';
+        if(document.getElementById('qr-image')) document.getElementById('qr-image').src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&color=0058a3&bgcolor=FFFFFF&data=${encodeURIComponent(guestName)}`;
+
+        function openInvitation() {
+            document.getElementById('cover-page').classList.add('-translate-y-full');
+            document.body.style.overflowY = 'auto';
+            document.getElementById('main-content').classList.remove('opacity-0');
+            document.getElementById('fab-container').classList.remove('opacity-0');
+            document.getElementById('bottom-nav').classList.remove('translate-y-32');
+            
+            toggleMusic(true);
+
+            const musicInfo = document.getElementById('music-tooltip');
+            setTimeout(() => {
+                musicInfo.classList.remove('opacity-0', 'translate-x-4');
+                musicInfo.classList.add('opacity-100', 'translate-x-0');
+                setTimeout(() => {
+                    musicInfo.classList.remove('opacity-100', 'translate-x-0');
+                    musicInfo.classList.add('opacity-0', 'translate-x-4');
+                    setTimeout(() => { musicInfo.style = ''; }, 500);
+                }, 3000);
+            }, 1500);
+        }
+
+        document.getElementById('btn-music').addEventListener('mouseenter', () => {
+            document.getElementById('music-tooltip').classList.remove('opacity-0', 'translate-x-4');
+            document.getElementById('music-tooltip').classList.add('opacity-100', 'translate-x-0');
+        });
+        document.getElementById('btn-music').addEventListener('mouseleave', () => {
+            document.getElementById('music-tooltip').classList.remove('opacity-100', 'translate-x-0');
+            document.getElementById('music-tooltip').classList.add('opacity-0', 'translate-x-4');
+        });
+
+        const audio = document.getElementById('bg-music');
+        let isMusicPlaying = false;
+        function toggleMusic(forcePlay = false) {
+            const icon = document.getElementById('icon-music');
+            if (isMusicPlaying && !forcePlay) {
+                audio.pause(); isMusicPlaying = false;
+                icon.classList.remove('fa-music', 'animate-spin-slow'); icon.classList.add('fa-volume-xmark');
+            } else {
+                audio.play().then(() => {
+                    isMusicPlaying = true;
+                    icon.classList.remove('fa-volume-xmark'); icon.classList.add('fa-music', 'animate-spin-slow');
+                }).catch(()=>{});
+            }
+        }
+
+        let isAutoScrolling = false; let scrollInterval;
+        function toggleAutoScroll(forceStart = false) {
+            const icon = document.getElementById('icon-scroll');
+            if (isAutoScrolling && !forceStart) {
+                clearInterval(scrollInterval); isAutoScrolling = false;
+                icon.classList.remove('fa-pause'); icon.classList.add('fa-angles-down');
+            } else {
+                isAutoScrolling = true;
+                icon.classList.remove('fa-angles-down'); icon.classList.add('fa-pause');
+                scrollInterval = setInterval(() => {
+                    window.scrollBy({ top: 1, behavior: 'auto' });
+                    if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 5) toggleAutoScroll();
+                }, 30);
+            }
+        }
+        window.addEventListener('wheel', () => { if(isAutoScrolling) toggleAutoScroll(); }, {passive:true});
+        window.addEventListener('touchmove', () => { if(isAutoScrolling) toggleAutoScroll(); }, {passive:true});
+
+        let hasShownRSVPAtEnd = false;
+        window.addEventListener('scroll', () => {
+            if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 150) {
+                if (!hasShownRSVPAtEnd && !document.getElementById('cover-page').classList.contains('translate-y-0')) {
+                    openRSVP();
+                    hasShownRSVPAtEnd = true;
+                    if (isAutoScrolling) toggleAutoScroll();
+                }
+            }
+        }, { passive: true });
+
+        const reveals = document.querySelectorAll('.reveal');
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => { if(entry.isIntersecting) entry.target.classList.add('active'); });
+        }, { threshold: 0.15 });
+        reveals.forEach(el => observer.observe(el));
+
+        function openRSVP() {
+            document.getElementById('rsvp-modal').classList.remove('invisible');
+            setTimeout(() => {
+                document.getElementById('rsvp-overlay').classList.replace('opacity-0', 'opacity-100');
+                document.getElementById('rsvp-content').classList.replace('translate-y-full', 'translate-y-0');
+            }, 10);
+        }
+        function closeRSVP() {
+            document.getElementById('rsvp-overlay').classList.replace('opacity-100', 'opacity-0');
+            document.getElementById('rsvp-content').classList.replace('translate-y-0', 'translate-y-full');
+            setTimeout(() => document.getElementById('rsvp-modal').classList.add('invisible'), 500);
+        }
+        
+        function selectAttendance(status) {
+            const btnHadir = document.getElementById('btn-hadir'); const btnAbsen = document.getElementById('btn-absen');
+            btnHadir.classList.remove('bg-primary', 'text-white', 'border-primary'); btnAbsen.classList.remove('bg-primary', 'text-white', 'border-primary');
+            btnHadir.classList.add('bg-white', 'text-dark', 'border-borderLight'); btnAbsen.classList.add('bg-white', 'text-dark', 'border-borderLight');
+            
+            if(status === 'Hadir') {
+                btnHadir.classList.add('bg-primary', 'text-white', 'border-primary'); btnHadir.classList.remove('bg-white', 'text-dark', 'border-borderLight');
+                document.getElementById('guest-selection').classList.remove('hidden');
+            } else {
+                btnAbsen.classList.add('bg-primary', 'text-white', 'border-primary'); btnAbsen.classList.remove('bg-white', 'text-dark', 'border-borderLight');
+                document.getElementById('guest-selection').classList.add('hidden');
+            }
+        }
+        document.querySelectorAll('.guest-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.guest-btn').forEach(b => { b.classList.remove('bg-primary', 'text-white'); b.classList.add('bg-white', 'text-dark'); });
+                this.classList.add('bg-primary', 'text-white'); this.classList.remove('bg-white', 'text-dark');
+            });
+        });
+
+        function copyToClipboard(id, btn) {
+            const text = document.getElementById(id).innerText;
+            const toast = document.getElementById('copy-toast');
+            navigator.clipboard.writeText(text).then(() => {
+                const originalText = btn.innerHTML;
+                btn.innerHTML = 'Tersalin!';
+                toast.classList.remove('opacity-0', 'translate-y-4', 'pointer-events-none');
+                
+                setTimeout(() => {
+                    btn.innerHTML = originalText;
+                    toast.classList.add('opacity-0', 'translate-y-4', 'pointer-events-none');
+                }, 2000);
+            });
+        }
+
+        function switchPlatform(id, title, desc, iconClass, link) {
+            document.getElementById('platform-title').innerText = title;
+            document.getElementById('platform-desc').innerText = desc;
+            document.getElementById('platform-icon').className = iconClass + ' text-6xl text-primary mb-4 animate-pulse-fast';
+            document.getElementById('platform-link').href = link;
+        }
+
+        function toggleGiftModal(show) {
+            const modal = document.getElementById('gift-modal');
+            if(show) modal.classList.remove('hidden'); else modal.classList.add('hidden');
+        }
+        let selId, selName;
+        function confirmGift(id, name) {
+            selId = id; selName = name;
+            document.getElementById('confirm-text').innerHTML = `Checkout <b>${name}</b> from the wishlist?`;
+            document.getElementById('confirm-modal').classList.remove('hidden');
+            document.getElementById('final-confirm-btn').onclick = () => {
+                document.getElementById('confirm-modal').classList.add('hidden');
+                document.getElementById('gift-toast').style.opacity = '1';
+                setTimeout(() => { document.getElementById('gift-toast').style.opacity = '0'; toggleGiftModal(false); }, 2500);
+            };
+        }
+        function closeConfirmModal() { document.getElementById('confirm-modal').classList.add('hidden'); }
+
+        const images = Array.from(document.querySelectorAll('.gallery-img')).map(img => img.src);
+        let curImg = 0;
+        function openLightbox(idx) {
+            curImg = idx; updateLB();
+            document.getElementById('lightbox').classList.remove('hidden');
+            document.getElementById('lightbox').classList.add('flex');
+        }
+        function closeLightbox() {
+            document.getElementById('lightbox').classList.add('hidden');
+            document.getElementById('lightbox').classList.remove('flex');
+        }
+        function updateLB() {
+            const img = document.getElementById('lightbox-img');
+            img.style.opacity = '0';
+            setTimeout(() => { img.src = images[curImg]; img.style.opacity = '1'; }, 200);
+            document.getElementById('current-count').innerText = curImg + 1;
+            document.getElementById('total-count').innerText = images.length;
+        }
+        function nextImg() { curImg = (curImg+1)%images.length; updateLB(); }
+        function prevImg() { curImg = (curImg-1+images.length)%images.length; updateLB(); }
+
+        document.getElementById('total-attendance').innerText = 142;
+        document.getElementById('total-wishes').innerText = 89;
+    </script>
+</body>
+</html>
