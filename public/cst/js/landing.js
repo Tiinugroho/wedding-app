@@ -136,7 +136,7 @@ const modalData = {
 
                 <div class="mt-8 p-6 bg-gradient-to-r from-rRed to-rOrange rounded-3xl text-white text-center">
                     <p class="font-medium mb-2">Masih punya pertanyaan lain?</p>
-                    <a href="https://wa.me/628123456789" target="_blank" class="inline-block bg-white text-rRed px-6 py-2 rounded-full font-bold hover:scale-105 transition">
+                    <a href="https://wa.me/6289515310917" target="_blank" class="inline-block bg-white text-rRed px-6 py-2 rounded-full font-bold hover:scale-105 transition">
                         Chat WhatsApp CS
                     </a>
                 </div>

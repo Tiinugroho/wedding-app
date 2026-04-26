@@ -1,0 +1,1476 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ruangrestu.com - The Elegant Wedding</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Custom Scrollbar for Minimalist Feel */
+        .scroll-custom::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .scroll-custom::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .scroll-custom::-webkit-scrollbar-thumb {
+            background: #C5A880;
+            border-radius: 10px;
+        }
+
+        /* Prevent body scroll when modal is open */
+        .modal-open {
+            overflow: hidden !important;
+        }
+
+        /* Animation */
+        @keyframes slide-up {
+            from {
+                transform: translateY(100%);
+            }
+
+            to {
+                transform: translateY(0);
+            }
+        }
+
+        .animate-slide-up {
+            animation: slide-up 0.5s ease-out forwards;
+        }
+
+        /* Typography scale fix for very small devices */
+        @media (max-width: 360px) {
+            .text-8xl {
+                font-size: 3.5rem;
+            }
+
+            .text-5xl {
+                font-size: 2.25rem;
+            }
+        }
+    </style>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        bg: '#FDFBF7',
+                        card: '#FFFFFF',
+                        primary: '#2D3748',
+                        secondary: '#718096',
+                        accent: '#C5A880',
+                        accentHover: '#B0946D',
+                        borderLight: '#E2E8F0'
+                    },
+                    fontFamily: {
+                        sans: ['"Montserrat"', 'sans-serif'],
+                        serif: ['"Playfair Display"', 'serif'],
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        ::-webkit-scrollbar {
+            width: 6px;
+            background: #FDFBF7;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #E2E8F0;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #C5A880;
+        }
+
+        body {
+            background-color: #FDFBF7;
+            color: #2D3748;
+            overflow-y: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Elegant Gradients */
+        .vignette {
+            background: radial-gradient(circle at center, transparent 0%, rgba(253,251,247, 0.4) 100%);
+        }
+
+        .bottom-gradient {
+            background: linear-gradient(to top, #FDFBF7 0%, transparent 100%);
+        }
+
+        /* Subtle shadows instead of harsh text shadows */
+        .text-shadow {
+            text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.8);
+        }
+
+        /* Soft Hover Scale */
+        .episode-card:hover .episode-img {
+            transform: scale(1.03);
+        }
+
+        .arch-image {
+            border-radius: 100px 100px 0 0;
+        }
+    </style>
+</head>
+
+<body class="bg-bg text-primary font-sans selection:bg-accent selection:text-white relative">
+
+    <audio id="bg-music" loop>
+        <source src="https://cdn.pixabay.com/audio/2022/01/18/audio_d0a13f69d2.mp3" type="audio/mpeg">
+    </audio>
+
+    <div id="cover-page"
+        class="fixed inset-0 z-[100] flex flex-col items-center justify-center w-screen h-screen bg-bg transition-all duration-700">
+
+        <div class="absolute top-0 w-full p-8 flex justify-center md:justify-between items-center">
+            <h1 class="font-serif text-accent text-2xl md:text-3xl tracking-[0.2em] uppercase">The Wedding</h1>
+        </div>
+
+        <div class="flex flex-col items-center justify-center transform transition-transform duration-500 w-full max-w-md px-6">
+            <h2 class="text-2xl md:text-3xl font-serif text-primary mb-10 text-center italic">Welcome to the Celebration</h2>
+
+            <div class="flex flex-wrap justify-center gap-6 md:gap-10">
+                <button onclick="openInvitation()"
+                    class="group flex flex-col items-center gap-5 transition-transform hover:scale-105">
+                    <div
+                        class="w-28 h-28 md:w-32 md:h-32 rounded-full overflow-hidden border border-borderLight group-hover:border-accent group-hover:shadow-xl transition-all relative p-1">
+                        <div class="w-full h-full rounded-full overflow-hidden">
+                            <img src="https://images.unsplash.com/photo-1511285560929-80b456fea0bc?q=80&w=500&auto=format&fit=crop"
+                                class="w-full h-full object-cover" alt="Profile">
+                        </div>
+                        <div class="absolute inset-0 bg-white/10 group-hover:bg-transparent transition-colors rounded-full"></div>
+                    </div>
+                    <span id="guest-name"
+                        class="text-secondary group-hover:text-accent transition-colors text-sm md:text-base font-medium tracking-wide">Tamu
+                        Undangan</span>
+                </button>
+            </div>
+
+            <button onclick="openInvitation()"
+                class="mt-16 px-8 py-3 bg-transparent border border-accent text-accent hover:bg-accent hover:text-white uppercase tracking-[0.2em] text-xs font-semibold transition-all rounded-sm">
+                Open Invitation
+            </button>
+        </div>
+    </div>
+
+    <main id="main-content" class="min-h-screen opacity-0 transition-opacity duration-1000 pb-20">
+
+        <nav class="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-md border-b border-borderLight p-5 flex justify-between items-center transition-all duration-300"
+            id="main-nav">
+            <h1 class="font-serif text-accent text-xl md:text-2xl tracking-[0.2em] uppercase">The Wedding</h1>
+            <div class="flex items-center gap-4">
+                <i
+                    class="fa-solid fa-envelope text-accent cursor-pointer hover:text-accentHover transition-colors text-lg"></i>
+            </div>
+        </nav>
+
+        <section id="home" class="relative h-[85vh] md:h-screen flex items-center justify-center md:justify-start px-6 md:px-20 pt-20">
+            <div class="absolute inset-0 z-0">
+                <img src="https://images.unsplash.com/photo-1511285560929-80b456fea0bc?q=80&w=2000&auto=format&fit=crop"
+                    class="w-full h-full object-cover opacity-60" alt="Hero">
+                <div class="absolute inset-0 bg-white/40"></div>
+                <div class="absolute inset-x-0 bottom-0 h-2/3 bottom-gradient"></div>
+            </div>
+
+            <div class="relative z-10 max-w-2xl mt-12 md:mt-0 text-center md:text-left">
+                <div class="flex items-center justify-center md:justify-start gap-3 mb-6">
+                    <span class="w-10 h-px bg-accent"></span>
+                    <span class="text-xs font-semibold tracking-[0.3em] text-accent uppercase">Exclusive Celebration</span>
+                </div>
+
+                <h2 class="text-5xl md:text-7xl font-serif text-primary mb-6 leading-tight">
+                    Romeo <span class="text-accent italic font-light">&</span> Juliet</h2>
+
+                <div class="flex items-center justify-center md:justify-start gap-4 text-xs md:text-sm font-medium mb-8 text-secondary">
+                    <span class="tracking-widest uppercase">Save The Date</span>
+                    <span class="w-1 h-1 rounded-full bg-accent"></span>
+                    <span class="tracking-widest">2026</span>
+                    <span class="w-1 h-1 rounded-full bg-accent"></span>
+                    <span class="tracking-widest">Bandung</span>
+                </div>
+
+                <p class="text-sm md:text-base text-secondary leading-relaxed mb-10 max-w-lg mx-auto md:mx-0 font-light">
+                    Dengan memohon rahmat Tuhan, dua pemeran utama kami bersiap mengikat janji suci. Sebuah perayaan
+                    cinta abadi yang tayang perdana secara eksklusif. Jadilah saksi di hari paling bahagia mereka.
+                </p>
+
+                <div class="flex flex-col sm:flex-row justify-center md:justify-start gap-4">
+                    <a href="javascript:void(0)" onclick="openRSVP()"
+                        class="px-8 py-3.5 bg-accent text-white rounded-sm text-xs uppercase tracking-[0.2em] font-semibold flex items-center justify-center gap-3 hover:bg-accentHover transition-colors shadow-lg shadow-accent/20">
+                        <i class="fa-solid fa-envelope-open-text text-lg"></i> RSVP Now
+                    </a>
+                    <a href="#cerita"
+                        class="px-8 py-3.5 bg-transparent border border-primary text-primary rounded-sm text-xs uppercase tracking-[0.2em] font-semibold flex items-center justify-center gap-3 hover:bg-primary hover:text-white transition-colors">
+                        Our Story
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <section id="cast" class="px-6 md:px-20 py-16 relative z-10 bg-bg">
+            <div class="text-center mb-12">
+                <h3 class="text-3xl md:text-4xl font-serif text-primary mb-3">The Couple</h3>
+                <div class="w-16 h-px bg-accent mx-auto"></div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-12 lg:gap-20 max-w-5xl mx-auto">
+                <div class="flex flex-col md:flex-row gap-8 items-center text-center md:text-left group">
+                    <div class="w-48 h-64 md:w-44 md:h-60 shrink-0 arch-image overflow-hidden relative border-4 border-white shadow-xl">
+                        <img src="https://images.soco.id/230-58.jpg.jpeg"
+                            class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                            alt="Groom">
+                    </div>
+                    <div>
+                        <p class="text-accent text-xs uppercase tracking-[0.2em] mb-2 font-bold">The Groom</p>
+                        <h4 class="text-3xl font-serif text-primary mb-3">Romeo Montague</h4>
+                        <p class="text-sm text-secondary font-light leading-relaxed">Putra dari Bapak Montague<br>& Ibu Montague</p>
+                    </div>
+                </div>
+
+                <div class="flex flex-col md:flex-row-reverse gap-8 items-center text-center md:text-right group">
+                    <div class="w-48 h-64 md:w-44 md:h-60 shrink-0 arch-image overflow-hidden relative border-4 border-white shadow-xl">
+                        <img src="https://images.pexels.com/photos/157757/wedding-dresses-fashion-character-bride-157757.jpeg"
+                            class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                            alt="Bride">
+                    </div>
+                    <div>
+                        <p class="text-accent text-xs uppercase tracking-[0.2em] mb-2 font-bold">The Bride</p>
+                        <h4 class="text-3xl font-serif text-primary mb-3">Juliet Capulet</h4>
+                        <p class="text-sm text-secondary font-light leading-relaxed">Putri dari Bapak Capulet<br>& Ibu Capulet</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="cerita" class="px-6 md:px-20 py-20 bg-card border-y border-borderLight mt-8">
+            <div class="text-center mb-16">
+                <h3 class="text-3xl md:text-4xl font-serif text-primary mb-3">The Journey</h3>
+                <span class="text-accent text-xs uppercase tracking-[0.2em] font-medium block">Our Story</span>
+                <div class="w-16 h-px bg-accent mx-auto mt-4"></div>
+            </div>
+
+            <div class="space-y-8 max-w-4xl mx-auto">
+                <div
+                    class="episode-card flex flex-col md:flex-row gap-6 md:gap-10 items-start md:items-center p-6 bg-bg hover:bg-white rounded-xl border border-borderLight hover:shadow-xl transition-all cursor-pointer">
+                    <h4 class="text-5xl font-serif text-borderLight hidden md:block italic">01</h4>
+                    <div class="w-full md:w-56 h-36 shrink-0 rounded-lg overflow-hidden relative episode-img-container shadow-md">
+                        <img src="https://images.unsplash.com/photo-1519741497674-611481863552?w=500"
+                            class="episode-img w-full h-full object-cover transition-transform duration-700" alt="Ep 1">
+                    </div>
+                    <div class="flex-1">
+                        <div class="flex justify-between items-start mb-3">
+                            <h5 class="font-serif text-xl text-primary">Pertemuan Pertama</h5>
+                            <span class="text-xs text-accent font-semibold tracking-widest uppercase">Des 2022</span>
+                        </div>
+                        <p class="text-sm text-secondary font-light leading-relaxed line-clamp-3">
+                            Di sebuah perpustakaan kota, takdir memulai naskahnya. Obrolan ringan tentang buku favorit
+                            berubah menjadi awal dari sebuah kisah panjang yang tak pernah mereka sangka sebelumnya.
+                        </p>
+                    </div>
+                </div>
+
+                <div
+                    class="episode-card flex flex-col md:flex-row gap-6 md:gap-10 items-start md:items-center p-6 bg-bg hover:bg-white rounded-xl border border-borderLight hover:shadow-xl transition-all cursor-pointer">
+                    <h4 class="text-5xl font-serif text-borderLight hidden md:block italic">02</h4>
+                    <div class="w-full md:w-56 h-36 shrink-0 rounded-lg overflow-hidden relative episode-img-container shadow-md">
+                        <img src="https://images.unsplash.com/photo-1510154221590-ff63e90a136f?w=500"
+                            class="episode-img w-full h-full object-cover transition-transform duration-700" alt="Ep 2">
+                    </div>
+                    <div class="flex-1">
+                        <div class="flex justify-between items-start mb-3">
+                            <h5 class="font-serif text-xl text-primary">Menjalin Komitmen</h5>
+                            <span class="text-xs text-accent font-semibold tracking-widest uppercase">Mar 2024</span>
+                        </div>
+                        <p class="text-sm text-secondary font-light leading-relaxed line-clamp-3">
+                            Melewati berbagai rintangan dan tawa bersama, mereka memutuskan bahwa satu-satunya cara
+                            untuk melanjutkan cerita ini adalah dengan menjalaninya berdua.
+                        </p>
+                    </div>
+                </div>
+
+                <div
+                    class="episode-card flex flex-col md:flex-row gap-6 md:gap-10 items-start md:items-center p-6 bg-bg hover:bg-white rounded-xl border border-borderLight hover:shadow-xl transition-all cursor-pointer">
+                    <h4 class="text-5xl font-serif text-borderLight hidden md:block italic">03</h4>
+                    <div class="w-full md:w-56 h-36 shrink-0 rounded-lg overflow-hidden relative episode-img-container shadow-md">
+                        <img src="https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?w=500"
+                            class="episode-img w-full h-full object-cover transition-transform duration-700" alt="Ep 3">
+                    </div>
+                    <div class="flex-1">
+                        <div class="flex justify-between items-start mb-3">
+                            <h5 class="font-serif text-xl text-primary">Satu Langkah Dekat</h5>
+                            <span class="text-xs text-accent font-semibold tracking-widest uppercase">Jan 2026</span>
+                        </div>
+                        <p class="text-sm text-secondary font-light leading-relaxed line-clamp-3">
+                            Di hadapan keluarga besar, cincin disematkan. Janji diucapkan untuk melangkah ke babak akhir
+                            dari masa lajang mereka.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <section id="gallery" class="py-20 bg-bg">
+            <div class="px-6 md:px-20 text-center mb-12">
+                <h3 class="text-3xl md:text-4xl font-serif text-primary mb-3">Gallery
+                </h3>
+                <div class="w-16 h-px bg-accent mx-auto"></div>
+            </div>
+
+            <div class="px-6 md:px-20 mb-16 max-w-5xl mx-auto">
+                <p class="text-xs font-semibold text-accent uppercase tracking-[0.2em] mb-4 text-center">Our Moments</p>
+                <div class="relative w-full aspect-video rounded-xl overflow-hidden bg-card shadow-xl border border-borderLight p-2 group">
+                    <div class="w-full h-full rounded-lg overflow-hidden relative">
+                        <iframe class="absolute inset-0 w-full h-full"
+                            src="https://www.youtube.com/embed/k1gj5wCLAhc?autoplay=0&mute=1&controls=1&rel=0"
+                            title="Wedding Trailer" frameborder="0"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowfullscreen>
+                        </iframe>
+                    </div>
+                </div>
+            </div>
+
+            <div class="relative group">
+                <div
+                    class="flex overflow-x-auto gap-6 px-6 md:px-20 pb-12 snap-x snap-mandatory hide-scrollbar scroll-smooth">
+
+                    <div class="w-[75vw] md:w-[30vw] shrink-0 snap-start group/card cursor-pointer"
+                        onclick="openLightbox(0)">
+                        <div class="relative aspect-[4/5] rounded-xl overflow-hidden shadow-md border border-borderLight">
+                            <img src="https://images.unsplash.com/photo-1522673607200-164d1b6ce486?w=600"
+                                class="gallery-img w-full h-full object-cover transition-transform duration-700 group-hover/card:scale-105">
+                            <div class="absolute inset-0 bg-white/20 opacity-0 group-hover/card:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-[2px]">
+                                <i class="fa-solid fa-expand text-primary text-3xl bg-white/80 w-12 h-12 rounded-full flex items-center justify-center shadow-lg"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="w-[75vw] md:w-[30vw] shrink-0 snap-start group/card cursor-pointer"
+                        onclick="openLightbox(1)">
+                        <div class="relative aspect-[4/5] rounded-xl overflow-hidden shadow-md border border-borderLight">
+                            <img src="https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?w=600"
+                                class="gallery-img w-full h-full object-cover transition-transform duration-700 group-hover/card:scale-105">
+                            <div class="absolute inset-0 bg-white/20 opacity-0 group-hover/card:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-[2px]">
+                                <i class="fa-solid fa-expand text-primary text-3xl bg-white/80 w-12 h-12 rounded-full flex items-center justify-center shadow-lg"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="w-[75vw] md:w-[30vw] shrink-0 snap-start group/card cursor-pointer"
+                        onclick="openLightbox(2)">
+                        <div class="relative aspect-[4/5] rounded-xl overflow-hidden shadow-md border border-borderLight">
+                            <img src="https://images.unsplash.com/photo-1606800052052-a08af7148866?w=600"
+                                class="gallery-img w-full h-full object-cover transition-transform duration-700 group-hover/card:scale-105">
+                            <div class="absolute inset-0 bg-white/20 opacity-0 group-hover/card:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-[2px]">
+                                <i class="fa-solid fa-expand text-primary text-3xl bg-white/80 w-12 h-12 rounded-full flex items-center justify-center shadow-lg"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="w-[75vw] md:w-[30vw] shrink-0 snap-start group/card cursor-pointer"
+                        onclick="openLightbox(3)">
+                        <div class="relative aspect-[4/5] rounded-xl overflow-hidden shadow-md border border-borderLight">
+                            <img src="https://images.unsplash.com/photo-1591604466107-ec97de577aff?w=600"
+                                class="gallery-img w-full h-full object-cover transition-transform duration-700 group-hover/card:scale-105">
+                            <div class="absolute inset-0 bg-white/20 opacity-0 group-hover/card:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-[2px]">
+                                <i class="fa-solid fa-expand text-primary text-3xl bg-white/80 w-12 h-12 rounded-full flex items-center justify-center shadow-lg"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <style>
+            .hide-scrollbar::-webkit-scrollbar {
+                display: none;
+            }
+
+            .hide-scrollbar {
+                -ms-overflow-style: none;
+                scrollbar-width: none;
+            }
+        </style>
+
+        <section id="lokasi" class="px-6 md:px-20 py-24 bg-card border-y border-borderLight">
+            <div class="text-center mb-16">
+                <h3 class="text-3xl md:text-4xl font-serif text-primary mb-3">Event Venue</h3>
+                <div class="w-16 h-px bg-accent mx-auto"></div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+                <div
+                    class="bg-bg p-10 rounded-2xl border border-borderLight hover:border-accent transition-all shadow-sm hover:shadow-xl group">
+                    <div class="flex justify-between items-start mb-8">
+                        <div>
+                            <span class="text-accent text-xs font-semibold uppercase tracking-[0.2em] block mb-2">The Vow</span>
+                            <h4 class="text-3xl font-serif text-primary">Akad Nikah</h4>
+                        </div>
+                        <div class="w-12 h-12 rounded-full bg-white flex items-center justify-center shadow-sm text-accent group-hover:bg-accent group-hover:text-white transition-colors">
+                            <i class="fa-solid fa-ring text-xl"></i>
+                        </div>
+                    </div>
+
+                    <ul class="space-y-5 mb-10 text-sm text-secondary font-medium">
+                        <li class="flex items-center gap-4"><i class="fa-regular fa-calendar w-5 text-accent"></i>
+                            Sabtu, 18 Juli 2026</li>
+                        <li class="flex items-center gap-4"><i class="fa-regular fa-clock w-5 text-accent"></i>
+                            08:00 - 10:00 WIB</li>
+                        <li class="flex items-start gap-4"><i
+                                class="fa-solid fa-location-dot w-5 mt-1 text-accent"></i> <span>Kediaman
+                                Mempelai<br><span class="text-gray-400 text-xs font-light mt-1 block">Jl. Jendral Sudirman No.
+                                    123</span></span></li>
+                    </ul>
+
+                    <a href="#" target="_blank"
+                        class="block w-full py-4 bg-white border border-borderLight hover:border-accent text-primary hover:text-accent text-center rounded-sm text-xs font-bold tracking-[0.1em] uppercase transition-all shadow-sm hover:shadow-md">
+                        <i class="fa-solid fa-map-location-dot mr-2"></i> Get Directions
+                    </a>
+                </div>
+
+                <div
+                    class="bg-bg p-10 rounded-2xl border border-borderLight hover:border-accent transition-all shadow-sm hover:shadow-xl group">
+                    <div class="flex justify-between items-start mb-8">
+                        <div>
+                            <span class="text-accent text-xs font-semibold uppercase tracking-[0.2em] block mb-2">The Celebration</span>
+                            <h4 class="text-3xl font-serif text-primary">Resepsi</h4>
+                        </div>
+                        <div class="w-12 h-12 rounded-full bg-white flex items-center justify-center shadow-sm text-accent group-hover:bg-accent group-hover:text-white transition-colors">
+                            <i class="fa-solid fa-champagne-glasses text-xl"></i>
+                        </div>
+                    </div>
+
+                    <ul class="space-y-5 mb-10 text-sm text-secondary font-medium">
+                        <li class="flex items-center gap-4"><i class="fa-regular fa-calendar w-5 text-accent"></i>
+                            Sabtu, 18 Juli 2026</li>
+                        <li class="flex items-center gap-4"><i class="fa-regular fa-clock w-5 text-accent"></i>
+                            11:00 - Selesai</li>
+                        <li class="flex items-start gap-4"><i
+                                class="fa-solid fa-location-dot w-5 mt-1 text-accent"></i> <span>Grand Ballroom
+                                Hotel<br><span class="text-gray-400 text-xs font-light mt-1 block">Jl. Kota Bahagia No. 45</span></span>
+                        </li>
+                    </ul>
+
+                    <a href="#" target="_blank"
+                        class="block w-full py-4 bg-accent hover:bg-accentHover text-white text-center rounded-sm text-xs font-bold tracking-[0.1em] uppercase transition-all shadow-md hover:shadow-lg">
+                        <i class="fa-solid fa-map-location-dot mr-2"></i> Get Directions
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <section id="live-streaming" class="py-24 px-6 bg-bg relative overflow-hidden">
+            <div class="max-w-5xl mx-auto relative z-10">
+                <div class="text-center mb-16">
+                    <div class="flex items-center justify-center gap-3 mb-4">
+                        <span class="relative flex h-2 w-2">
+                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-2 w-2 bg-accent"></span>
+                        </span>
+                        <span class="text-xs font-semibold uppercase tracking-[0.2em] text-accent">Virtual Wedding</span>
+                    </div>
+                    <h2 class="text-3xl md:text-4xl font-serif text-primary mb-4">Siaran Langsung</h2>
+                    <p class="text-secondary text-sm md:text-base max-w-2xl mx-auto leading-relaxed font-light">
+                        Saksikan momen sakral kami secara virtual melalui platform pilihan Anda. Tekan tombol putar
+                        untuk bergabung dalam kebahagiaan kami.
+                    </p>
+                </div>
+
+                <div class="relative group max-w-4xl mx-auto">
+                    <div id="streaming-display"
+                        class="relative aspect-video w-full rounded-2xl bg-card overflow-hidden border border-borderLight shadow-xl transition-all duration-700 p-2">
+
+                        <div class="w-full h-full rounded-xl overflow-hidden relative">
+                            <div class="absolute inset-0 bg-cover bg-center transition-all duration-1000 opacity-30 group-hover:scale-105 group-hover:opacity-40"
+                                style="background-image: url('https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1000&q=80');">
+                            </div>
+                            <div class="absolute inset-0 bg-gradient-to-t from-bg via-transparent to-transparent"></div>
+
+                            <div
+                                class="relative h-full flex flex-col items-center justify-center p-6 text-primary text-center">
+                                <div class="mb-6 group-hover:scale-110 transition-transform duration-500 bg-white w-24 h-24 rounded-full flex items-center justify-center shadow-lg">
+                                    <i id="platform-icon"
+                                        class="fa-brands fa-youtube text-5xl text-accent"></i>
+                                </div>
+
+                                <h3 id="platform-title" class="text-2xl md:text-3xl font-serif mb-2 text-primary">YouTube
+                                    Live</h3>
+                                <p id="platform-desc" class="text-secondary text-sm md:text-base mb-8 font-medium">Mulai
+                                    Pukul 09.00 WIB</p>
+
+                                <a id="platform-link" href="https://youtube.com/live/URL_ANDA" target="_blank"
+                                    class="flex items-center gap-3 px-8 py-3.5 bg-primary text-white rounded-sm font-semibold text-xs uppercase tracking-[0.1em] hover:bg-slate-700 transition-all active:scale-95 shadow-md">
+                                    <i class="fa-solid fa-play text-accent"></i>
+                                    <span>Putar Sekarang</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-16 max-w-4xl mx-auto">
+                    <h4 class="text-secondary font-serif text-xl mb-6 text-center italic">Pilih Platform Lainnya</h4>
+                    <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+                        <button
+                            onclick="switchPlatform('youtube', 'YouTube Live', 'Mulai Pukul 09.00 WIB', 'fa-brands fa-youtube', 'https://youtube.com/...')"
+                            class="platform-btn flex flex-col items-center bg-card border border-borderLight hover:border-accent p-5 rounded-xl transition-all group text-center shadow-sm hover:shadow-md">
+                            <i class="fa-brands fa-youtube text-2xl text-secondary group-hover:text-accent mb-3 transition-colors"></i>
+                            <span class="text-primary font-semibold text-[10px] uppercase tracking-wider mb-1">YouTube</span>
+                        </button>
+
+                        <button
+                            onclick="switchPlatform('instagram', 'Instagram Live', '@AkunMempelai', 'fa-brands fa-instagram', 'https://instagram.com/...')"
+                            class="platform-btn flex flex-col items-center bg-card border border-borderLight hover:border-accent p-5 rounded-xl transition-all group text-center shadow-sm hover:shadow-md">
+                            <i class="fa-brands fa-instagram text-2xl text-secondary group-hover:text-accent mb-3 transition-colors"></i>
+                            <span class="text-primary font-semibold text-[10px] uppercase tracking-wider mb-1">Instagram</span>
+                        </button>
+
+                        <button
+                            onclick="switchPlatform('tiktok', 'TikTok Live', 'Live Streaming Wedding', 'fa-brands fa-tiktok', 'https://tiktok.com/...')"
+                            class="platform-btn flex flex-col items-center bg-card border border-borderLight hover:border-accent p-5 rounded-xl transition-all group text-center shadow-sm hover:shadow-md">
+                            <i class="fa-brands fa-tiktok text-2xl text-secondary group-hover:text-accent mb-3 transition-colors"></i>
+                            <span class="text-primary font-semibold text-[10px] uppercase tracking-wider mb-1">TikTok</span>
+                        </button>
+
+                        <button
+                            onclick="switchPlatform('zoom', 'Zoom Meeting', 'ID: 123 456 7890', 'fa-solid fa-video', 'https://zoom.us/...')"
+                            class="platform-btn flex flex-col items-center bg-card border border-borderLight hover:border-accent p-5 rounded-xl transition-all group text-center shadow-sm hover:shadow-md">
+                            <i class="fa-solid fa-video text-2xl text-secondary group-hover:text-accent mb-3 transition-colors"></i>
+                            <span class="text-primary font-semibold text-[10px] uppercase tracking-wider mb-1">Zoom</span>
+                        </button>
+
+                        <button
+                            onclick="switchPlatform('gmeet', 'Google Meet', 'meet.google.com/xyz', 'fa-solid fa-camera-retro', 'https://meet.google.com/...')"
+                            class="platform-btn flex flex-col items-center bg-card border border-borderLight hover:border-accent p-5 rounded-xl transition-all group text-center shadow-sm hover:shadow-md">
+                            <i class="fa-solid fa-camera-retro text-2xl text-secondary group-hover:text-accent mb-3 transition-colors"></i>
+                            <span class="text-primary font-semibold text-[10px] uppercase tracking-wider mb-1">Meet</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <section id="guest-stats" class="py-24 px-6 bg-card border-y border-borderLight relative overflow-hidden">
+            <div class="max-w-5xl mx-auto relative z-10">
+
+                <div class="text-center mb-16">
+                    <h2 class="text-3xl md:text-4xl font-serif text-primary mb-4">Kehadiran & Doa</h2>
+                    <div class="flex items-center justify-center gap-3">
+                        <span class="w-8 h-px bg-accent"></span>
+                        <p class="text-accent text-xs font-semibold uppercase tracking-[0.2em]">Guest Registry</p>
+                        <span class="w-8 h-px bg-accent"></span>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-10 mb-16 max-w-3xl mx-auto">
+
+                    <div class="flex flex-col items-center p-8 bg-bg border border-borderLight rounded-2xl shadow-sm hover:shadow-md transition-shadow">
+                        <p class="text-xs uppercase tracking-[0.2em] text-secondary font-semibold mb-4">Tamu Akan Hadir</p>
+                        <h4 id="total-attendance" class="text-5xl md:text-6xl font-serif text-primary mb-2">0</h4>
+                        <div class="w-12 h-1 bg-accent rounded-full mt-2"></div>
+                    </div>
+
+                    <div class="flex flex-col items-center p-8 bg-bg border border-borderLight rounded-2xl shadow-sm hover:shadow-md transition-shadow">
+                        <p class="text-xs uppercase tracking-[0.2em] text-secondary font-semibold mb-4">Ucapan Hangat</p>
+                        <h4 id="total-wishes" class="text-5xl md:text-6xl font-serif text-primary mb-2">0</h4>
+                        <div class="w-12 h-1 bg-accent rounded-full mt-2"></div>
+                    </div>
+
+                </div>
+
+                <div class="bg-white rounded-2xl border border-borderLight shadow-xl max-w-4xl mx-auto overflow-hidden">
+                    <div class="flex items-center justify-between p-6 border-b border-borderLight bg-bg">
+                        <div class="flex items-center gap-3">
+                            <i class="fa-solid fa-envelope-open-text text-accent text-xl"></i>
+                            <span class="text-sm font-semibold uppercase tracking-[0.1em] text-primary">Wishes Wall</span>
+                        </div>
+                        <span class="text-[10px] text-secondary uppercase font-semibold">Recent</span>
+                    </div>
+
+                    <div id="wishes-container" class="max-h-[500px] overflow-y-auto scroll-custom p-6 space-y-4">
+                        <div
+                            class="flex flex-col md:flex-row gap-6 p-5 rounded-xl bg-bg border border-borderLight hover:border-accent hover:shadow-md transition-all">
+                            <div
+                                class="w-12 h-12 md:w-16 md:h-16 bg-white border border-borderLight rounded-full shrink-0 flex items-center justify-center shadow-sm">
+                                <i class="fa-solid fa-heart text-accent/50 text-xl"></i>
+                            </div>
+                            <div class="flex-1">
+                                <div class="flex justify-between items-center mb-3">
+                                    <div class="h-4 w-32 bg-slate-200 rounded animate-pulse"></div>
+                                    <div class="h-3 w-16 bg-slate-100 rounded animate-pulse"></div>
+                                </div>
+                                <div class="space-y-2">
+                                    <div class="h-3 w-full bg-slate-100 rounded animate-pulse"></div>
+                                    <div class="h-3 w-4/5 bg-slate-100 rounded animate-pulse"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="p-6 text-center border-t border-borderLight bg-bg">
+                        <button id="btn-load-more" onclick="loadMoreWishes()"
+                            class="px-8 py-3 bg-white border border-primary text-primary font-semibold text-[10px] uppercase tracking-[0.2em] rounded-sm hover:bg-primary hover:text-white transition-all duration-300">
+                            Load More
+                        </button>
+                    </div>
+                </div>
+
+                <p
+                    class="text-center mt-8 text-[10px] text-secondary uppercase font-semibold tracking-[0.2em]">
+                    Data updated via RSVP system.
+                </p>
+            </div>
+        </section>
+
+        <section id="hadiah" class="py-24 px-6 bg-bg relative overflow-hidden">
+            <div class="max-w-5xl mx-auto relative z-10">
+                <div class="text-center mb-16">
+                    <div class="flex items-center justify-center gap-3 mb-4">
+                        <span class="text-xs tracking-[0.3em] uppercase text-accent font-semibold">Tanda Kasih</span>
+                    </div>
+                    <h2 class="text-3xl md:text-4xl font-serif text-primary mb-6">Wedding Gift
+                    </h2>
+                    <div class="w-16 h-px bg-accent mx-auto mb-6"></div>
+                    <p class="text-sm md:text-base text-secondary font-light leading-relaxed max-w-2xl mx-auto">
+                        Doa restu Anda adalah karunia terindah bagi kami. Namun jika Anda ingin memberikan tanda kasih,
+                        pintu hati kami terbuka melalui jalur resmi berikut:
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+
+                    <div
+                        class="group relative bg-white rounded-2xl overflow-hidden border border-borderLight transition-all duration-500 hover:border-accent hover:shadow-xl p-8 md:p-10 text-center">
+                        <div class="flex justify-center items-center mb-8 h-12">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/ad/Bank_Mandiri_logo_2016.svg/1200px-Bank_Mandiri_logo_2016.svg.png"
+                                class="h-8 object-contain opacity-70 group-hover:opacity-100 transition-opacity"
+                                alt="Mandiri">
+                        </div>
+
+                        <div class="space-y-2 mb-10">
+                            <h3 id="rek-1" class="text-2xl md:text-3xl font-sans font-bold text-primary tracking-widest">
+                                1234567890</h3>
+                            <p class="text-xs text-secondary font-medium uppercase tracking-widest">a.n Romeo Montague
+                            </p>
+                        </div>
+
+                        <button onclick="copyToClipboard('rek-1', this)"
+                            class="w-full py-3.5 bg-bg border border-borderLight text-primary rounded-sm font-semibold text-xs uppercase tracking-[0.1em] transition-all hover:bg-accent hover:text-white hover:border-accent flex items-center justify-center gap-2">
+                            <i class="fa-regular fa-copy"></i>
+                            <span>Salin Nomor</span>
+                        </button>
+                    </div>
+
+                    <div
+                        class="group relative bg-white rounded-2xl overflow-hidden border border-borderLight transition-all duration-500 hover:border-accent hover:shadow-xl p-8 md:p-10 text-center">
+                        <div class="flex justify-center items-center mb-8 h-12">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5c/Bank_Central_Asia.svg/1200px-Bank_Central_Asia.svg.png"
+                                class="h-8 object-contain opacity-70 group-hover:opacity-100 transition-opacity"
+                                alt="BCA">
+                        </div>
+
+                        <div class="space-y-2 mb-10">
+                            <h3 id="rek-2" class="text-2xl md:text-3xl font-sans font-bold text-primary tracking-widest">
+                                0987654321</h3>
+                            <p class="text-xs text-secondary font-medium uppercase tracking-widest">a.n Juliet Capulet
+                            </p>
+                        </div>
+
+                        <button onclick="copyToClipboard('rek-2', this)"
+                            class="w-full py-3.5 bg-bg border border-borderLight text-primary rounded-sm font-semibold text-xs uppercase tracking-[0.1em] transition-all hover:bg-accent hover:text-white hover:border-accent flex items-center justify-center gap-2">
+                            <i class="fa-regular fa-copy"></i>
+                            <span>Salin Nomor</span>
+                        </button>
+                    </div>
+
+                </div>
+
+                <div id="copy-toast"
+                    class="fixed bottom-12 left-1/2 -translate-x-1/2 z-[300] px-8 py-3 bg-accent text-white text-xs rounded-sm shadow-xl font-semibold uppercase tracking-widest opacity-0 translate-y-10 transition-all duration-500 pointer-events-none flex items-center gap-3">
+                    <i class="fa-solid fa-check"></i> Tersalin ke Clipboard
+                </div>
+            </div>
+        </section>
+
+        <script>
+            function copyToClipboard(elementId, btn) {
+                const text = document.getElementById(elementId).innerText;
+                const toast = document.getElementById('copy-toast');
+
+                navigator.clipboard.writeText(text).then(() => {
+                    const originalContent = btn.innerHTML;
+                    btn.classList.replace('bg-bg', 'bg-accent');
+                    btn.classList.replace('text-primary', 'text-white');
+                    btn.classList.replace('border-borderLight', 'border-accent');
+                    btn.innerHTML = '<i class="fa-solid fa-check"></i> <span>Tersalin!</span>';
+
+                    toast.classList.remove('opacity-0', 'translate-y-10');
+                    toast.classList.add('opacity-100', 'translate-y-0');
+
+                    setTimeout(() => {
+                        btn.classList.replace('bg-accent', 'bg-bg');
+                        btn.classList.replace('text-white', 'text-primary');
+                        btn.classList.replace('border-accent', 'border-borderLight');
+                        btn.innerHTML = originalContent;
+
+                        toast.classList.add('opacity-0', 'translate-y-10');
+                        toast.classList.remove('opacity-100', 'translate-y-0');
+                    }, 2500);
+                });
+            }
+        </script>
+
+        <section id="kirim-kado" class="py-24 px-6 bg-card border-y border-borderLight relative overflow-hidden">
+            <div class="max-w-5xl mx-auto relative z-10">
+                <div class="text-center mb-16">
+                    <div class="flex items-center justify-center gap-3 mb-4">
+                        <span class="text-[10px] tracking-[0.3em] uppercase text-accent font-semibold">Gift Registry</span>
+                    </div>
+                    <h2 class="text-3xl md:text-4xl font-serif text-primary mb-6">Kirim Kado
+                    </h2>
+                    <div class="w-16 h-px bg-accent mx-auto mb-6"></div>
+                    <p class="text-sm md:text-base text-secondary font-light leading-relaxed max-w-2xl mx-auto">
+                        Kehadiran Anda adalah kado terbesar. Namun bagi Anda yang ingin mengirimkan tanda kasih fisik,
+                        kami telah menyediakan alamat pengiriman dan daftar kebutuhan kami.
+                    </p>
+                </div>
+
+                <div class="flex flex-col items-center gap-8">
+                    <div
+                        class="group relative p-10 bg-white rounded-2xl border border-borderLight max-w-2xl w-full transition-all duration-500 hover:border-accent hover:shadow-xl shadow-sm">
+                        <div
+                            class="w-16 h-16 bg-bg rounded-full flex items-center justify-center mx-auto mb-6 border border-borderLight group-hover:bg-accent group-hover:text-white transition-colors group-hover:border-accent text-accent">
+                            <i class="fa-solid fa-box-open text-2xl"></i>
+                        </div>
+
+                        <p class="text-[10px] text-center uppercase tracking-[0.3em] text-secondary mb-4 font-semibold">
+                            Alamat Pengiriman</p>
+
+                        <div id="alamat-kado"
+                            class="text-lg md:text-xl text-primary font-serif italic text-center leading-relaxed mb-10">
+                            Jl. Gegerkalong Hilir No. 123,<br>
+                            Sukasari, Kota Bandung, Jawa Barat 40153
+                        </div>
+
+                        <div class="flex flex-col sm:flex-row justify-center gap-4">
+                            <button onclick="copyToClipboard('alamat-kado', this)"
+                                class="px-8 py-3.5 bg-bg text-primary border border-borderLight rounded-sm font-semibold text-[10px] uppercase tracking-widest transition-all hover:bg-slate-100 active:scale-95 flex items-center justify-center gap-2">
+                                <i class="fa-regular fa-copy"></i> Salin Alamat
+                            </button>
+                            <button onclick="toggleGiftModal(true)"
+                                class="px-8 py-3.5 bg-accent text-white rounded-sm font-semibold text-[10px] uppercase tracking-widest transition-all hover:bg-accentHover active:scale-95 shadow-md flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-list"></i> Daftar Kebutuhan
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="gift-modal" class="fixed inset-0 z-[500] hidden flex items-center justify-center p-4">
+                <div class="absolute inset-0 bg-primary/40 backdrop-blur-sm" onclick="toggleGiftModal(false)"></div>
+
+                <div
+                    class="relative bg-white w-full max-w-lg rounded-2xl border border-borderLight overflow-hidden shadow-2xl flex flex-col max-h-[85vh] animate-slide-up">
+
+                    <div class="p-8 border-b border-borderLight bg-bg sticky top-0 z-20">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <h3 class="text-2xl font-serif text-primary">Wishlist Kami</h3>
+                                <p class="text-[10px] text-accent uppercase tracking-widest mt-1 font-semibold">Wedding Registry</p>
+                            </div>
+                            <button onclick="toggleGiftModal(false)"
+                                class="w-10 h-10 flex items-center justify-center rounded-full bg-white border border-borderLight text-secondary hover:text-accent transition-all shadow-sm">
+                                <i class="fa-solid fa-xmark"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="flex-1 overflow-y-auto p-6 custom-scrollbar space-y-4">
+
+                        <div id="item-1"
+                            class="p-5 rounded-xl border border-borderLight bg-white flex items-center justify-between gap-4 transition-all hover:shadow-md group">
+                            <div>
+                                <h4
+                                    class="text-sm font-bold text-primary tracking-wide group-hover:text-accent transition-colors">
+                                    Air Fryer Digital</h4>
+                                <p class="text-[10px] text-secondary font-medium mt-1">Kapasitas 4L - Putih/Cream</p>
+                            </div>
+                            <button onclick="confirmGift('item-1', 'Air Fryer Digital')"
+                                class="shrink-0 px-5 py-2.5 bg-white border border-accent text-accent rounded-sm text-[10px] font-semibold uppercase tracking-widest hover:bg-accent hover:text-white transition-all">
+                                Pilih
+                            </button>
+                        </div>
+
+                        <div id="item-2"
+                            class="p-5 rounded-xl border border-borderLight bg-white flex items-center justify-between gap-4 transition-all hover:shadow-md group">
+                            <div>
+                                <h4
+                                    class="text-sm font-bold text-primary tracking-wide group-hover:text-accent transition-colors">
+                                    Set Sprei King Size</h4>
+                                <p class="text-[10px] text-secondary font-medium mt-1">Bahan Tencel - Earth Tone</p>
+                            </div>
+                            <button onclick="confirmGift('item-2', 'Set Sprei King Size')"
+                                class="shrink-0 px-5 py-2.5 bg-white border border-accent text-accent rounded-sm text-[10px] font-semibold uppercase tracking-widest hover:bg-accent hover:text-white transition-all">
+                                Pilih
+                            </button>
+                        </div>
+
+                    </div>
+
+                    <div class="p-6 bg-bg text-center border-t border-borderLight">
+                        <p class="text-[10px] text-secondary font-serif italic tracking-wide">Thank You for Your Kindness</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="confirm-modal" class="fixed inset-0 z-[600] hidden flex items-center justify-center p-6">
+                <div class="absolute inset-0 bg-primary/60 backdrop-blur-md"></div>
+                <div
+                    class="relative bg-white w-full max-w-sm rounded-2xl p-10 text-center shadow-2xl border border-borderLight">
+                    <div
+                        class="w-16 h-16 bg-bg border border-accent text-accent rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i class="fa-solid fa-heart text-2xl"></i>
+                    </div>
+                    <h4 class="text-xl font-serif text-primary mb-3">Niat Baik Anda</h4>
+                    <p id="confirm-text" class="text-sm text-secondary font-light leading-relaxed mb-8">
+                        Apakah Anda yakin ingin memberikan kado ini? Nama Anda akan dicatat dalam daftar syukur kami.
+                    </p>
+                    <div class="flex flex-col gap-3">
+                        <button id="final-confirm-btn"
+                            class="w-full py-3.5 bg-accent text-white rounded-sm font-semibold text-[10px] uppercase tracking-widest transition-all hover:bg-accentHover shadow-md">
+                            Ya, Saya Bersedia
+                        </button>
+                        <button onclick="closeConfirmModal()"
+                            class="w-full py-3.5 bg-transparent text-secondary font-semibold text-[10px] uppercase tracking-widest hover:text-primary transition-all border border-transparent hover:border-borderLight rounded-sm">
+                            Batalkan
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="gift-toast"
+                class="fixed bottom-10 left-1/2 -translate-x-1/2 z-[700] px-8 py-4 bg-primary text-white rounded-sm shadow-xl text-xs font-semibold tracking-wide opacity-0 transition-all duration-500 pointer-events-none text-center">
+                Terima kasih atas ketulusan Anda!
+            </div>
+        </section>
+
+
+        <section id="guest-info" class="py-24 px-6 md:px-20 bg-bg relative overflow-hidden">
+            <div class="max-w-6xl mx-auto relative z-10">
+
+                <div class="mb-16 text-center md:text-left">
+                    <h2 class="text-3xl md:text-4xl font-serif text-primary mb-4">Informasi Tamu</h2>
+                    <div class="w-16 h-px bg-accent mx-auto md:mx-0 mb-6"></div>
+                    <p class="text-secondary font-light max-w-xl">Hal-hal yang perlu diperhatikan demi kenyamanan dan kekhidmatan acara.</p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-12">
+
+                    <div class="lg:col-span-2 space-y-12">
+                        <div class="bg-white p-8 rounded-2xl border border-borderLight shadow-sm">
+                            <div class="flex items-center gap-3 mb-4">
+                                <i class="fa-solid fa-shirt text-accent text-xl"></i>
+                                <h4 class="text-primary uppercase tracking-[0.1em] text-sm font-semibold">Dresscode</h4>
+                            </div>
+                            <p class="text-secondary text-lg font-light leading-relaxed">
+                                <span class="font-bold text-primary">Formal & Elegant.</span> "Your presence is our greatest gift, your elegance completes our joy." Kami memohon kehadiran Anda dengan busana terbaik.
+                            </p>
+                        </div>
+
+                        <div>
+                            <h5 class="text-primary text-sm font-semibold uppercase tracking-widest mb-6 border-b border-borderLight pb-2">Protokol Kesehatan</h5>
+                            <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                                <div id="protokol-cuci-tangan"
+                                    class="flex flex-col items-center text-center gap-3 bg-white p-6 rounded-xl border border-borderLight shadow-sm">
+                                    <i class="fa-solid fa-hands-bubbles text-accent text-2xl"></i>
+                                    <span class="text-primary text-[10px] uppercase font-semibold">Cuci Tangan</span>
+                                </div>
+                                <div id="protokol-pakai-masker"
+                                    class="flex flex-col items-center text-center gap-3 bg-white p-6 rounded-xl border border-borderLight shadow-sm">
+                                    <i class="fa-solid fa-head-side-mask text-accent text-2xl"></i>
+                                    <span class="text-primary text-[10px] uppercase font-semibold">Pakai Masker</span>
+                                </div>
+                                <div id="protokol-jaga-jarak"
+                                    class="flex flex-col items-center text-center gap-3 bg-white p-6 rounded-xl border border-borderLight shadow-sm">
+                                    <i class="fa-solid fa-people-arrows text-accent text-2xl"></i>
+                                    <span class="text-primary text-[10px] uppercase font-semibold">Jaga Jarak</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="space-y-8 bg-card p-8 rounded-2xl border border-borderLight shadow-sm">
+                        <h5 class="text-primary text-sm font-semibold uppercase tracking-widest flex items-center gap-3 border-b border-borderLight pb-4">
+                            <i class="fa-solid fa-list-check text-accent"></i> Adab Walimah
+                        </h5>
+
+                        <div class="space-y-6">
+                            <div class="flex gap-4 items-start">
+                                <div class="text-accent text-lg w-6 shrink-0 mt-0.5"><i class="fa-solid fa-mosque"></i></div>
+                                <div>
+                                    <p class="text-primary font-bold text-xs uppercase">Waktu Sholat</p>
+                                    <p class="text-secondary text-[11px] leading-relaxed mt-1 font-light">Memperhatikan waktu ibadah saat acara.</p>
+                                </div>
+                            </div>
+                            <div class="flex gap-4 items-start">
+                                <div class="text-accent text-lg w-6 shrink-0 mt-0.5"><i class="fa-solid fa-utensils"></i></div>
+                                <div>
+                                    <p class="text-primary font-bold text-xs uppercase">Adab Makan</p>
+                                    <p class="text-secondary text-[11px] leading-relaxed mt-1 font-light">Makan & minum dengan cara duduk sopan.</p>
+                                </div>
+                            </div>
+                            <div class="flex gap-4 items-start">
+                                <div class="text-accent text-lg w-6 shrink-0 mt-0.5"><i class="fa-solid fa-hands-praying"></i></div>
+                                <div>
+                                    <p class="text-primary font-bold text-xs uppercase">Doa Restu</p>
+                                    <p class="text-secondary text-[11px] leading-relaxed mt-1 font-light">Memberikan doa keberkahan bagi kami.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <section id="qr-tamu" class="py-24 px-6 bg-card border-y border-borderLight relative overflow-hidden">
+            <div class="max-w-4xl mx-auto text-center relative z-10">
+                <div class="mb-16">
+                    <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-bg border border-borderLight mb-6 shadow-sm">
+                        <i class="fa-solid fa-qrcode text-accent text-2xl"></i>
+                    </div>
+                    <h2 class="text-3xl md:text-4xl font-serif text-primary mb-4">Akses Undangan</h2>
+                    <div class="h-px w-16 bg-accent mx-auto mb-6"></div>
+                    <p class="text-secondary text-sm font-light leading-relaxed max-w-md mx-auto">
+                        Tunjukkan kode akses unik Anda di bawah ini kepada petugas untuk proses verifikasi kehadiran.
+                    </p>
+                </div>
+
+                <div class="flex justify-center">
+                    <div class="bg-white p-10 rounded-2xl border border-borderLight shadow-xl max-w-sm w-full mx-auto">
+                        <div class="relative flex flex-col items-center">
+                            <div class="p-4 border border-borderLight rounded-xl mb-8 shadow-inner bg-bg">
+                                <img id="qr-image"
+                                    src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=Tamu"
+                                    class="w-40 h-40 object-contain" alt="QR Code Tamu">
+                            </div>
+
+                            <div class="space-y-2 mb-8 text-center">
+                                <span class="text-[10px] uppercase tracking-[0.3em] text-accent font-semibold block">Guest Identity</span>
+                                <h3 id="guest-name-qr" class="text-2xl font-serif text-primary italic">Tamu Undangan</h3>
+                            </div>
+
+                            <div class="w-full py-3 bg-bg border border-borderLight rounded-sm text-center text-secondary">
+                                <p class="text-[9px] uppercase tracking-widest font-semibold">Verify RSVP Status</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <section id="rsvp-modal"
+            class="fixed inset-0 z-[100] invisible transition-all duration-500 overflow-hidden flex items-end md:items-center justify-center">
+            <div onclick="closeRSVP()"
+                class="absolute inset-0 bg-primary/60 backdrop-blur-sm opacity-0 transition-opacity duration-500"
+                id="rsvp-overlay"></div>
+
+            <div id="rsvp-content"
+                class="relative w-full md:max-w-xl lg:max-w-2xl h-[92vh] md:h-auto max-h-[95vh] bg-white rounded-t-[2rem] md:rounded-2xl border border-borderLight shadow-2xl transform translate-y-full transition-transform duration-700 ease-[cubic-bezier(0.23,1,0.32,1)] flex flex-col">
+
+                <div class="overflow-y-auto px-8 pb-10 pt-6 custom-scrollbar">
+                    <div class="w-12 h-1.5 bg-borderLight rounded-full mx-auto mb-8 md:hidden"></div>
+
+                    <div class="text-center mb-10 border-b border-borderLight pb-6">
+                        <h2 class="text-3xl font-serif text-primary mb-2">RSVP</h2>
+                        <p class="text-secondary text-xs uppercase tracking-widest">Confirmation & Wishes</p>
+                    </div>
+
+                    <form id="form-rsvp" class="space-y-8">
+                        <div class="space-y-2">
+                            <label class="text-[10px] font-semibold text-secondary uppercase tracking-widest">Nama Lengkap</label>
+                            <input type="text" id="input-nama-rsvp" placeholder="Masukkan nama Anda"
+                                class="w-full bg-bg border border-borderLight focus:border-accent p-4 text-primary text-sm outline-none transition-all rounded-sm shadow-inner">
+                        </div>
+
+                        <div class="space-y-3">
+                            <label class="text-[10px] font-semibold text-secondary uppercase tracking-widest">Konfirmasi Kehadiran</label>
+                            <div class="grid grid-cols-2 gap-4">
+                                <button type="button" onclick="selectAttendance('Hadir')" id="btn-hadir"
+                                    class="py-3.5 rounded-sm border border-borderLight text-xs font-semibold uppercase tracking-widest transition-all bg-transparent text-secondary active:scale-95 hover:border-accent">
+                                    <i class="fa-solid fa-check mr-2"></i> Hadir
+                                </button>
+                                <button type="button" onclick="selectAttendance('Tidak Hadir')" id="btn-absen"
+                                    class="py-3.5 rounded-sm border border-borderLight text-xs font-semibold uppercase tracking-widest transition-all bg-transparent text-secondary active:scale-95 hover:border-accent">
+                                    <i class="fa-solid fa-xmark mr-2"></i> Absen
+                                </button>
+                            </div>
+                        </div>
+
+                        <div id="guest-selection" class="hidden transition-all duration-500 overflow-hidden">
+                            <div class="bg-bg p-5 rounded-xl border border-borderLight space-y-4">
+                                <p class="text-[10px] uppercase tracking-widest text-primary text-center font-semibold">Jumlah Tamu</p>
+                                <div class="flex gap-3">
+                                    <button type="button" class="guest-btn flex-1 py-2 rounded border border-borderLight bg-white text-secondary text-sm font-semibold hover:border-accent hover:text-accent transition-all">1</button>
+                                    <button type="button" class="guest-btn flex-1 py-2 rounded border border-borderLight bg-white text-secondary text-sm font-semibold hover:border-accent hover:text-accent transition-all">2</button>
+                                    <button type="button" class="guest-btn flex-1 py-2 rounded border border-borderLight bg-white text-secondary text-sm font-semibold hover:border-accent hover:text-accent transition-all">3+</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="space-y-2">
+                            <label class="text-[10px] font-semibold text-secondary uppercase tracking-widest">Doa & Ucapan</label>
+                            <textarea id="input-pesan-rsvp" rows="3" placeholder="Tuliskan pesan bahagia..."
+                                class="w-full bg-bg border border-borderLight focus:border-accent p-4 text-primary text-sm outline-none transition-all rounded-sm resize-none shadow-inner"></textarea>
+                        </div>
+
+                        <div class="flex flex-col gap-3 pt-4 border-t border-borderLight">
+                            <button type="submit"
+                                class="w-full py-4 bg-accent text-white rounded-sm font-semibold text-xs uppercase tracking-[0.2em] shadow-md hover:bg-accentHover active:scale-95 transition-all">
+                                Kirim Konfirmasi
+                            </button>
+                            <button type="button" onclick="closeRSVP()"
+                                class="w-full py-3 bg-transparent text-secondary border border-transparent hover:border-borderLight rounded-sm font-semibold text-[10px] uppercase tracking-widest hover:text-primary transition-all">
+                                Batal
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+
+        <footer class="py-20 px-6 bg-white border-t border-borderLight text-center relative overflow-hidden">
+            <div class="max-w-4xl mx-auto relative z-10">
+
+                <div class="mb-12 flex flex-col items-center">
+                    <div class="flex items-center gap-4 mb-4">
+                        <span class="w-10 h-px bg-accent"></span>
+                        <h2 class="text-4xl md:text-5xl font-serif text-primary uppercase tracking-widest">R & J</h2>
+                        <span class="w-10 h-px bg-accent"></span>
+                    </div>
+                </div>
+
+                <div class="mb-16">
+                    <p class="text-base md:text-lg font-serif italic text-secondary mb-8 leading-relaxed max-w-xl mx-auto px-4">
+                        "Merupakan suatu kehormatan dan kebahagiaan bagi kami apabila Bapak/Ibu/Saudara/i berkenan hadir dan memberikan doa restu."
+                    </p>
+                </div>
+
+                <div class="mb-16 space-y-3">
+                    <h3 class="text-2xl md:text-3xl font-serif text-primary">Romeo & Juliet</h3>
+                    <p class="text-[10px] text-secondary uppercase tracking-[0.2em] font-medium">Beserta Keluarga Besar</p>
+                </div>
+
+                <div class="flex flex-col items-center">
+                    <div class="p-6 rounded-xl bg-bg border border-borderLight w-full max-w-xs shadow-sm">
+                        <p class="text-[9px] text-secondary font-semibold uppercase tracking-widest mb-3">Created By</p>
+                        <a href="https://www.instagram.com/ruangrestu.undangan" target="_blank" rel="noopener noreferrer" class="block group">
+                            <div class="flex items-center justify-center gap-2 text-xs font-medium text-primary group-hover:text-accent transition-colors">
+                                <i class="fa-brands fa-instagram"></i>
+                                <span class="tracking-wide">@ruangrestu.undangan</span>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="mt-16 pt-8 border-t border-borderLight">
+                    <p class="text-[10px] text-secondary font-medium tracking-widest uppercase">
+                        &copy; 2026 The Wedding. All Rights Reserved.
+                    </p>
+                </div>
+            </div>
+        </footer>
+
+    </main>
+
+    <div id="fab-container" class="fixed right-6 bottom-28 flex flex-col gap-4 z-40 opacity-0 transition-opacity duration-1000">
+        <div class="relative flex items-center group">
+            <div id="music-info"
+                class="absolute right-full mr-3 px-4 py-2 bg-white/90 backdrop-blur border border-borderLight rounded shadow-sm text-primary text-xs whitespace-nowrap opacity-0 translate-x-4 pointer-events-none transition-all duration-500 group-hover:opacity-100 group-hover:translate-x-0 font-medium">
+                Beautiful in White - Westlife
+            </div>
+
+            <button id="btn-music" onclick="toggleMusic()"
+                class="w-12 h-12 bg-white border border-borderLight rounded-full flex items-center justify-center text-accent shadow-md hover:bg-bg transition-all">
+                <i class="fa-solid fa-music animate-spin-slow" id="icon-music"></i>
+            </button>
+        </div>
+
+        <button id="btn-scroll" onclick="toggleAutoScroll()"
+            class="w-12 h-12 bg-white border border-borderLight rounded-full flex items-center justify-center text-accent shadow-md hover:bg-bg transition-all">
+            <i class="fa-solid fa-angles-down" id="icon-scroll"></i>
+        </button>
+    </div>
+
+    <div id="lightbox" class="fixed inset-0 z-[200] hidden flex-col items-center justify-center bg-white/95 backdrop-blur-md p-4 transition-all duration-500">
+        <div class="w-full flex justify-between items-center p-6 absolute top-0 left-0">
+            <span class="text-primary font-bold tracking-widest text-sm"><span id="current-count">1</span> / <span id="total-count">4</span></span>
+            <button onclick="closeLightbox()" class="text-primary hover:text-accent transition-colors text-3xl">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <div class="relative w-full max-w-5xl flex items-center justify-center h-[80vh]">
+            <img id="lightbox-img" src="" class="max-h-full max-w-full object-contain transition-opacity duration-300 shadow-2xl rounded" alt="Zoomed Photo">
+        </div>
+
+        <div class="absolute bottom-10 flex gap-6">
+            <button onclick="prevImg()" class="w-12 h-12 rounded-full border border-primary text-primary hover:bg-primary hover:text-white flex items-center justify-center transition-colors shadow-sm">
+                <i class="fa-solid fa-chevron-left"></i>
+            </button>
+            <button onclick="nextImg()" class="w-12 h-12 rounded-full border border-primary text-primary hover:bg-primary hover:text-white flex items-center justify-center transition-colors shadow-sm">
+                <i class="fa-solid fa-chevron-right"></i>
+            </button>
+        </div>
+    </div>
+
+    <nav id="bottom-nav" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-[90] transition-all duration-700 translate-y-32">
+        <div class="bg-white/90 backdrop-blur-md border border-borderLight rounded-full shadow-lg p-1">
+            <ul class="flex justify-around items-center h-14 w-[300px] md:w-[380px]">
+                <li class="relative group h-full">
+                    <a href="#home" class="nav-link flex items-center justify-center w-14 h-full text-secondary hover:text-accent transition-all rounded-full hover:bg-bg">
+                        <i class="fa-solid fa-house text-lg"></i>
+                    </a>
+                </li>
+                <li class="relative group h-full">
+                    <a href="#gallery" class="nav-link flex items-center justify-center w-14 h-full text-secondary hover:text-accent transition-all rounded-full hover:bg-bg">
+                        <i class="fa-solid fa-image text-lg"></i>
+                    </a>
+                </li>
+                <li class="relative group h-full">
+                    <a href="#lokasi" class="nav-link flex items-center justify-center w-14 h-full text-secondary hover:text-accent transition-all rounded-full hover:bg-bg">
+                        <i class="fa-solid fa-location-dot text-lg"></i>
+                    </a>
+                </li>
+                <li class="relative h-full px-1 flex items-center">
+                    <a href="javascript:void(0)" onclick="openRSVP()" class="flex items-center justify-center px-6 h-10 bg-accent text-white rounded-full text-[10px] font-bold uppercase tracking-widest hover:bg-accentHover shadow-md transition-all active:scale-95">
+                        RSVP
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <div id="copy-toast" class="fixed bottom-24 left-1/2 -translate-x-1/2 z-[300] px-6 py-3 bg-accent text-white text-xs rounded shadow-lg font-semibold uppercase tracking-widest opacity-0 translate-y-10 transition-all duration-500 pointer-events-none flex items-center gap-2">
+        <i class="fa-solid fa-check-circle"></i> Tersalin!
+    </div>
+
+    <script>
+        // Data Stats
+        let countAttendance = 142;
+        let countWishes = 89;
+
+        document.getElementById('total-attendance').innerText = countAttendance;
+        document.getElementById('total-wishes').innerText = countWishes;
+
+        function updateGuestStats(statusHadir) {
+            countWishes++;
+            document.getElementById('total-wishes').innerText = countWishes;
+            if (statusHadir === "hadir") {
+                countAttendance++;
+                document.getElementById('total-attendance').innerText = countAttendance;
+            }
+            const statsNumbers = document.querySelectorAll('#guest-stats h4');
+            statsNumbers.forEach(num => {
+                num.classList.add('text-accent', 'scale-110');
+                setTimeout(() => num.classList.remove('text-accent', 'scale-110'), 700);
+            });
+        }
+    </script>
+    <script>
+        // Guest Info & QR Setup
+        const urlParams = new URLSearchParams(window.location.search);
+        let guestName = urlParams.get('to') ? decodeURIComponent(urlParams.get('to')) : 'Tamu Undangan';
+
+        const qrNameDisplay = document.getElementById('guest-name-qr');
+        if (qrNameDisplay) qrNameDisplay.innerText = guestName;
+
+        const qrImage = document.getElementById('qr-image');
+        if (qrImage) qrImage.src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(guestName)}`;
+
+        const coverName = document.getElementById('guest-name');
+        if (coverName) coverName.innerText = guestName;
+
+        const inputRSVP = document.getElementById('input-nama-rsvp');
+        if (inputRSVP) inputRSVP.value = guestName !== 'Tamu Undangan' ? guestName : '';
+
+        // Media & Scroll Controls
+        const audio = document.getElementById('bg-music');
+        let isMusicPlaying = false;
+        let isAutoScrolling = false;
+        let scrollInterval;
+
+        function openInvitation() {
+            document.getElementById('cover-page').classList.add('-translate-y-full');
+            document.body.style.overflowY = 'auto';
+            document.getElementById('main-content').classList.remove('opacity-0');
+            document.getElementById('fab-container').classList.remove('opacity-0');
+            document.getElementById('bottom-nav').classList.remove('translate-y-32');
+            toggleMusic(true);
+            toggleAutoScroll(true);
+        }
+
+        function toggleMusic(forcePlay = false) {
+            const btn = document.getElementById('btn-music');
+            const icon = document.getElementById('icon-music');
+            if (isMusicPlaying && !forcePlay) {
+                audio.pause();
+                isMusicPlaying = false;
+                icon.classList.remove('fa-music', 'animate-spin');
+                icon.classList.add('fa-volume-xmark');
+                btn.classList.remove('bg-accent', 'text-white');
+                btn.classList.add('bg-white', 'text-accent');
+            } else {
+                audio.play().then(() => {
+                    isMusicPlaying = true;
+                    icon.classList.remove('fa-volume-xmark');
+                    icon.classList.add('fa-music', 'animate-spin');
+                    btn.classList.add('bg-accent', 'text-white');
+                    btn.classList.remove('bg-white', 'text-accent');
+                }).catch(() => console.log("Autoplay blocked"));
+            }
+        }
+
+        function toggleAutoScroll(forceStart = false) {
+            const btn = document.getElementById('btn-scroll');
+            const icon = document.getElementById('icon-scroll');
+            if (isAutoScrolling && !forceStart) {
+                clearInterval(scrollInterval);
+                isAutoScrolling = false;
+                btn.classList.remove('bg-accent', 'text-white');
+                btn.classList.add('bg-white', 'text-accent');
+                icon.classList.remove('fa-pause');
+                icon.classList.add('fa-angles-down');
+            } else {
+                isAutoScrolling = true;
+                btn.classList.add('bg-accent', 'text-white');
+                btn.classList.remove('bg-white', 'text-accent');
+                icon.classList.remove('fa-angles-down');
+                icon.classList.add('fa-pause');
+                scrollInterval = setInterval(() => {
+                    window.scrollBy({ top: 1, behavior: 'auto' });
+                    if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) toggleAutoScroll();
+                }, 35);
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const musicInfo = document.getElementById('music-info');
+            setTimeout(() => {
+                musicInfo.classList.remove('opacity-0', 'translate-x-4', 'pointer-events-none');
+                musicInfo.classList.add('opacity-100', 'translate-x-0');
+                setTimeout(() => {
+                    musicInfo.classList.remove('opacity-100', 'translate-x-0');
+                    musicInfo.classList.add('opacity-0', 'translate-x-4', 'pointer-events-none');
+                    setTimeout(() => musicInfo.classList.remove('pointer-events-none'), 500);
+                }, 3000);
+            }, 1200);
+        });
+
+        window.addEventListener('wheel', () => { if (isAutoScrolling) toggleAutoScroll(); }, { passive: true });
+        window.addEventListener('touchmove', () => { if (isAutoScrolling) toggleAutoScroll(); }, { passive: true });
+
+        // Lightbox
+        const images = Array.from(document.querySelectorAll('.gallery-img')).map(img => img.src);
+        let currentIndex = 0;
+
+        function openLightbox(index) {
+            currentIndex = index;
+            updateLightbox();
+            const modal = document.getElementById('lightbox');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeLightbox() {
+            const modal = document.getElementById('lightbox');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+            document.body.style.overflow = 'auto';
+        }
+
+        function updateLightbox() {
+            const imgElement = document.getElementById('lightbox-img');
+            document.getElementById('current-count').innerText = currentIndex + 1;
+            document.getElementById('total-count').innerText = images.length;
+            imgElement.style.opacity = '0';
+            setTimeout(() => {
+                imgElement.src = images[currentIndex];
+                imgElement.style.opacity = '1';
+            }, 200);
+        }
+
+        function nextImg() { currentIndex = (currentIndex + 1) % images.length; updateLightbox(); }
+        function prevImg() { currentIndex = (currentIndex - 1 + images.length) % images.length; updateLightbox(); }
+
+        document.addEventListener('keydown', (e) => {
+            if (document.getElementById('lightbox').classList.contains('hidden')) return;
+            if (e.key === "ArrowRight") nextImg();
+            if (e.key === "ArrowLeft") prevImg();
+            if (e.key === "Escape") closeLightbox();
+        });
+    </script>
+    <script>
+        // RSVP Scripts
+        let hasShownRSVPAtEnd = false;
+
+        function openRSVP() {
+            const modal = document.getElementById('rsvp-modal');
+            const overlay = document.getElementById('rsvp-overlay');
+            const content = document.getElementById('rsvp-content');
+            modal.classList.remove('invisible');
+            setTimeout(() => {
+                overlay.classList.replace('opacity-0', 'opacity-100');
+                content.classList.replace('translate-y-full', 'translate-y-0');
+            }, 10);
+        }
+
+        function closeRSVP() {
+            const overlay = document.getElementById('rsvp-overlay');
+            const content = document.getElementById('rsvp-content');
+            const modal = document.getElementById('rsvp-modal');
+            overlay.classList.replace('opacity-100', 'opacity-0');
+            content.classList.replace('translate-y-0', 'translate-y-full');
+            setTimeout(() => modal.classList.add('invisible'), 500);
+        }
+
+        function selectAttendance(status) {
+            const btnHadir = document.getElementById('btn-hadir');
+            const btnAbsen = document.getElementById('btn-absen');
+            const guestDiv = document.getElementById('guest-selection');
+
+            [btnHadir, btnAbsen].forEach(btn => {
+                btn.classList.remove('bg-accent', 'text-white', 'border-accent');
+                btn.classList.add('bg-transparent', 'text-secondary', 'border-borderLight');
+            });
+
+            if (status === 'Hadir') {
+                btnHadir.classList.remove('bg-transparent', 'text-secondary', 'border-borderLight');
+                btnHadir.classList.add('bg-accent', 'text-white', 'border-accent');
+                guestDiv.classList.remove('hidden');
+            } else {
+                btnAbsen.classList.remove('bg-transparent', 'text-secondary', 'border-borderLight');
+                btnAbsen.classList.add('bg-accent', 'text-white', 'border-accent');
+                guestDiv.classList.add('hidden');
+            }
+        }
+
+        window.addEventListener('scroll', () => {
+            if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 100) {
+                if (!hasShownRSVPAtEnd) {
+                    openRSVP();
+                    hasShownRSVPAtEnd = true;
+                    if (isAutoScrolling) toggleAutoScroll();
+                }
+            }
+        }, { passive: true });
+
+        document.querySelectorAll('.guest-btn').forEach(btn => {
+            btn.addEventListener('click', function () {
+                document.querySelectorAll('.guest-btn').forEach(b => {
+                    b.classList.remove('bg-accent', 'text-white', 'border-accent');
+                    b.classList.add('bg-white', 'text-secondary', 'border-borderLight');
+                });
+                this.classList.remove('bg-white', 'text-secondary', 'border-borderLight');
+                this.classList.add('bg-accent', 'text-white', 'border-accent');
+            });
+        });
+    </script>
+    <script>
+        // Gift Modal & Claim Scripts
+        let currentSelectedItemId = null;
+        let currentSelectedItemName = '';
+
+        function confirmGift(id, name) {
+            currentSelectedItemId = id;
+            currentSelectedItemName = name;
+            const guestN = urlParams.get('to') ? decodeURIComponent(urlParams.get('to')) : "Tamu Undangan";
+            const confirmText = document.getElementById('confirm-text');
+            confirmText.innerHTML = `Terima kasih atas niat baiknya, <b>${guestN}</b>.<br><br>Apakah Anda yakin ingin mengirimkan <b>${name}</b> sebagai tanda kasih? Nama Anda akan kami catat dengan penuh rasa syukur.`;
+
+            document.getElementById('confirm-modal').classList.remove('hidden');
+            document.getElementById('final-confirm-btn').onclick = () => processClaim(guestN, name);
+        }
+
+        function closeConfirmModal() {
+            document.getElementById('confirm-modal').classList.add('hidden');
+        }
+
+        function processClaim(guestName, giftName) {
+            const itemElement = document.getElementById(currentSelectedItemId);
+            if (itemElement) {
+                const actionArea = itemElement.querySelector('button');
+                actionArea.outerHTML = `
+                    <div class="flex items-center gap-2 text-green-700 animate-pulse bg-green-50 px-3 py-1.5 rounded-sm">
+                        <span class="text-[9px] font-bold uppercase tracking-widest">Tercatat</span>
+                        <i class="fa-solid fa-circle-check text-sm"></i>
+                    </div>
+                `;
+                itemElement.classList.add('border-green-200', 'bg-green-50/50');
+            }
+
+            closeConfirmModal();
+            const toast = document.getElementById('gift-toast');
+            toast.innerHTML = `Hati kami sangat tersentuh, ${guestName}.<br>Kado "${giftName}" telah tercatat atas nama Anda.`;
+            toast.style.opacity = '1';
+            toast.style.transform = 'translate(-50%, -20px)';
+
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translate(-50%, 40px)';
+                setTimeout(() => toggleGiftModal(false), 500);
+            }, 4000);
+        }
+
+        function toggleGiftModal(show) {
+            const modal = document.getElementById('gift-modal');
+            if (show) {
+                modal.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+            } else {
+                modal.classList.add('hidden');
+                document.body.style.overflow = 'auto';
+            }
+        }
+    </script>
+    <script>
+        function switchPlatform(id, title, desc, iconClass, link) {
+            const display = document.getElementById('streaming-display');
+            display.style.opacity = '0';
+            display.style.transform = 'scale(0.98)';
+
+            setTimeout(() => {
+                document.getElementById('platform-title').innerText = title;
+                document.getElementById('platform-desc').innerText = desc;
+                document.getElementById('platform-icon').className = iconClass + ' text-5xl text-accent';
+                document.getElementById('platform-link').href = link;
+
+                display.style.opacity = '1';
+                display.style.transform = 'scale(1)';
+            }, 400);
+        }
+    </script>
+</body>
+</html>
