@@ -344,6 +344,50 @@
                     </p>
                 </div>
 
+                {{-- GRID KATALOG TEMA --}}
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16 max-w-6xl mx-auto" id="template-grid">
+                    @forelse($templates as $template)
+                        <div class="template-card group relative bg-white rounded-[2.5rem] overflow-hidden border border-slate-100 transition-all duration-500 hover:shadow-2xl hover:shadow-rOrange/10 hover:-translate-y-2 text-left">
+                            
+                            {{-- Iframe Preview --}}
+                            <div class="h-[350px] overflow-hidden relative bg-stone-100">
+                                <div class="absolute inset-0 w-full h-full transition-transform duration-700 group-hover:scale-110">
+                                    <div class="absolute inset-0 w-full h-full pointer-events-none overflow-hidden">
+                                        <iframe src="{{ asset('preview/' . $template->view_path . '/index.html') }}?thumbnail=1" class="absolute top-0 left-0 w-[400%] h-[400%] origin-top-left scale-[0.25] border-0" scrolling="no" tabindex="-1"></iframe>
+                                    </div>
+                                </div>
+                                
+                                <div class="absolute inset-0 bg-gradient-to-t from-white/90 via-white/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex flex-col justify-end p-6 pointer-events-none">
+                                    <div class="bg-white/80 backdrop-blur-md p-5 rounded-3xl translate-y-10 group-hover:translate-y-0 transition-transform duration-500 pointer-events-auto shadow-lg border border-white/50 text-center">
+                                        <a href="{{ asset('preview/' . $template->view_path . '/index.html') }}" target="_blank" class="block w-full py-3 bg-slate-800 text-white rounded-2xl font-semibold hover:bg-rOrange transition shadow-md">
+                                            Preview Live
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {{-- Info Text --}}
+                            <div class="p-6 border-t border-slate-100">
+                                <span class="inline-block px-3 py-1 bg-slate-100 text-slate-500 text-[10px] font-bold rounded-full uppercase tracking-wider mb-3">
+                                    {{ $template->category->name ?? 'Umum' }}
+                                </span>
+                                <h3 class="text-xl font-bold text-slate-800 mb-4">{{ $template->name }}</h3>
+                                
+                                @auth
+                                    <a href="{{ route('customer.invitations.create') }}" class="block text-center w-full py-3 border border-slate-200 text-slate-700 rounded-xl font-bold text-sm hover:bg-slate-900 hover:text-white hover:border-slate-900 transition">Gunakan Tema Ini</a>
+                                @else
+                                    <a href="{{ route('login') }}" class="block text-center w-full py-3 border border-slate-200 text-slate-700 rounded-xl font-bold text-sm hover:bg-slate-900 hover:text-white hover:border-slate-900 transition">Buat Undangan</a>
+                                @endauth
+                            </div>
+                        </div>
+                    @empty
+                        <div class="col-span-full text-center py-20 text-slate-500">
+                            <svg class="w-16 h-16 mx-auto text-slate-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                            <p class="text-lg font-medium">Belum ada template yang diunggah untuk saat ini.</p>
+                        </div>
+                    @endforelse
+                </div>
+
                 <div class="flex flex-col sm:flex-row justify-center items-center gap-4 mt-8 sm:mt-0">
                     <a href="{{ route('katalog') }}" class="group bg-slate-900 text-white px-8 sm:px-10 py-4 rounded-full font-bold text-base sm:text-lg hover:-translate-y-1 hover:bg-slate-800 transition-all duration-300 shadow-xl shadow-slate-900/20 flex items-center justify-center gap-3 w-full sm:w-auto">
                         <i class="fa-solid fa-layer-group group-hover:rotate-12 transition-transform"></i>
