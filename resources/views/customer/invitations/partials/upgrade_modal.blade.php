@@ -28,7 +28,7 @@
                                 <p class="text-2xl font-extrabold text-rOrange">Rp
                                     {{ number_format($selisihHarga, 0, ',', '.') }}</p>
                             </div>
-                            <button type="button" class="px-6 py-2 bg-slate-900 text-white rounded-xl">Pilih</button>
+                            <button type="button" onclick="payUpgrade('{{ strtolower($pkg->name) }}')" class="px-6 py-2 bg-slate-900 text-white rounded-xl hover:bg-rRed transition">Pilih</button>
                         </div>
                     @endforeach
                 </div>

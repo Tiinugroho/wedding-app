@@ -21,12 +21,14 @@ class InvitationController extends Controller
     public function index()
     {
         // Mengambil semua undangan milik klien yang sedang login
-        $invitations = Invitation::with(['template', 'details'])
+        $invitations = Invitation::with(['template', 'details', 'orders.package'])
             ->where('user_id', Auth::id())
             ->latest()
             ->get();
 
-        return view('customer.invitations.index', compact('invitations'));
+        $packages = Package::where('is_active', true)->orderBy('price', 'asc')->get();
+
+        return view('customer.invitations.index', compact('invitations', 'packages'));
     }
 
     public function create()
@@ -63,13 +65,16 @@ class InvitationController extends Controller
             'content' => json_encode([]),
         ]);
 
+        $package = Package::find($request->package_id);
+        $isFree = $package && $package->price == 0;
+
         Order::create([
             'order_number' => 'INV-' . time() . strtoupper(Str::random(5)),
             'user_id' => Auth::id(),
             'invitation_id' => $invitation->id,
             'package_id' => $request->package_id,
-            'amount' => Package::find($request->package_id)->price,
-            'status' => 'pending',
+            'amount' => $package->price ?? 0,
+            'status' => $isFree ? 'success' : 'pending',
         ]);
 
         return redirect()->route('customer.invitations.edit', $invitation->id)->with('success', 'Langkah 1 Selesai! Silakan lengkapi data acara dan mempelai Anda.');
@@ -184,7 +189,7 @@ class InvitationController extends Controller
             foreach ($request->file('gallery_files') as $file) {
                 // Laravel akan mengenali ini sebagai file asli berkat DataTransfer JS
                 $path = $file->store('galleries/' . $invitation->id, 'public');
-                
+
                 Gallery::create([
                     'invitation_id' => $invitation->id,
                     'file_path' => $path,
@@ -200,7 +205,7 @@ class InvitationController extends Controller
         if ($request->hasFile('edited_gallery_files')) {
             foreach ($request->file('edited_gallery_files') as $galleryId => $file) {
                 $gallery = Gallery::where('invitation_id', $invitation->id)->find($galleryId);
-                
+
                 if ($gallery) {
                     // Hapus file fisik foto lama di server agar storage tidak bengkak
                     if (Storage::disk('public')->exists($gallery->file_path)) {
@@ -209,7 +214,7 @@ class InvitationController extends Controller
 
                     // Simpan file fisik baru hasil crop
                     $path = $file->store('galleries/' . $invitation->id, 'public');
-                    
+
                     // Update record database
                     $gallery->update([
                         'file_path' => $path

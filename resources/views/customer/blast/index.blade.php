@@ -189,18 +189,35 @@
                         </div>
                     @else
                         {{-- STATUS ACTIVE (Sudah Lunas) --}}
-                        <div class="bg-emerald-50 border border-emerald-100 text-emerald-700 p-6 rounded-[2rem] mb-8 shadow-sm flex flex-col md:flex-row items-center justify-between gap-4">
-                            <div>
-                                <div class="flex items-center gap-2 font-extrabold text-lg mb-1">
-                                    <svg class="w-6 h-6 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                                    Paket Undangan Aktif
+                        <div class="bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-100 text-emerald-700 p-6 rounded-[2rem] mb-8 shadow-sm">
+                            <div class="flex flex-col md:flex-row items-center justify-between gap-6">
+                                <div class="flex-grow">
+                                    <div class="flex items-center gap-3 font-extrabold text-lg mb-1">
+                                        <svg class="w-7 h-7 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                        Paket {{ $packageName }} Aktif
+                                    </div>
+                                    <p class="text-sm font-medium text-emerald-600/80 mb-3">Link undangan Anda dapat diakses publik dengan aman.</p>
+                                    
+                                    {{-- Progress Bar Kuota Blast --}}
+                                    <div class="mt-4">
+                                        <div class="flex justify-between text-xs font-bold text-slate-500 mb-1">
+                                            <span>Kuota Terpakai: {{ $sudahDikirim }} / {{ $totalQuota }}</span>
+                                            <span>Sisa: {{ $remainingQuota }} Tamu</span>
+                                        </div>
+                                        <div class="w-full bg-slate-200 h-2.5 rounded-full overflow-hidden">
+                                            @php 
+                                                $percent = $totalQuota > 0 ? ($sudahDikirim / $totalQuota) * 100 : 0; 
+                                                $percent = min(100, max(0, $percent));
+                                            @endphp
+                                            <div class="bg-gradient-to-r from-emerald-500 to-teal-500 h-full rounded-full" style="width: {{ $percent }}%"></div>
+                                        </div>
+                                    </div>
                                 </div>
-                                <p class="text-sm text-emerald-600/80 font-medium">Link undangan Anda dapat diakses publik dengan aman.</p>
-                            </div>
-                            <div class="w-full md:w-auto shrink-0">
-                                <button type="button" onclick="openUpgradeModal()" class="block w-full text-center bg-white border border-emerald-200 text-emerald-600 hover:bg-emerald-600 hover:text-white px-6 py-3 rounded-2xl font-bold transition-all shadow-sm">
-                                    + Top Up Kuota Blast
-                                </button>
+                                <div class="w-full md:w-auto shrink-0">
+                                    <button type="button" onclick="openUpgradeModal()" class="block w-full text-center bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white px-8 py-4 rounded-2xl font-extrabold shadow-xl shadow-emerald-500/20 transition-all hover:scale-105">
+                                        + Top Up Kuota Blast
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     @endif
@@ -603,40 +620,37 @@
             if (targetFormId) document.getElementById(targetFormId).submit();
         });
 
-        // 🔥 LOGIKA KUOTA GRATIS (MENGGUNAKAN UNIVERSAL MODAL) 🔥
-        const isFreePlan = {{ isset($invitation) && $invitation->status != 'active' ? 'true' : 'false' }};
-        const maxFree = 30;
+        // 🔥 LOGIKA PEMBATASAN KUOTA BLAST AKTIF (MENGGUNAKAN UNIVERSAL MODAL) 🔥
         const sudahDikirim = {{ $sudahDikirim ?? 0 }};
-        let sisaKuota = Math.max(0, maxFree - sudahDikirim);
+        let sisaKuota = {{ $remainingQuota ?? 0 }};
 
         function checkQuota(source) {
-            if (!isFreePlan) return; 
-
             const checkedBoxes = document.querySelectorAll('.guest-checkbox:checked').length;
             if (checkedBoxes > sisaKuota) {
                 source.checked = false; 
-                showUniversalAlert('warning', 'Peringatan Kuota!', `Versi Gratis dibatasi maksimal 30 pesan.\nSisa kuota Anda: ${sisaKuota} tamu.\n\nSilakan "Lihat Pilihan Layanan" untuk mengaktifkan web dan mengirim tanpa batas.`);
+                showUniversalAlert('warning', 'Peringatan Kuota!', `Jumlah yang dipilih melebihi kuota blast Anda.\nSisa kuota Anda: ${sisaKuota} tamu.\n\nSilakan "+ Top Up Kuota Blast" untuk menambahkan kuota pesan.`);
             }
         }
 
         function toggleSelectAll(source) {
             const checkboxes = document.querySelectorAll('.guest-checkbox:not(:disabled)');
 
-            if (isFreePlan && source.checked) {
-                let checkedCount = document.querySelectorAll('.guest-checkbox:checked').length;
+            if (source.checked) {
+                let checkedCount = 0;
+                // Uncheck all first
+                checkboxes.forEach(cb => cb.checked = false);
+                
                 checkboxes.forEach(cb => {
-                    if (!cb.checked && checkedCount < sisaKuota) {
+                    if (checkedCount < sisaKuota) {
                         cb.checked = true;
                         checkedCount++;
-                    } else if (!cb.checked) {
-                        cb.checked = false;
                     }
                 });
                 if (checkboxes.length > sisaKuota) {
-                    showUniversalAlert('warning', 'Perhatian!', `Hanya ${sisaKuota} tamu yang dipilih karena Anda masih menggunakan Versi Gratis.`);
+                    showUniversalAlert('warning', 'Perhatian!', `Hanya ${sisaKuota} tamu yang dipilih karena keterbatasan kuota blast Anda.`);
                 }
             } else {
-                checkboxes.forEach(cb => cb.checked = source.checked);
+                checkboxes.forEach(cb => cb.checked = false);
             }
         }
 

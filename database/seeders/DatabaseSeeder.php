@@ -42,6 +42,30 @@ class DatabaseSeeder extends Seeder
         // 4. SEEDER PAKET HARGA (Basic vs Premium)
         // =========================================================
 
+        // --- PAKET 0: FREE ---
+        $pkgFree = Package::create([
+            'name' => 'FREE',
+            'price' => 0,
+            'description' => 'Paket gratis untuk mencoba pengisian data undangan. Tidak bisa share link & blast.',
+            'features' => json_encode([
+                'display' => [
+                    'included' => ['Buat Data Undangan'],
+                    'excluded' => ['Fitur Share Link Publik', 'WhatsApp Blast', 'Fitur QR Absensi Tamu', 'Live Streaming Acara'],
+                ],
+                'logic' => [
+                    'event_limit' => 1,
+                    'gallery_limit' => 1,
+                    'has_love_story' => false,
+                    'has_digital_gift' => false,
+                    'has_video' => false,
+                    'has_qr_attendance' => false,
+                    'has_live_stream' => false,
+                    'active_days' => 7,
+                    'blast_limit' => 0, // 🔥 TIDAK BISA BLAST
+                ],
+            ]),
+        ]);
+
         // --- PAKET 1: BASIC ---
         $pkgBasic = Package::create([
             'name' => 'BASIC',
@@ -49,7 +73,7 @@ class DatabaseSeeder extends Seeder
             'description' => 'Paket standar dengan fitur esensial, cocok untuk undangan sederhana. Masa aktif 14 Hari.',
             'features' => json_encode([
                 'display' => [
-                    'included' => ['Galeri 5 Foto', 'Fitur Love Story', 'Amplop Digital', 'Masa Aktif 14 Hari'],
+                    'included' => ['Galeri 5 Foto', 'Fitur Love Story', 'Amplop Digital', 'Masa Aktif 14 Hari', 'Limit Blast 100 Tamu'],
                     'excluded' => ['Fitur QR Absensi Tamu', 'Live Streaming Acara'],
                 ],
                 'logic' => [
@@ -61,6 +85,7 @@ class DatabaseSeeder extends Seeder
                     'has_qr_attendance' => false, // 🔥 MATI DI BASIC
                     'has_live_stream' => false, // 🔥 MATI DI BASIC
                     'active_days' => 14,
+                    'blast_limit' => 100, // 🔥 LIMIT BLAST 100
                 ],
             ]),
         ]);
@@ -72,7 +97,7 @@ class DatabaseSeeder extends Seeder
             'description' => 'Paket hemat dengan semua fitur premium terbuka, masa aktif 1 Bulan.',
             'features' => json_encode([
                 'display' => [
-                    'included' => ['Semua Fitur Premium Terbuka', 'Galeri 10 Foto', 'Fitur QR Absensi Tamu', 'Live Streaming Acara', 'Masa Aktif 1 Bulan'],
+                    'included' => ['Semua Fitur Premium Terbuka', 'Galeri 10 Foto', 'Fitur QR Absensi Tamu', 'Live Streaming Acara', 'Masa Aktif 1 Bulan', 'Limit Blast 200 Tamu'],
                     'excluded' => [],
                 ],
                 'logic' => [
@@ -84,11 +109,12 @@ class DatabaseSeeder extends Seeder
                     'has_qr_attendance' => true, // 🔥 NYALA DI PREMIUM
                     'has_live_stream' => true, // 🔥 NYALA DI PREMIUM
                     'active_days' => 30,
+                    'blast_limit' => 200, // 🔥 LIMIT BLAST 200
                 ],
             ]),
         ]);
 
-        // 5. SEEDER TEMPLATE DINAMIS
+        // 1. Template 1 (Premium)
         Template::create([
             'category_id' => $catModern->id,
             'package_id' => $pkgPremium->id,
@@ -103,6 +129,7 @@ class DatabaseSeeder extends Seeder
             ]),
         ]);
 
+        // 2. Template 2 (Basic)
         Template::create([
             'category_id' => $catMinimalist->id,
             'package_id' => $pkgBasic->id,
@@ -114,6 +141,156 @@ class DatabaseSeeder extends Seeder
                 'has_video' => false,
                 'has_love_story' => false,
                 'gallery_limit' => 5,
+            ]),
+        ]);
+
+        // 3. Template 3 (Premium)
+        Template::create([
+            'category_id' => $catModern->id,
+            'package_id' => $pkgPremium->id,
+            'name' => 'Rustic Nature',
+            'view_path' => 't3',
+            'thumbnail' => null,
+            'is_active' => true,
+            'required_fields' => json_encode([
+                'has_video' => true,
+                'has_love_story' => true,
+                'gallery_limit' => 10,
+            ]),
+        ]);
+
+        // 4. Template 4 (Basic)
+        Template::create([
+            'category_id' => $catMinimalist->id,
+            'package_id' => $pkgBasic->id,
+            'name' => 'Simple Elegance',
+            'view_path' => 't4',
+            'thumbnail' => null,
+            'is_active' => true,
+            'required_fields' => json_encode([
+                'has_video' => false,
+                'has_love_story' => true, // Basic tapi ada love story
+                'gallery_limit' => 5,
+            ]),
+        ]);
+
+        // 5. Template 5 (Premium)
+        Template::create([
+            'category_id' => $catModern->id,
+            'package_id' => $pkgPremium->id,
+            'name' => 'Classic Blue',
+            'view_path' => 't5',
+            'thumbnail' => null,
+            'is_active' => true,
+            'required_fields' => json_encode([
+                'has_video' => true,
+                'has_love_story' => true,
+                'gallery_limit' => 10,
+            ]),
+        ]);
+
+        // 6. Template 6 (Basic)
+        Template::create([
+            'category_id' => $catModern->id,
+            'package_id' => $pkgBasic->id,
+            'name' => 'Vintage Flora',
+            'view_path' => 't6',
+            'thumbnail' => null,
+            'is_active' => true,
+            'required_fields' => json_encode([
+                'has_video' => false,
+                'has_love_story' => false,
+                'gallery_limit' => 5,
+            ]),
+        ]);
+
+        // 7. Template 7 (Premium)
+        Template::create([
+            'category_id' => $catMinimalist->id,
+            'package_id' => $pkgPremium->id,
+            'name' => 'Dark Romance',
+            'view_path' => 't7',
+            'thumbnail' => null,
+            'is_active' => true,
+            'required_fields' => json_encode([
+                'has_video' => true,
+                'has_love_story' => true,
+                'gallery_limit' => 10,
+            ]),
+        ]);
+
+        // 8. Template 8 (Basic)
+        Template::create([
+            'category_id' => $catModern->id,
+            'package_id' => $pkgBasic->id,
+            'name' => 'Modern Collage',
+            'view_path' => 't8',
+            'thumbnail' => null,
+            'is_active' => true,
+            'required_fields' => json_encode([
+                'has_video' => false,
+                'has_love_story' => false,
+                'gallery_limit' => 5,
+            ]),
+        ]);
+
+        // 9. Template 9 (Premium)
+        Template::create([
+            'category_id' => $catModern->id,
+            'package_id' => $pkgPremium->id,
+            'name' => 'Monochrome Sketch',
+            'view_path' => 't9',
+            'thumbnail' => null,
+            'is_active' => true,
+            'required_fields' => json_encode([
+                'has_video' => true,
+                'has_love_story' => true,
+                'gallery_limit' => 10,
+            ]),
+        ]);
+
+        // 10. Template 10 (Basic)
+        Template::create([
+            'category_id' => $catMinimalist->id,
+            'package_id' => $pkgBasic->id,
+            'name' => 'Eternal Bloom',
+            'view_path' => 't10',
+            'thumbnail' => null,
+            'is_active' => true,
+            'required_fields' => json_encode([
+                'has_video' => false,
+                'has_love_story' => false,
+                'gallery_limit' => 5,
+            ]),
+        ]);
+
+        // 11. Template 11 (Premium)
+        Template::create([
+            'category_id' => $catMinimalist->id,
+            'package_id' => $pkgPremium->id,
+            'name' => 'IKEA Style',
+            'view_path' => 't11',
+            'thumbnail' => null,
+            'is_active' => true,
+            'required_fields' => json_encode([
+                'has_video' => true,
+                'has_love_story' => true,
+                'gallery_limit' => 10,
+            ]),
+        ]);
+
+        // 12. Template 12 (Premium)
+        Template::create([
+            'category_id' => $catModern->id,
+            'package_id' => $pkgPremium->id,
+            'name' => 'Royal Minang',
+            'view_path' => 't12',
+            'thumbnail' => null,
+            'is_active' => true,
+            'required_fields' => json_encode([
+                'has_video' => true,
+                'has_love_story' => true,
+                'gallery_limit' => 10,
             ]),
         ]);
 

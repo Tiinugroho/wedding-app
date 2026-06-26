@@ -107,8 +107,13 @@
                     $sisaWaktuText = '';
                     $tanggalBerakhir = ''; // 🔥 Variabel baru untuk tanggal berakhir
 
+                    $lastOrder = $invitation->orders->last();
+                    $packageName = $lastOrder && $lastOrder->package ? $lastOrder->package->name : 'FREE';
+                    $isFree = ($packageName === 'FREE');
+                    $currentPackagePrice = $lastOrder && $lastOrder->package ? (int) $lastOrder->package->price : 0;
+
                     if ($invitation->status != 'active') {
-                        // 1. LOGIKA UNTUK BELUM LUNAS (Masa Uji Coba 7 Hari, berakhir pukul 23:59:59)
+                        // 1. LOGIKA UNTUK BELUM LUNAS / FREE (Masa Uji Coba 7 Hari, berakhir pukul 23:59:59)
                         $batasWaktuTrial = $invitation->created_at->copy()->addDays(7)->endOfDay();
                         $tanggalBerakhir = $batasWaktuTrial->format('d M Y'); // Format tanggal trial
 
@@ -167,7 +172,10 @@
 
                             <div class="absolute top-4 left-4 z-10 flex flex-col items-start gap-2">
                                 <div class="flex items-center">
-                                    @if ($invitation->status != 'active')
+                                    @if ($isFree)
+                                        <span
+                                            class="px-4 py-2 mr-2 bg-blue-100 text-blue-600 text-xs font-bold uppercase rounded-full shadow-sm">Versi Gratis</span>
+                                    @elseif ($invitation->status != 'active')
                                         @if ($isLocked)
                                             <span
                                                 class="px-4 py-2 mr-2 bg-red-100 text-red-600 text-xs font-bold uppercase rounded-full shadow-sm">Terkunci
@@ -187,7 +195,16 @@
                                     </span>
                                 </div>
 
-                                @if ($invitation->status != 'active' && !$isLocked)
+                                @if ($isFree && !$isLocked)
+                                    <span
+                                        class="px-3 py-1.5 bg-blue-500/90 backdrop-blur text-white text-[10px] font-bold rounded-full shadow-sm flex items-center gap-1">
+                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                        </svg>
+                                        Sisa Aktif: {{ $sisaWaktuText }}
+                                    </span>
+                                @elseif ($invitation->status != 'active' && !$isLocked)
                                     <span
                                         class="px-3 py-1.5 bg-amber-500/90 backdrop-blur text-white text-[10px] font-bold rounded-full shadow-sm flex items-center gap-1">
                                         <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -231,8 +248,13 @@
                         </p>
 
                         <div class="flex items-center gap-2 mb-6">
-                            @if ($invitation->status != 'active')
-                                <button type="button" onclick="payNow(this, '{{ $invitation->id }}')"
+                            @if ($isFree)
+                                <button type="button" onclick="openUpgradeModal('{{ $invitation->id }}', '{{ $packageName }}', {{ $currentPackagePrice }})"
+                                    class="w-full flex items-center justify-center py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-2xl font-bold text-sm hover:scale-[1.02] transition shadow-lg shadow-indigo-500/30">
+                                    Upgrade Paket
+                                </button>
+                            @elseif ($invitation->status != 'active')
+                                <button type="button" onclick="payNow(this, '{{ $invitation->id }}', 'package_{{ strtolower($packageName) }}')"
                                     class="w-full flex items-center justify-center py-3 bg-gradient-to-r from-rRed to-rOrange text-white rounded-2xl font-bold text-sm hover:scale-[1.02] transition shadow-lg shadow-rOrange/30">
                                     Aktifkan & Bayar
                                 </button>
@@ -264,7 +286,7 @@
                             </button>
                         @else
                             <button type="button"
-                                onclick="openActionModal('{{ route('customer.invitations.edit', $invitation->id) }}', '{{ url('/' . $invitation->slug) }}', '{{ route('customer.blast.index', $invitation->id) }}', '{{ route('customer.invitations.scanner', $invitation->id) }}')"
+                                onclick="openActionModal('{{ route('customer.invitations.edit', $invitation->id) }}', '{{ url('/' . $invitation->slug) }}', '{{ route('customer.blast.index', $invitation->id) }}', '{{ route('customer.invitations.scanner', $invitation->id) }}', {{ $invitation->status == 'active' ? 'true' : 'false' }})"
                                 class="w-full flex items-center justify-center py-3 bg-slate-900 text-white rounded-2xl font-bold text-sm hover:bg-slate-800 transition shadow-lg">
                                 Kelola Data
                             </button>
@@ -390,6 +412,33 @@
             </div>
         </div>
     </div>
+
+    {{-- ========================================================= --}}
+    {{-- 🔥 MODAL UPGRADE PAKET DINAMIS 🔥 --}}
+    {{-- ========================================================= --}}
+    <div id="upgradeModal"
+        class="fixed inset-0 z-[60] hidden bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-4 opacity-0 transition-opacity duration-300">
+        <div class="bg-white rounded-[2.5rem] w-full max-w-2xl overflow-hidden shadow-2xl transform scale-95 transition-transform duration-300"
+            id="upgradeModalContent">
+            <div class="px-8 py-6 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+                <div>
+                    <h3 class="text-2xl font-extrabold text-slate-800">Upgrade Paket</h3>
+                    <p class="text-sm text-slate-500 font-medium">Buka akses sebar publik & fitur premium undangan Anda.</p>
+                </div>
+                <button type="button" onclick="closeUpgradeModal()"
+                    class="w-10 h-10 rounded-full bg-white border text-slate-500 flex items-center justify-center hover:bg-red-50 hover:text-red-500">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            <div class="p-8">
+                <div class="space-y-4" id="upgrade-options-container">
+                    <!-- Dinamis diisi lewat JS -->
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection
 
 @push('scripts')
@@ -397,11 +446,36 @@
         // ==========================================
         // SCRIPT KELOLA DATA MODAL
         // ==========================================
-        function openActionModal(editUrl, previewUrl, blastUrl, scannerUrl) {
+        function openActionModal(editUrl, previewUrl, blastUrl, scannerUrl, isActive) {
             document.getElementById('btn-kelola-konten').href = editUrl;
             document.getElementById('btn-live-preview-modal').href = previewUrl;
-            document.getElementById('btn-wa-blast').href = blastUrl;
-            document.getElementById('btn-scanner').href = scannerUrl;
+
+            const btnWaBlast = document.getElementById('btn-wa-blast');
+            const btnScanner = document.getElementById('btn-scanner');
+
+            if (isActive) {
+                btnWaBlast.href = blastUrl;
+                btnWaBlast.removeAttribute('onclick');
+                btnWaBlast.style.opacity = '1';
+                
+                btnScanner.href = scannerUrl;
+                btnScanner.removeAttribute('onclick');
+                btnScanner.style.opacity = '1';
+            } else {
+                btnWaBlast.removeAttribute('href');
+                btnWaBlast.onclick = function(e) {
+                    e.preventDefault();
+                    showUniversalAlert('warning', 'Fitur Terkunci', 'Fitur WhatsApp Blast terkunci. Silakan upgrade ke paket BASIC atau PREMIUM untuk mengaktifkan.');
+                };
+                btnWaBlast.style.opacity = '0.5';
+
+                btnScanner.removeAttribute('href');
+                btnScanner.onclick = function(e) {
+                    e.preventDefault();
+                    showUniversalAlert('warning', 'Fitur Terkunci', 'Fitur QR Scanner terkunci. Silakan upgrade ke paket PREMIUM untuk mengaktifkan.');
+                };
+                btnScanner.style.opacity = '0.5';
+            }
 
             const modal = document.getElementById('action-modal');
             const box = document.getElementById('action-modal-box');
@@ -491,7 +565,7 @@
         // ==========================================
         // MIDTRANS PAYMENT LOGIC
         // ==========================================
-        function payNow(btnElement, invitationId) {
+        function payNow(btnElement, invitationId, type = 'package_premium') {
             const originalText = btnElement.innerText;
             btnElement.innerText = 'Memproses...';
             btnElement.disabled = true;
@@ -504,7 +578,7 @@
                         'Accept': 'application/json'
                     },
                     body: JSON.stringify({
-                        type: 'package_premium',
+                        type: type,
                         invitation_id: invitationId
                     })
                 })
@@ -570,6 +644,68 @@
                     btnElement.innerText = originalText;
                     btnElement.disabled = false;
                 });
+        }
+
+        // ==========================================
+        // SCRIPT UPGRADE PAKET MODAL
+        // ==========================================
+        let activeUpgradeInvitationId = null;
+
+        function openUpgradeModal(invitationId, currentPackageName, currentPackagePrice) {
+            activeUpgradeInvitationId = invitationId;
+            const container = document.getElementById('upgrade-options-container');
+            container.innerHTML = '';
+
+            const allPackages = @json($packages);
+            let availableUpgrades = allPackages.filter(pkg => pkg.price > currentPackagePrice);
+
+            if (availableUpgrades.length === 0) {
+                container.innerHTML = '<p class="text-center text-slate-500 py-4 font-bold">Anda sudah menggunakan paket tertinggi.</p>';
+            } else {
+                availableUpgrades.forEach(pkg => {
+                    let selisihHarga = pkg.price - currentPackagePrice;
+                    let formattedPrice = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(selisihHarga);
+                    
+                    let div = document.createElement('div');
+                    div.className = 'border-2 border-slate-100 rounded-3xl p-5 flex items-center justify-between hover:border-slate-300 transition';
+                    div.innerHTML = `
+                        <div>
+                            <h5 class="font-extrabold text-lg">${pkg.name}</h5>
+                            <p class="text-xs text-slate-400 mb-2">${pkg.description}</p>
+                            <p class="text-2xl font-extrabold text-rOrange">${formattedPrice}</p>
+                        </div>
+                        <button type="button" onclick="payUpgrade('${pkg.name.toLowerCase()}')" class="px-6 py-3 bg-slate-900 hover:bg-rRed text-white font-bold rounded-xl transition shadow">Pilih</button>
+                    `;
+                    container.appendChild(div);
+                });
+            }
+
+            const modal = document.getElementById('upgradeModal');
+            const content = document.getElementById('upgradeModalContent');
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modal.classList.remove('opacity-0');
+                content.classList.remove('scale-95');
+                content.classList.add('scale-100');
+            }, 20);
+        }
+
+        function closeUpgradeModal() {
+            const modal = document.getElementById('upgradeModal');
+            const content = document.getElementById('upgradeModalContent');
+            modal.classList.add('opacity-0');
+            content.classList.remove('scale-100');
+            content.classList.add('scale-95');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 300);
+        }
+
+        function payUpgrade(packageName) {
+            closeUpgradeModal();
+            const tempButton = document.createElement('button');
+            document.body.appendChild(tempButton);
+            payNow(tempButton, activeUpgradeInvitationId, 'package_' + packageName);
         }
     </script>
 @endpush

@@ -130,6 +130,7 @@ require __DIR__ . '/auth.php';
 // PERINGATAN: Rute wildcard seperti '/{slug}' WAJIB selalu berada di baris paling bawah!
 // ====================================================================
 Route::post('/{slug}/rsvp', [FrontController::class, 'storeRsvp'])->name('rsvp.store');
+Route::get('/{slug}/stats', [FrontController::class, 'getRsvpStats'])->name('rsvp.stats');
 Route::get('/{slug}', [FrontController::class, 'showInvitation'])->name('invitation.show');
 
 // Endpoint API untuk Scanner Buku Tamu

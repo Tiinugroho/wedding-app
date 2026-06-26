@@ -1079,5 +1079,93 @@
                 else btnContainer.classList.remove('hidden');
             }
         }
+
+        function payUpgrade(packageName) {
+            const upgradeModal = document.getElementById('upgradeModal');
+            if (upgradeModal) {
+                upgradeModal.classList.add('opacity-0');
+                setTimeout(() => upgradeModal.classList.add('hidden'), 300);
+            }
+
+            const tempButton = document.createElement('button');
+            document.body.appendChild(tempButton);
+            
+            payNow(tempButton, '{{ $invitation->id }}', 'package_' + packageName);
+        }
+
+        function payNow(btnElement, invitationId, type = 'package_premium') {
+            const originalText = btnElement.innerText;
+            btnElement.innerText = 'Memproses...';
+            btnElement.disabled = true;
+
+            fetch('/customer/checkout/get-snap-token', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        type: type,
+                        invitation_id: invitationId
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    btnElement.innerText = originalText;
+                    btnElement.disabled = false;
+
+                    if (data.snap_token) {
+                        snap.pay(data.snap_token, {
+                            onSuccess: function(result) {
+                                if (typeof btnElement !== 'undefined') btnElement.innerText = 'Menyimpan...';
+
+                                fetch('/customer/checkout/success', {
+                                        method: 'POST',
+                                        headers: {
+                                            'Content-Type': 'application/json',
+                                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                                        },
+                                        body: JSON.stringify(result)
+                                    })
+                                    .then(res => res.json())
+                                    .then(data => {
+                                        if (data.success) {
+                                            let metode = result.payment_type.replace(/_/g, ' ').toUpperCase();
+                                            alert('Pembayaran Berhasil! Menggunakan metode: ' + metode);
+                                            window.location.reload();
+                                        } else {
+                                            alert('Pembayaran sedang diproses oleh bank.');
+                                        }
+                                    })
+                                    .catch(err => {
+                                        alert('Gagal menyimpan status ke database lokal.');
+                                    });
+                            },
+                            onPending: function(result) {
+                                alert('Silakan selesaikan pembayaran Anda di panduan Midtrans yang diberikan.');
+                            },
+                            onError: function(result) {
+                                alert('Proses pembayaran Anda mengalami kegagalan.');
+                            },
+                            onClose: function() {
+                                console.log('Pop-up Midtrans ditutup sebelum dibayar');
+                            }
+                        });
+                    } else if (data.error) {
+                        alert(data.error);
+                    } else {
+                        alert('Gagal mendapatkan token pembayaran dari server.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Gagal menghubungi server sistem pembayaran.');
+                    btnElement.innerText = originalText;
+                    btnElement.disabled = false;
+                });
+        }
     </script>
+    <script type="text/javascript" src="https://app.sandbox.midtrans.com/snap/snap.js"
+        data-client-key="{{ config('midtrans.client_key') }}"></script>
 @endpush

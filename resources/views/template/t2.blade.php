@@ -88,6 +88,13 @@
             ->sum('pax') ?? 0;
 
     $totalWishes = $dbWishes->count();
+
+    $guestSlug = request()->query('to');
+    $guestNameDisplay = $guestData
+        ? $guestData->name
+        : ($guestSlug
+            ? urldecode(str_replace(['+', '-'], ' ', $guestSlug))
+            : 'Tamu Undangan');
 @endphp
 
 <!DOCTYPE html>
@@ -378,7 +385,7 @@
                 </p>
                 <h2 id="guest-name"
                     class="text-3xl md:text-5xl font-serif text-white mb-6 leading-tight drop-shadow-lg text-protected">
-                    Tamu Undangan
+                    {{ $guestNameDisplay }}
                 </h2>
                 <div
                     class="flex items-center justify-center gap-3 text-xs text-brand-gold tracking-widest border-t border-white/5 pt-6">
@@ -961,7 +968,7 @@
                                     </div>
                                     <div class="flex flex-col items-center">
                                         <i class="fa-regular fa-clock text-brand-gold/60 mb-2"></i>
-                                        <p class="text-white font-medium">{{ $event['time'] ?? '' }} -
+                                        <p class="text-white font-medium">{{ $event['time'] ?? '08.00' }} -
                                             {{ $event['time_end'] ?? 'Selesai' }}</p>
                                     </div>
                                     <div class="flex flex-col items-center">
@@ -1384,7 +1391,7 @@
                                         Identity</span>
                                     <h3 id="guest-name-qr"
                                         class="text-2xl font-serif font-medium text-white tracking-wide uppercase leading-tight">
-                                        Tamu Undangan</h3>
+                                        {{ $guestNameDisplay }}</h3>
                                     <p class="text-xs text-brand-muted italic font-light tracking-widest uppercase">
                                         E-Invitation Only</p>
                                 </div>
@@ -1598,10 +1605,28 @@
         </ul>
     </nav>
 
+    {{-- PROTEKSI DRAFT / EXPIRED - Hanya disable copy jika pending/canceled --}}
+    @if(isset($isPreviewMode) && $isPreviewMode)
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const copyButtons = document.querySelectorAll('[onclick*="copyToClipboard"]');
+                copyButtons.forEach(btn => {
+                    btn.disabled = true;
+                    btn.classList.add('opacity-50', 'cursor-not-allowed');
+                    btn.title = 'Aktifkan paket untuk membuka fitur bagikan';
+                    btn.onclick = function() {
+                        showToast('Aktifkan paket untuk membuka fitur bagikan.');
+                        return false;
+                    };
+                });
+            });
+        </script>
+    @endif
+
     <script>
         // 1. URL Parameter untuk Tamu
         const urlParams = new URLSearchParams(window.location.search);
-        let guestName = urlParams.get('to') ? decodeURIComponent(urlParams.get('to')) : 'Tamu Undangan';
+        let guestName = "{{ $guestNameDisplay }}";
 
         document.querySelectorAll('#guest-name, #guest-name-qr').forEach(el => el.innerText = guestName);
 
@@ -1622,6 +1647,21 @@
         let isAutoScrolling = false;
         let scrollInterval;
         let hasShownRSVPAtEnd = false;
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            if (toast) {
+                document.getElementById('toast-msg').innerText = msg;
+                toast.classList.remove('opacity-0', 'translate-y-4', 'pointer-events-none');
+                toast.classList.add('opacity-100', 'translate-y-0');
+                setTimeout(() => {
+                    toast.classList.add('opacity-0', 'translate-y-4', 'pointer-events-none');
+                    toast.classList.remove('opacity-100', 'translate-y-0');
+                }, 2500);
+            } else {
+                alert(msg);
+            }
+        }
 
         function openInvitation() {
             document.getElementById('cover-page').classList.add('-translate-y-full');

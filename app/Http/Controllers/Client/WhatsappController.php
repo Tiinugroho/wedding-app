@@ -18,19 +18,56 @@ class WhatsappController extends Controller
 {
     public function index($invitation_id)
     {
-        // 🔥 PERBAIKAN: Ambil undangan SPESIFIK berdasarkan ID yang dipilih
-        // Pastikan juga undangan tersebut benar-benar milik user yang sedang login
         $invitation = Invitation::where('user_id', Auth::id())->findOrFail($invitation_id);
         
+        if ($invitation->status !== 'active') {
+            return redirect()->route('customer.invitations.index')->with('error', 'Maaf, Anda harus mengaktifkan undangan (melakukan pembayaran) sebelum bisa mengakses fitur WhatsApp Blast.');
+        }
+
         // Ambil data tamu khusus untuk undangan yang dipilih
         $guests = Guest::where('invitation_id', $invitation->id)->orderBy('name', 'asc')->get();
         $sudahDikirim = Guest::where('invitation_id', $invitation->id)->where('is_blasted', 1)->count();
+
+        // Ambil limit paket dari order berbayar terakhir yang lunas/success
+        $lastPaidOrder = Order::with('package')
+            ->where('invitation_id', $invitation->id)
+            ->whereNotNull('package_id')
+            ->where('status', 'success')
+            ->latest()
+            ->first();
+
+        $packageName = 'FREE';
+        $packageLimit = 0;
+        if ($lastPaidOrder && $lastPaidOrder->package) {
+            $packageName = $lastPaidOrder->package->name;
+            $features = $lastPaidOrder->package->features;
+            if (is_string($features)) {
+                $features = json_decode($features, true);
+            }
+            $packageLimit = $features['logic']['blast_limit'] ?? 0;
+        }
+
+        $addon = \App\Models\InvitationAddon::where('invitation_id', $invitation->id)->first();
+        $extraQuota = $addon ? (int) $addon->extra_quota : 0;
+
+        $totalQuota = $packageLimit + $extraQuota;
+        $remainingQuota = max(0, $totalQuota - $sudahDikirim);
 
         // ID Sesi WA tetap dibuat per User (bukan per undangan) agar klien tidak perlu scan QR berkali-kali
         $sessionId = 'user_' . Auth::id();
         WaSession::updateOrCreate(['user_id' => Auth::id()], ['session_id' => $sessionId]);
 
-        return view('customer.blast.index', compact('invitation', 'guests', 'sessionId', 'sudahDikirim'));
+        return view('customer.blast.index', compact(
+            'invitation', 
+            'guests', 
+            'sessionId', 
+            'sudahDikirim',
+            'packageName',
+            'packageLimit',
+            'extraQuota',
+            'totalQuota',
+            'remainingQuota'
+        ));
     }
 
     // 🔥 FUNGSI BARU UNTUK TAMBAH TAMU MANUAL
@@ -122,14 +159,56 @@ class WhatsappController extends Controller
             'guest_ids' => 'required|array',
         ]);
 
-        $invitation = Invitation::findOrFail($invitation_id);
-        $guests = Guest::whereIn('id', $request->guest_ids)->whereNotNull('phone_number')->get();
-        $sessionId = 'user_' . Auth::id();
+        $invitation = Invitation::where('user_id', Auth::id())->findOrFail($invitation_id);
+        
+        if ($invitation->status !== 'active') {
+            return back()->with('error', 'Maaf, Anda harus mengaktifkan undangan terlebih dahulu sebelum bisa menggunakan WhatsApp Blast.');
+        }
 
+        // Get limits and quota
+        $sudahDikirim = Guest::where('invitation_id', $invitation->id)->where('is_blasted', 1)->count();
+
+        $lastPaidOrder = Order::with('package')
+            ->where('invitation_id', $invitation->id)
+            ->whereNotNull('package_id')
+            ->where('status', 'success')
+            ->latest()
+            ->first();
+
+        $packageLimit = 0;
+        if ($lastPaidOrder && $lastPaidOrder->package) {
+            $features = $lastPaidOrder->package->features;
+            if (is_string($features)) {
+                $features = json_decode($features, true);
+            }
+            $packageLimit = $features['logic']['blast_limit'] ?? 0;
+        }
+
+        $addon = \App\Models\InvitationAddon::where('invitation_id', $invitation->id)->first();
+        $extraQuota = $addon ? (int) $addon->extra_quota : 0;
+
+        $totalQuota = $packageLimit + $extraQuota;
+        $remainingQuota = max(0, $totalQuota - $sudahDikirim);
+
+        // Filter guest ids that are not blasted yet
+        $guests = Guest::whereIn('id', $request->guest_ids)
+            ->where('invitation_id', $invitation->id)
+            ->where('is_blasted', 0)
+            ->whereNotNull('phone_number')
+            ->get();
+
+        if ($guests->count() > $remainingQuota) {
+            return back()->with('error', "Gagal melakukan blast! Jumlah tamu yang dipilih ({$guests->count()}) melebihi sisa kuota blast Anda ({$remainingQuota}). Silakan top up kuota terlebih dahulu.");
+        }
+
+        $sessionId = 'user_' . Auth::id();
         $linkUndangan = url("/{$invitation->slug}");
         $delaySeconds = 0;
 
         foreach ($guests as $guest) {
+            // Set as blasted immediately to prevent double-sending/exceeding limits
+            $guest->update(['is_blasted' => 1]);
+
             // Dispatch job ke antrean dengan delay bertambah 10 detik setiap pesan
             SendWaBlastJob::dispatch($guest, $request->message, $linkUndangan, $sessionId)->delay(now()->addSeconds($delaySeconds));
 

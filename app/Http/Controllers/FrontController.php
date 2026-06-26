@@ -21,12 +21,14 @@ class FrontController extends Controller
         // LOGIKA PROTEKSI UNDANGAN (DRAFT & EXPIRED)
         // =========================================================
         $isOwner = auth()->check() && auth()->id() === $invitation->user_id;
+        $isPreviewMode = false; // 🔥 Tambahkan variabel penanda ini
 
-        // 1. JIKA UNDANGAN BELUM LUNAS / DRAFT
+        // 1. JIKA UNDANGAN BELUM LUNAS / DRAFT / CANCELED
         if ($invitation->status !== 'active') {
             if (!$isOwner) {
                 abort(403, 'Maaf, undangan ini belum diaktifkan oleh mempelai.');
             }
+            $isPreviewMode = true; // Set true jika owner yang melihat
         } 
         // 2. JIKA UNDANGAN SUDAH LUNAS TAPI MASA AKTIF HABIS (EXPIRED)
         else {
@@ -34,6 +36,7 @@ class FrontController extends Controller
                 if (!$isOwner) {
                     abort(403, 'Maaf, masa aktif undangan ini telah habis.');
                 }
+                $isPreviewMode = true; // Set true jika owner yang melihat
             }
         }
         // =========================================================
@@ -52,10 +55,20 @@ class FrontController extends Controller
                             ->first();
         }
 
+        $dbWishes = WishesRsvp::where('invitation_id', $invitation->id)
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        $totalAttendance = WishesRsvp::where('invitation_id', $invitation->id)
+            ->where('status_rsvp', 'hadir')
+            ->sum('pax');
+
+        $totalWishes = $dbWishes->count();
+
         $viewPath = 'template.' . $invitation->template->view_path; 
         
         if (view()->exists($viewPath)) {
-            return view($viewPath, compact('invitation', 'content', 'guestData'));
+            return view($viewPath, compact('invitation', 'content', 'guestData', 'isPreviewMode', 'dbWishes', 'totalAttendance', 'totalWishes'));
         }
 
         return "File template {$viewPath} belum tersedia di folder resources/views/template/";
@@ -95,6 +108,23 @@ class FrontController extends Controller
         return response()->json([
             'status' => 'success', 
             'message' => 'RSVP berhasil disimpan!'
+        ]);
+    }
+
+    public function getRsvpStats($slug)
+    {
+        $invitation = Invitation::where('slug', $slug)->firstOrFail();
+
+        $totalAttendance = WishesRsvp::where('invitation_id', $invitation->id)
+            ->where('status_rsvp', 'hadir')
+            ->sum('pax');
+
+        $totalWishes = WishesRsvp::where('invitation_id', $invitation->id)->count();
+
+        return response()->json([
+            'status' => 'success',
+            'totalAttendance' => $totalAttendance,
+            'totalWishes' => $totalWishes
         ]);
     }
 }

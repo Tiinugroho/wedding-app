@@ -31,7 +31,8 @@
     {{-- GRID TEMA DIPERKECIL --}}
     <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4" id="template-grid">
         @foreach ($templates as $template)
-            <label class="cursor-pointer relative group template-card"
+            {{-- Tambahkan class 'hidden' secara default --}}
+            <label class="cursor-pointer relative group template-card hidden"
                 data-category="{{ $template->category->name ?? 'Umum' }}">
                 <input type="radio" name="template_id" value="{{ $template->id }}" class="peer sr-only"
                     {{ old('template_id', $invitation->template_id) == $template->id ? 'checked' : '' }}>
@@ -75,4 +76,113 @@
             </label>
         @endforeach
     </div>
+
+    {{-- KONTROL PAGINATION --}}
+    <div id="pagination-controls" class="flex justify-center items-center gap-2 mt-8"></div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const itemsPerPage = 8;
+        let currentPage = 1;
+        let currentFilter = 'all';
+
+        const cards = Array.from(document.querySelectorAll('.template-card'));
+        const filterBtns = document.querySelectorAll('.filter-btn');
+        const paginationContainer = document.getElementById('pagination-controls');
+
+        function renderGrid() {
+            // 1. Sembunyikan semua kartu secara paksa melalui inline style
+            cards.forEach(card => {
+                card.style.display = 'none';
+                card.classList.add('hidden');
+            });
+
+            // 2. Dapatkan data mana saja yang sesuai kategori
+            const filteredCards = cards.filter(card => {
+                return currentFilter === 'all' || card.dataset.category === currentFilter;
+            });
+
+            // 3. Kalkulasi total halaman
+            const totalPages = Math.ceil(filteredCards.length / itemsPerPage);
+            if (currentPage > totalPages && totalPages > 0) currentPage = totalPages;
+
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+
+            // 4. Tampilkan HANYA 8 data pada limit page yang aktif
+            filteredCards.slice(startIndex, endIndex).forEach(card => {
+                card.style.display = 'block'; 
+                card.classList.remove('hidden');
+                
+                // Tambahkan transisi fade-in agar mulus saat perpindahan
+                card.style.opacity = '0';
+                setTimeout(() => {
+                    card.style.transition = 'opacity 0.4s ease-in-out';
+                    card.style.opacity = '1';
+                }, 10);
+            });
+
+            // 5. Build kontrol pagination
+            renderPaginationControls(totalPages);
+        }
+
+        function renderPaginationControls(totalPages) {
+            paginationContainer.innerHTML = '';
+            
+            if (totalPages <= 1) return; 
+
+            // Tombol Prev
+            const prevBtn = document.createElement('button');
+            prevBtn.type = 'button';
+            prevBtn.className = `px-3 py-1.5 rounded-lg text-xs font-bold transition ${currentPage === 1 ? 'bg-slate-100 text-slate-400 cursor-not-allowed' : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-50'}`;
+            prevBtn.innerText = 'Prev';
+            prevBtn.disabled = currentPage === 1;
+            prevBtn.onclick = () => { currentPage--; renderGrid(); };
+            paginationContainer.appendChild(prevBtn);
+
+            // Angka Halaman
+            for (let i = 1; i <= totalPages; i++) {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = `w-8 h-8 rounded-lg text-xs font-bold transition flex items-center justify-center ${currentPage === i ? 'bg-slate-900 text-white shadow-md' : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-50'}`;
+                btn.innerText = i;
+                btn.onclick = () => { currentPage = i; renderGrid(); };
+                paginationContainer.appendChild(btn);
+            }
+
+            // Tombol Next
+            const nextBtn = document.createElement('button');
+            nextBtn.type = 'button';
+            nextBtn.className = `px-3 py-1.5 rounded-lg text-xs font-bold transition ${currentPage === totalPages ? 'bg-slate-100 text-slate-400 cursor-not-allowed' : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-50'}`;
+            nextBtn.innerText = 'Next';
+            nextBtn.disabled = currentPage === totalPages;
+            nextBtn.onclick = () => { currentPage++; renderGrid(); };
+            paginationContainer.appendChild(nextBtn);
+        }
+
+        // Listener Filter
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                // 🔥 PROTEKSI PENTING: Mencegah script filter lama dari luar component ikut tereksekusi
+                e.preventDefault();
+                e.stopImmediatePropagation();
+
+                // Manipulasi gaya tombol kategori yang aktif
+                filterBtns.forEach(b => {
+                    b.classList.remove('bg-slate-900', 'text-white', 'shadow-md');
+                    b.classList.add('bg-slate-100', 'text-slate-600');
+                });
+                this.classList.remove('bg-slate-100', 'text-slate-600');
+                this.classList.add('bg-slate-900', 'text-white', 'shadow-md');
+
+                currentFilter = this.dataset.filter;
+                currentPage = 1; // Reset ke halaman 1 setiap kali filter diubah
+                renderGrid();
+            });
+        });
+
+        // Eksekusi tampilan awal
+        renderGrid();
+    });
+</script>

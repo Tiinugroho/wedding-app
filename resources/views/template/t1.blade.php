@@ -1453,11 +1453,44 @@
         </ul>
     </nav>
 
+    {{-- PROTEKSI DRAFT / EXPIRED - Hanya disable copy jika pending/canceled --}}
+    @if(isset($isPreviewMode) && $isPreviewMode)
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const copyButtons = document.querySelectorAll('[onclick*="copyToClipboard"]');
+                copyButtons.forEach(btn => {
+                    btn.disabled = true;
+                    btn.classList.add('opacity-50', 'cursor-not-allowed');
+                    btn.title = 'Aktifkan paket untuk membuka fitur bagikan';
+                    btn.onclick = function() {
+                        showToast('Aktifkan paket untuk membuka fitur bagikan.');
+                        return false;
+                    };
+                });
+            });
+        </script>
+    @endif
+
     <script>
         const audio = document.getElementById('bg-music');
         let isMusicPlaying = false;
         let isAutoScrolling = false;
         let scrollInterval;
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            if (toast) {
+                document.getElementById('toast-msg').innerText = msg;
+                toast.classList.remove('opacity-0', 'translate-y-4', 'pointer-events-none');
+                toast.classList.add('opacity-100', 'translate-y-0');
+                setTimeout(() => {
+                    toast.classList.add('opacity-0', 'translate-y-4', 'pointer-events-none');
+                    toast.classList.remove('opacity-100', 'translate-y-0');
+                }, 2500);
+            } else {
+                alert(msg);
+            }
+        }
 
         function openInvitation() {
             document.getElementById('cover-page').classList.add('-translate-y-full');
@@ -1621,37 +1654,37 @@
         // ==========================================
         // FUNGSI KONTROL MODAL KADO & KONFIRMASI
         // ==========================================
-        
+
         function toggleGiftModal(show) {
             const modal = document.getElementById('gift-modal');
             if (!modal) return;
-            
+
             if (show) {
                 modal.classList.remove('hidden');
                 setTimeout(() => modal.classList.remove('opacity-0'), 20);
-                
+
                 // Kunci scroll saat pop-up terbuka
-                document.body.style.overflowY = 'hidden'; 
+                document.body.style.overflowY = 'hidden';
             } else {
                 modal.classList.add('opacity-0');
                 setTimeout(() => {
                     modal.classList.add('hidden');
                 }, 300);
-                
+
                 // 🔥 KUNCI PERBAIKAN: Kembalikan ke 'auto', BUKAN dikosongkan ('')
-                document.body.style.overflowY = 'auto'; 
+                document.body.style.overflowY = 'auto';
             }
         }
 
         function closeConfirmModal() {
             const modal = document.getElementById('confirm-modal');
             if (!modal) return;
-            
+
             modal.classList.add('opacity-0');
             setTimeout(() => {
                 modal.classList.add('hidden');
             }, 300);
-            
+
             // Kembalikan scroll body HANYA JIKA modal daftar kado utama juga sedang tertutup
             const giftModal = document.getElementById('gift-modal');
             if (giftModal && giftModal.classList.contains('hidden')) {
