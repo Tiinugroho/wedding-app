@@ -136,7 +136,7 @@ class WhatsappController extends Controller
     public function startSession()
     {
         $sessionId = 'user_' . Auth::id();
-        $waUrl = config('services.wa_engine.url', 'http://wa.duacerita.my.id/');
+        $waUrl = config('services.wa_engine.url', 'https://wa.duacerita.my.id/');
 
         try {
             // 🔥 CEK STATUS DULU (dengan timeout agar tidak hang lama)
@@ -261,7 +261,7 @@ class WhatsappController extends Controller
     public function logoutSession()
     {
         $sessionId = 'user_' . Auth::id();
-        $waUrl = config('services.wa_engine.url', 'http://wa.duacerita.my.id/');
+        $waUrl = config('services.wa_engine.url', 'https://wa.duacerita.my.id/');
 
         $response = Http::post($waUrl . '/api/wa/logout', [
             'session_id' => $sessionId,
@@ -273,7 +273,7 @@ class WhatsappController extends Controller
     // 🔥 FUNGSI BARU SEBAGAI JEMBATAN (PROXY) CEK STATUS 🔥
     public function checkStatus($session_id)
     {
-        $waUrl = config('services.wa_engine.url', 'http://wa.duacerita.my.id');
+        $waUrl = config('services.wa_engine.url', 'https://wa.duacerita.my.id');
 
         try {
             // Laravel yang akan menembak HTTP (tidak akan diblokir karena dilakukan di backend)

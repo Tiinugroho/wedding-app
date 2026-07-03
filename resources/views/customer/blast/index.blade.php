@@ -96,9 +96,6 @@
                 <div class="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm text-center relative overflow-hidden">
                     <div class="absolute top-0 right-0 w-20 h-20 bg-slate-50 rounded-bl-[4rem]"></div>
                     <h3 class="text-xl font-bold text-slate-800 mb-6 relative z-10">Status Koneksi</h3>
-                    <h3 class="text-xl font-bold text-slate-800 mb-6 relative z-10">Status Koneksi</h3>
-                    <h3 class="text-xl font-bold text-slate-800 mb-6 relative z-10">Status Koneksi</h3>
-                    <h1 style="color: red; font-size: 40px; font-weight: bold;">HALO JATI, INI TEST BACA FILE</h1>
                     <div id="wa-user" class="text-xs text-slate-500 mt-2 hidden mb-4"></div>
 
                     <div id="qr-container" class="w-48 h-48 mx-auto bg-slate-50 rounded-[2rem] border-2 border-dashed border-slate-200 flex items-center justify-center mb-6 overflow-hidden relative">
