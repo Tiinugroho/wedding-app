@@ -736,138 +736,253 @@
             btnLogout.classList.add('hidden');
         }
 
-        function startWaSession() {
-            if (isStarting) return;
-            isStarting = true;
-            qrLoading.innerText = 'Menyiapkan server...';
-            status.innerText = 'Loading...';
-            btnStart.disabled = true;
+        let pollInterval = null;
+let isStarting = false;
+let isPolling = false;
+let isRequesting = false;
+let lastStatus = null;
+let lastQr = null;
 
-            // Mengambil CSRF token dari meta tag bawaan Laravel
-            let csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+function startWaSession() {
 
-            // 🔥 SEKARANG KITA TEMBAK KE ROUTE LARAVEL, BUKAN KE NODEJS LANGSUNG
-            fetch(`/customer/blast/start`, {
-                    method: 'POST',
-                    headers: { 
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': csrfToken, // Wajib ada untuk POST di Laravel
-                        'Accept': 'application/json'
-                    },
-                    body: JSON.stringify({ session_id: sessionId })
-                })
-                .then(res => {
-                    if (!res.ok) throw new Error('Server error: ' + res.status);
-                    return res.json();
-                })
-                .then(data => {
-                    // Mulai polling status setelah server menerima request
-                    if (pollInterval) clearInterval(pollInterval);
-                    pollInterval = setInterval(checkStatus, 2500);
-                })
-                .catch(err => {
-                    resetUI();
-                    isStarting = false;
-                    qrLoading.innerText = 'Gagal terhubung ke server';
-                    status.innerText = 'Error';
-                    status.className = "inline-block px-6 py-2 bg-red-100 text-red-600 rounded-full font-extrabold text-[10px] uppercase tracking-widest";
-                    console.error('startWaSession error:', err.message);
-                });
+    if (isStarting) return;
+
+    isStarting = true;
+
+    qrLoading.innerText = "Menyiapkan server...";
+    status.innerText = "Loading...";
+
+    btnStart.disabled = true;
+
+    const csrfToken = document
+        .querySelector('meta[name="csrf-token"]')
+        .getAttribute('content');
+
+    fetch('/customer/blast/start', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': csrfToken,
+            'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+            session_id: sessionId
+        })
+    })
+    .then(res => {
+
+        if (!res.ok) {
+            throw new Error(res.status);
         }
 
-        function checkStatus() {
-            // 🔥 TEMBAK KE ROUTE GET STATUS LARAVEL YANG BARU KITA BUAT
-            fetch(`/customer/blast/status/${sessionId}`, {
+        return res.json();
+    })
+    .then(() => {
+
+        if (!pollInterval) {
+
+            pollInterval = setInterval(() => {
+
+                if (!isRequesting) {
+                    checkStatus();
+                }
+
+            }, 2500);
+
+        }
+
+    })
+    .catch(err => {
+
+        console.error(err);
+
+        resetUI();
+
+        isStarting = false;
+
+    });
+
+}
+
+        async function checkStatus() {
+
+        if (isRequesting) return;
+
+        isRequesting = true;
+
+        try {
+
+            const res = await fetch(`/customer/blast/status/${sessionId}`, {
                 method: 'GET',
                 headers: {
                     'Accept': 'application/json',
                     'X-Requested-With': 'XMLHttpRequest'
                 }
-            })
-                .then(res => res.json())
-                .then(data => {
-                    console.log("Status dari Server:", data.status);
-                    switch (data.status) {
-                        case 'qr_ready':
-                            qrLoading.classList.add('hidden');
-                            connectedIcon.classList.add('hidden');
-                            qrImage.classList.remove('hidden');
-                            qrImage.src = data.qr;
-                            status.innerText = 'Scan QR';
-                            status.className = "inline-block px-6 py-2 bg-yellow-100 text-yellow-600 rounded-full font-extrabold text-[10px] uppercase tracking-widest";
-                            userDiv.classList.add('hidden');
-                            break;
-                        case 'connected':
-                        // TAMBAHKAN INI UNTUK MENGHENTIKAN LOOPING
-                        if (pollInterval) {
-                            clearInterval(pollInterval);
-                            pollInterval = null;
-                        }
+            });
 
-                        qrImage.classList.add('hidden');
-                        qrLoading.classList.add('hidden');
-                        
-                        connectedIcon.classList.remove('hidden');
-                        connectedIcon.classList.add('flex');
-                        
-                        status.innerText = 'Terhubung';
-                        status.className = "inline-block px-6 py-2 bg-emerald-100 text-emerald-600 rounded-full font-extrabold text-[10px] uppercase tracking-widest";
-                        btnStart.style.display = 'none';
-                        btnLogout.classList.remove('hidden');
-                        if (data.user) {
-                            userDiv.innerText = "Login sebagai: " + data.user.name;
-                            userDiv.classList.remove('hidden');
-                        }
-                        break;
-                        case 'restarting':
-                            qrImage.classList.add('hidden');
-                            connectedIcon.classList.add('hidden');
-                            qrLoading.classList.remove('hidden');
-                            qrLoading.innerText = 'Menyiapkan QR baru...';
-                            status.innerText = 'Reconnect...';
-                            status.className = "inline-block px-6 py-2 bg-blue-100 text-blue-600 rounded-full font-extrabold text-[10px] uppercase tracking-widest";
-                            userDiv.classList.add('hidden');
-                            btnLogout.classList.add('hidden');
-                            break;
-                        case 'disconnected':
-                            resetUI();
-                            isStarting = false;
-                            break;
-                            
-                            
+            const data = await res.json();
+
+            // status tidak berubah dan QR juga sama
+            if (
+                data.status === lastStatus &&
+                data.qr === lastQr
+            ) {
+                isRequesting = false;
+                return;
+            }
+
+            lastStatus = data.status;
+            lastQr = data.qr;
+
+            switch (data.status) {
+
+                case 'qr_ready':
+
+                    qrLoading.classList.add('hidden');
+
+                    connectedIcon.classList.add('hidden');
+
+                    qrImage.classList.remove('hidden');
+
+                    if (qrImage.src !== data.qr) {
+                        qrImage.src = data.qr;
                     }
-                })
-                .catch(err => console.error("Polling error:", err));
+
+                    status.innerText = 'Scan QR';
+
+                    status.className =
+                        "inline-block px-6 py-2 bg-yellow-100 text-yellow-600 rounded-full font-extrabold text-[10px] uppercase tracking-widest";
+
+                    userDiv.classList.add('hidden');
+
+                    btnLogout.classList.add('hidden');
+
+                    break;
+
+                case 'connected':
+
+                    stopPolling();
+
+                    qrLoading.classList.add('hidden');
+
+                    qrImage.classList.add('hidden');
+
+                    connectedIcon.classList.remove('hidden');
+                    connectedIcon.classList.add('flex');
+
+                    status.innerText = 'Terhubung';
+
+                    status.className =
+                        "inline-block px-6 py-2 bg-emerald-100 text-emerald-600 rounded-full font-extrabold text-[10px] uppercase tracking-widest";
+
+                    btnStart.style.display = 'none';
+
+                    btnLogout.classList.remove('hidden');
+
+                    if (data.user) {
+
+                        userDiv.innerText =
+                            "Login sebagai: " + data.user.name;
+
+                        userDiv.classList.remove('hidden');
+
+                    }
+
+                    break;
+
+                case 'restarting':
+
+                    qrImage.classList.add('hidden');
+
+                    connectedIcon.classList.add('hidden');
+
+                    qrLoading.classList.remove('hidden');
+
+                    qrLoading.innerText = "Menyiapkan QR baru...";
+
+                    status.innerText = "Reconnect...";
+
+                    status.className =
+                        "inline-block px-6 py-2 bg-blue-100 text-blue-600 rounded-full font-extrabold text-[10px] uppercase tracking-widest";
+
+                    userDiv.classList.add('hidden');
+
+                    btnLogout.classList.add('hidden');
+
+                    break;
+
+                case 'disconnected':
+
+                    stopPolling();
+
+                    resetUI();
+
+                    isStarting = false;
+
+                    break;
+
+            }
+
+        } catch (err) {
+
+            console.error(err);
+
+        } finally {
+
+            isRequesting = false;
+
         }
+
+    }
 
         function logoutWa() {
-            btnLogout.innerText = "Memproses...";
-            btnLogout.disabled = true;
 
-            let csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+    btnLogout.disabled = true;
 
-            // 🔥 TEMBAK KE ROUTE LOGOUT LARAVEL
-            fetch(`/customer/wa/logout`, {
-                    method: 'POST',
-                    headers: { 
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': csrfToken,
-                        'Accept': 'application/json'
-                    },
-                    body: JSON.stringify({ session_id: sessionId })
-                })
-                .then(() => {
-                    clearInterval(pollInterval);
-                    pollInterval = null;
-                    isStarting = false;
-                    resetUI();
-                    btnLogout.innerText = "Putuskan Koneksi WA";
-                })
-                .catch(err => {
-                    console.error("Logout error:", err);
-                    btnLogout.innerText = "Putuskan Koneksi WA";
-                    btnLogout.disabled = false;
-                });
-        }
+    btnLogout.innerText = "Memproses...";
+
+    const csrfToken = document
+        .querySelector('meta[name="csrf-token"]')
+        .getAttribute('content');
+
+    fetch('/customer/wa/logout', {
+
+        method: 'POST',
+
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': csrfToken,
+            'Accept': 'application/json'
+        },
+
+        body: JSON.stringify({
+            session_id: sessionId
+        })
+
+    })
+    .then(() => {
+
+        stopPolling();
+
+        resetUI();
+
+        isStarting = false;
+
+        btnLogout.disabled = false;
+
+        btnLogout.innerText = "Putuskan Koneksi WA";
+
+    })
+    .catch(err => {
+
+        console.error(err);
+
+        btnLogout.disabled = false;
+
+        btnLogout.innerText = "Putuskan Koneksi WA";
+
+    });
+
+}
     </script>
 @endpush
