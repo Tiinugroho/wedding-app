@@ -286,26 +286,25 @@ class WhatsappController extends Controller
 
     // 🔥 FUNGSI BARU SEBAGAI JEMBATAN (PROXY) CEK STATUS 🔥
     public function checkStatus($session_id)
-    {
-        $waUrl = rtrim(config('services.wa_engine.url', 'https://wa.duacerita.my.id'), '/');
-        $candidates = [
-            "{$waUrl}/api/wa/status/{$session_id}",
-            "{$waUrl}/api/status/{$session_id}",
-            "{$waUrl}/status/{$session_id}",
-        ];
+{
+    $waUrl = rtrim(config('services.wa_engine.url', 'https://wa.duacerita.my.id'), '/');
+    // Hanya gunakan URL yang pasti benar berdasarkan app.js Anda
+    $targetUrl = "{$waUrl}/api/wa/status/{$session_id}";
 
-        foreach ($candidates as $candidate) {
-            try {
-                $response = Http::timeout(5)->get($candidate);
+    try {
+        // Kurangi timeout menjadi 2-3 detik agar tidak memblokir antrean request Laravel
+        $response = Http::timeout(3)->get($targetUrl);
 
-                if ($response->successful()) {
-                    return response()->json($this->normalizeWaPayload($response->json(), 'loading'));
-                }
-            } catch (\Exception $e) {
-                continue;
-            }
+        if ($response->successful()) {
+            return response()->json($this->normalizeWaPayload($response->json(), 'loading'));
         }
-
-        return response()->json(['status' => 'loading', 'message' => 'Status WA sedang dipantau ulang'], 200);
+    } catch (\Exception $e) {
+        // Jika gagal, langsung return response loading
     }
+
+    return response()->json([
+        'status' => 'loading', 
+        'message' => 'Menghubungkan ke server WA...'
+    ], 200);
+}
 }

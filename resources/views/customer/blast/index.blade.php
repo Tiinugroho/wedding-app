@@ -837,27 +837,29 @@
                 const qrValue = data?.qr || data?.qrCode || data?.qr_code || data?.image || data?.qr_url || data?.qrUrl || null;
 
                 if (qrValue) {
-                    qrLoading.classList.add('hidden');
-                    connectedIcon.classList.add('hidden');
-                    qrImage.classList.remove('hidden');
-                    qrImage.src = qrValue;
-                    status.innerText = 'Scan QR';
-                    status.className = "inline-block px-6 py-2 bg-yellow-100 text-yellow-600 rounded-full font-extrabold text-[10px] uppercase tracking-widest";
-                    userDiv.classList.add('hidden');
-                    btnLogout.classList.add('hidden');
-                    isStarting = false;
-                    btnStart.disabled = false;
-                    stopPolling();
-                    return;
-                }
+    qrLoading.classList.add('hidden');
+    connectedIcon.classList.add('hidden');
+    qrImage.classList.remove('hidden');
+    qrImage.src = qrValue;
+    status.innerText = 'Scan QR';
+    status.className = "inline-block px-6 py-2 bg-yellow-100 text-yellow-600 rounded-full font-extrabold text-[10px] uppercase tracking-widest";
+    userDiv.classList.add('hidden');
+    btnLogout.classList.add('hidden');
+    isStarting = false;
+    btnStart.disabled = false;
+    
+    // HAPUS stopPolling() di sini, ganti dengan scheduleStatusCheck agar terus memantau scan
+    scheduleStatusCheck(2000); 
+    return;
+}
 
-                if (statusValue === 'connected') {
-                    handleConnectedState(data);
-                    isStarting = false;
-                    btnStart.disabled = false;
-                    stopPolling();
-                    return;
-                }
+if (statusValue === 'connected') {
+    handleConnectedState(data);
+    isStarting = false;
+    btnStart.disabled = false;
+    stopPolling(); // Di sini BARU BOLEH stop polling karena sudah sukses login
+    return;
+}
 
                 if (statusValue === 'error') {
                     qrLoading.innerText = data.message || 'Gagal memulai sesi WhatsApp.';
@@ -942,37 +944,37 @@
             ) {
                 isRequesting = false;
                 return;
-            }
+            }// ...
+if (statusValue === lastStatus && qrValue === lastQr) {
+    isRequesting = false;
+    // TAMBAHKAN INI: Jika status belum berubah, tetap harus cek lagi nanti
+    scheduleStatusCheck(2000); 
+    return;
+}
 
-            lastStatus = statusValue;
-            lastQr = qrValue;
+lastStatus = statusValue;
+lastQr = qrValue;
 
-            switch (statusValue) {
+switch (statusValue) {
+    case 'qr_ready':
+        // HAPUS stopPolling() di sini
+        qrLoading.classList.add('hidden');
+        connectedIcon.classList.add('hidden');
+        qrImage.classList.remove('hidden');
 
-                case 'qr_ready':
+        if (qrImage.src !== qrValue) {
+            qrImage.src = qrValue;
+        }
 
-                    stopPolling();
-
-                    qrLoading.classList.add('hidden');
-
-                    connectedIcon.classList.add('hidden');
-
-                    qrImage.classList.remove('hidden');
-
-                    if (qrImage.src !== qrValue) {
-                        qrImage.src = qrValue;
-                    }
-
-                    status.innerText = 'Scan QR';
-
-                    status.className =
-                        "inline-block px-6 py-2 bg-yellow-100 text-yellow-600 rounded-full font-extrabold text-[10px] uppercase tracking-widest";
-
-                    userDiv.classList.add('hidden');
-
-                    btnLogout.classList.add('hidden');
-
-                    break;
+        status.innerText = 'Scan QR';
+        status.className = "inline-block px-6 py-2 bg-yellow-100 text-yellow-600 rounded-full font-extrabold text-[10px] uppercase tracking-widest";
+        userDiv.classList.add('hidden');
+        btnLogout.classList.add('hidden');
+        
+        // TAMBAHKAN INI: Lanjutkan polling setiap 2 detik untuk menunggu user scan
+        scheduleStatusCheck(2000); 
+        break;
+// ...
 
                 case 'connected':
 
