@@ -269,4 +269,19 @@ class WhatsappController extends Controller
 
         return response()->json($response->json());
     }
+
+    // 🔥 FUNGSI BARU SEBAGAI JEMBATAN (PROXY) CEK STATUS 🔥
+    public function checkStatus($session_id)
+    {
+        $waUrl = config('services.wa_engine.url', 'http://wa.duacerita.my.id');
+
+        try {
+            // Laravel yang akan menembak HTTP (tidak akan diblokir karena dilakukan di backend)
+            $response = Http::timeout(5)->get("{$waUrl}/api/wa/status/{$session_id}");
+            return response()->json($response->json());
+        } catch (\Exception $e) {
+            \Log::error("Gagal cek status WA: " . $e->getMessage());
+            return response()->json(['status' => 'disconnected']);
+        }
+    }
 }

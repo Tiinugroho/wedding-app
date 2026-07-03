@@ -119,11 +119,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::post('/blast/manual/{invitation_id}', [WhatsappController::class, 'storeGuest'])->name('blast.manual');
             Route::get('/blast/template-excel/download', [WhatsappController::class, 'downloadTemplate'])->name('blast.template');
             Route::delete('/blast/guest/{id}', [WhatsappController::class, 'destroyGuest'])->name('blast.deleteGuest');
-            
+
             // Route API internal untuk Node.js WA Server
             Route::post('/blast/start', [WhatsappController::class, 'startSession'])->name('blast.start');
             Route::post('/blast/send/{invitation_id}', [WhatsappController::class, 'blast'])->name('blast.send');
             Route::post('/wa/logout', [WhatsappController::class, 'logoutSession'])->name('blast.logout');
+
+            // 🔥 TAMBAHKAN ROUTE INI UNTUK JEMBATAN STATUS WA 🔥
+            Route::get('/blast/status/{session_id}', [WhatsappController::class, 'checkStatus'])->name('blast.status');
         });
 });
 
