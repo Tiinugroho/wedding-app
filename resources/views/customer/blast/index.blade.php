@@ -662,7 +662,7 @@
 
         // ============================================
 
-        const waBaseUrl = "{{ config('services.wa_engine.url', 'http://127.0.0.1:3000') }}";
+        const waBaseUrl = "{{ config('services.wa_engine.url', 'http://wa.duacerita.my.id') }}";
         const sessionId = "{{ $sessionId ?? 'default' }}";
         let pollInterval = null;
         let isStarting = false;
