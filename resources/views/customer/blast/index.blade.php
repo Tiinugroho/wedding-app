@@ -668,6 +668,9 @@
         let isRequesting = false;
         let lastStatus = null;
         let lastQr = null;
+        let statusPollTimer = null;
+        let statusPollAttempts = 0;
+        const maxStatusPollAttempts = 12;
 
         const qrImage = document.getElementById('qr-image');
         const qrLoading = document.getElementById('qr-loading');
@@ -728,8 +731,33 @@
             btnLogout.classList.add('hidden');
         }
 
+        function clearStatusPollTimer() {
+            if (statusPollTimer) {
+                clearTimeout(statusPollTimer);
+                statusPollTimer = null;
+            }
+        }
+
         function stopPolling() {
-            return;
+            clearStatusPollTimer();
+            statusPollAttempts = 0;
+        }
+
+        function scheduleStatusCheck(delay = 2000) {
+            clearStatusPollTimer();
+            if (statusPollAttempts >= maxStatusPollAttempts) {
+                qrLoading.innerText = 'Gagal memuat QR. Coba lagi dalam beberapa saat.';
+                status.innerText = 'Gagal';
+                status.className = "inline-block px-6 py-2 bg-red-100 text-red-600 rounded-full font-extrabold text-[10px] uppercase tracking-widest";
+                btnStart.disabled = false;
+                isStarting = false;
+                return;
+            }
+
+            statusPollAttempts += 1;
+            statusPollTimer = setTimeout(() => {
+                checkStatus();
+            }, delay);
         }
 
         function startWaSession() {
@@ -781,6 +809,7 @@
                     btnLogout.classList.add('hidden');
                     isStarting = false;
                     btnStart.disabled = false;
+                    stopPolling();
                     return;
                 }
 
@@ -788,20 +817,22 @@
                     handleConnectedState(data);
                     isStarting = false;
                     btnStart.disabled = false;
+                    stopPolling();
                     return;
                 }
 
                 if (statusValue === 'already_running' || statusValue === 'qr_ready' || statusValue === 'loading') {
-                    setTimeout(() => checkStatus(), 1500);
+                    scheduleStatusCheck(1500);
                     return;
                 }
 
-                setTimeout(() => checkStatus(), 1500);
+                scheduleStatusCheck(1500);
             })
             .catch(err => {
 
                 console.error(err);
 
+                stopPolling();
                 resetUI();
 
                 isStarting = false;
@@ -889,6 +920,16 @@
 
                     break;
 
+                case 'loading':
+
+                    qrLoading.classList.remove('hidden');
+                    qrLoading.innerText = 'Menunggu koneksi WhatsApp...';
+                    status.innerText = 'Loading...';
+                    status.className = "inline-block px-6 py-2 bg-slate-100 text-slate-500 rounded-full font-extrabold text-[10px] uppercase tracking-widest";
+                    scheduleStatusCheck(3000);
+
+                    break;
+
                 case 'restarting':
 
                     stopPolling();
@@ -922,6 +963,12 @@
 
                     break;
 
+                default:
+                    if (data.status && data.status !== 'unknown') {
+                        scheduleStatusCheck(3000);
+                    }
+                    break;
+
             }
 
         } catch (err) {
@@ -931,8 +978,11 @@
         } finally {
 
             isRequesting = false;
-            isStarting = false;
-            btnStart.disabled = false;
+
+            if (lastStatus === 'connected' || lastStatus === 'disconnected') {
+                isStarting = false;
+                btnStart.disabled = false;
+            }
 
         }
 
