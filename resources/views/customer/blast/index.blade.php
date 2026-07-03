@@ -669,7 +669,6 @@
         let isRequesting = false;
         let lastStatus = null;
         let lastQr = null;
-        let pollEnabled = false;
 
         const qrImage = document.getElementById('qr-image');
         const qrLoading = document.getElementById('qr-loading');
@@ -735,7 +734,16 @@
                 clearInterval(pollInterval);
                 pollInterval = null;
             }
-            pollEnabled = false;
+        }
+
+        function startPolling() {
+            if (pollInterval) return;
+
+            pollInterval = setInterval(() => {
+                if (!isRequesting && document.visibilityState !== 'hidden') {
+                    checkStatus();
+                }
+            }, 10000);
         }
 
         function startWaSession() {
@@ -774,6 +782,7 @@
             })
             .then(() => {
                 checkStatus();
+                startPolling();
             })
             .catch(err => {
 
