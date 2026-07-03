@@ -666,6 +666,9 @@
         const sessionId = "{{ $sessionId ?? 'default' }}";
         let pollInterval = null;
         let isStarting = false;
+        let isRequesting = false;
+        let lastStatus = null;
+        let lastQr = null;
 
         const qrImage = document.getElementById('qr-image');
         const qrLoading = document.getElementById('qr-loading');
@@ -695,13 +698,23 @@
                 textArea.value = templates['formal'];
             }
 
-            if (!document.getElementById('wa-status')) return; 
+            if (!document.getElementById('wa-status')) return;
 
             fetch(`${waBaseUrl}/api/wa/status/${sessionId}`)
                 .then(res => res.json())
                 .then(data => {
-                    if (data.status === 'connected') checkStatus();
-                    else if (data.status === 'qr_ready' || data.status === 'loading') startWaSession();
+                    if (data.status === 'connected') {
+                        checkStatus();
+                    } else if (data.status === 'qr_ready' || data.status === 'loading') {
+                        if (data.qr) {
+                            qrLoading.classList.add('hidden');
+                            connectedIcon.classList.add('hidden');
+                            qrImage.classList.remove('hidden');
+                            qrImage.src = data.qr;
+                            status.innerText = 'Scan QR';
+                            status.className = "inline-block px-6 py-2 bg-yellow-100 text-yellow-600 rounded-full font-extrabold text-[10px] uppercase tracking-widest";
+                        }
+                    }
                 })
                 .catch(err => console.log("Menunggu server Node..."));
         });
@@ -736,73 +749,73 @@
             btnLogout.classList.add('hidden');
         }
 
-        let pollInterval = null;
-let isStarting = false;
-let isPolling = false;
-let isRequesting = false;
-let lastStatus = null;
-let lastQr = null;
-
-function startWaSession() {
-
-    if (isStarting) return;
-
-    isStarting = true;
-
-    qrLoading.innerText = "Menyiapkan server...";
-    status.innerText = "Loading...";
-
-    btnStart.disabled = true;
-
-    const csrfToken = document
-        .querySelector('meta[name="csrf-token"]')
-        .getAttribute('content');
-
-    fetch('/customer/blast/start', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': csrfToken,
-            'Accept': 'application/json'
-        },
-        body: JSON.stringify({
-            session_id: sessionId
-        })
-    })
-    .then(res => {
-
-        if (!res.ok) {
-            throw new Error(res.status);
+        function stopPolling() {
+            if (pollInterval) {
+                clearInterval(pollInterval);
+                pollInterval = null;
+            }
         }
 
-        return res.json();
-    })
-    .then(() => {
+        function startWaSession() {
 
-        if (!pollInterval) {
+            if (isStarting) return;
 
-            pollInterval = setInterval(() => {
+            isStarting = true;
 
-                if (!isRequesting) {
-                    checkStatus();
+            qrLoading.innerText = "Menyiapkan server...";
+            status.innerText = "Loading...";
+
+            btnStart.disabled = true;
+
+            const csrfToken = document
+                .querySelector('meta[name="csrf-token"]')
+                .getAttribute('content');
+
+            fetch('/customer/blast/start', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken,
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({
+                    session_id: sessionId
+                })
+            })
+            .then(res => {
+
+                if (!res.ok) {
+                    throw new Error(res.status);
                 }
 
-            }, 1000);
+                return res.json();
+            })
+            .then(() => {
+
+                if (!pollInterval) {
+
+                    pollInterval = setInterval(() => {
+
+                        if (!isRequesting && document.visibilityState !== 'hidden') {
+                            checkStatus();
+                        }
+
+                    }, 5000);
+
+                }
+
+            })
+            .catch(err => {
+
+                console.error(err);
+
+                resetUI();
+
+                isStarting = false;
+
+            });
 
         }
-
-    })
-    .catch(err => {
-
-        console.error(err);
-
-        resetUI();
-
-        isStarting = false;
-
-    });
-
-}
 
         async function checkStatus() {
 
