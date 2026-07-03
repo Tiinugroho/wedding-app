@@ -9,5 +9,6 @@ use Illuminate\Support\Facades\Route;
 |--------------------------------------------------------------------------
 */
 
-// Route Webhook / Callback Duitku (Tidak butuh CSRF Token)
+// Webhook / Callback Payment Gateways (Tidak butuh CSRF Token)
+Route::post('/callback/midtrans', [CheckoutController::class, 'callback']);
 Route::post('/callback/duitku', [CheckoutController::class, 'callback']);

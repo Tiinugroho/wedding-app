@@ -1116,6 +1116,10 @@
                     btnElement.disabled = false;
 
                     if (data.snap_token) {
+                        if (data.active_gateway === 'duitku' && data.redirect_url) {
+                            window.location.href = data.redirect_url;
+                            return;
+                        }
                         snap.pay(data.snap_token, {
                             onSuccess: function(result) {
                                 if (typeof btnElement !== 'undefined') btnElement.innerText = 'Menyimpan...';
@@ -1166,6 +1170,8 @@
                 });
         }
     </script>
-    <script type="text/javascript" src="https://app.sandbox.midtrans.com/snap/snap.js"
-        data-client-key="{{ config('midtrans.client_key') }}"></script>
+    @if(\App\Models\Setting::get('active_payment_gateway', 'midtrans') === 'midtrans')
+        <script type="text/javascript" src="{{ \App\Services\Payment\PaymentGatewayManager::active()->getClientScriptUrl() }}"
+            data-client-key="{{ \App\Models\Setting::get('midtrans_client_key', config('midtrans.client_key')) }}"></script>
+    @endif
 @endpush

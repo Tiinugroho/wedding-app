@@ -29,26 +29,34 @@ class SendWaBlastJob implements ShouldQueue
 
     public function handle(): void
     {
-        // Rangkai pesan: Ganti {nama} dan {link}
         $linkTamu = $this->invitationLink . '?to=' . urlencode($this->guest->name);
         $pesanFinal = str_replace(
-            ['{nama}', '{link}'], 
-            [$this->guest->name, $linkTamu], 
+            ['{nama}', '{link}'],
+            [$this->guest->nama, $linkTamu],
             $this->messageTemplate
         );
 
-        // Tembak ke Node.js local (port 3000)
-        $response = Http::post('http://127.0.0.1:3000/api/wa/send', [
+        // Tembak ke Node.js local / prod server
+        $waUrl = config('services.wa_engine.url', 'http://127.0.0.1:3000');
+        $response = Http::post($waUrl . '/api/wa/send', [
             'session_id' => $this->sessionId,
             'number' => $this->guest->phone_number,
             'message' => $pesanFinal
         ]);
 
         if ($response->successful()) {
+            // Berhasil dikirim, catat waktu blast
             $this->guest->update([
-                'is_blasted' => true,
                 'blasted_at' => now()
             ]);
+        } else {
+            // JIKA GAGAL: Kembalikan status blast agar kuota/tamu bisa di-blast ulang
+            $this->guest->update([
+                'is_blasted' => false
+            ]);
+
+            // Catat di Log Laravel untuk memudahkan Anda melakukan debug
+            \Log::error("Gagal mengirim WA ke {$this->guest->name} ({$this->guest->phone_number}). Status Node.js: " . $response->status());
         }
     }
 }

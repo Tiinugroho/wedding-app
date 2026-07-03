@@ -8,6 +8,7 @@ use App\Imports\GuestsImport;
 use App\Jobs\SendWaBlastJob;
 use App\Models\Guest;
 use App\Models\Invitation;
+use App\Models\Order;
 use App\Models\WaSession;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -19,7 +20,7 @@ class WhatsappController extends Controller
     public function index($invitation_id)
     {
         $invitation = Invitation::where('user_id', Auth::id())->findOrFail($invitation_id);
-        
+
         if ($invitation->status !== 'active') {
             return redirect()->route('customer.invitations.index')->with('error', 'Maaf, Anda harus mengaktifkan undangan (melakukan pembayaran) sebelum bisa mengakses fitur WhatsApp Blast.');
         }
@@ -58,9 +59,9 @@ class WhatsappController extends Controller
         WaSession::updateOrCreate(['user_id' => Auth::id()], ['session_id' => $sessionId]);
 
         return view('customer.blast.index', compact(
-            'invitation', 
-            'guests', 
-            'sessionId', 
+            'invitation',
+            'guests',
+            'sessionId',
             'sudahDikirim',
             'packageName',
             'packageLimit',
@@ -84,11 +85,11 @@ class WhatsappController extends Controller
         if (!empty($number)) {
             // Buang semua karakter selain angka (spasi, strip, tanda +)
             $number = preg_replace('/[^0-9]/', '', $number);
-            
+
             // Jika diawali 0 (misal 0812), ganti 0 jadi 62
             if (str_starts_with($number, '0')) {
                 $number = '62' . substr($number, 1);
-            } 
+            }
             // Jika diawali 8 (misal 812), tambahkan 62 di depannya
             elseif (str_starts_with($number, '8')) {
                 $number = '62' . $number;
@@ -98,13 +99,13 @@ class WhatsappController extends Controller
         // 🔥 SIMPAN KE DATABASE
         Guest::create([
             'invitation_id' => $invitation_id,
-            'name'          => $request->name,
+            'name' => $request->name,
             // Jika nomor kosong, simpan sebagai NULL agar tidak error
-            'phone_number'  => !empty($number) ? $number : null,
+            'phone_number' => !empty($number) ? $number : null,
             // urlencode membuat spasi menjadi + (Contoh: Jati+Nugroho)
-            'slug_name'     => urlencode($request->name),
-            'is_present'    => 0,
-            'is_blasted'    => 0,
+            'slug_name' => urlencode($request->name),
+            'is_present' => 0,
+            'is_blasted' => 0,
         ]);
 
         return back()->with('success', 'Tamu berhasil ditambahkan secara manual.');
@@ -135,9 +136,10 @@ class WhatsappController extends Controller
     public function startSession()
     {
         $sessionId = 'user_' . Auth::id();
+        $waUrl = config('services.wa_engine.url', 'http://127.0.0.1:3000');
 
         // 🔥 CEK STATUS DULU
-        $status = Http::get("http://127.0.0.1:3000/api/wa/status/$sessionId")->json();
+        $status = Http::get($waUrl . "/api/wa/status/$sessionId")->json();
 
         if ($status['status'] === 'connected' || $status['status'] === 'qr_ready') {
             return response()->json([
@@ -145,7 +147,7 @@ class WhatsappController extends Controller
             ]);
         }
 
-        $response = Http::post('http://127.0.0.1:3000/api/wa/start', [
+        $response = Http::post($waUrl . '/api/wa/start', [
             'session_id' => $sessionId,
         ]);
 
@@ -160,7 +162,7 @@ class WhatsappController extends Controller
         ]);
 
         $invitation = Invitation::where('user_id', Auth::id())->findOrFail($invitation_id);
-        
+
         if ($invitation->status !== 'active') {
             return back()->with('error', 'Maaf, Anda harus mengaktifkan undangan terlebih dahulu sebelum bisa menggunakan WhatsApp Blast.');
         }
@@ -222,7 +224,7 @@ class WhatsappController extends Controller
     public function destroyGuest($id)
     {
         $guest = Guest::findOrFail($id);
-        
+
         // Pastikan tamu yang dihapus benar-benar milik user yang sedang login
         if ($guest->invitation->user_id !== Auth::id()) {
             abort(403, 'Unauthorized action.');
@@ -236,8 +238,9 @@ class WhatsappController extends Controller
     public function logoutSession()
     {
         $sessionId = 'user_' . Auth::id();
+        $waUrl = config('services.wa_engine.url', 'http://127.0.0.1:3000');
 
-        $response = Http::post('http://127.0.0.1:3000/api/wa/logout', [
+        $response = Http::post($waUrl . '/api/wa/logout', [
             'session_id' => $sessionId,
         ]);
 

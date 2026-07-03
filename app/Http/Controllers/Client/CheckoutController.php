@@ -160,55 +160,47 @@ class CheckoutController extends Controller
             // 🔥 EKSEKUSI KE MIDTRANS
             // ====================================================
 
+            // ====================================================
+            // 🔥 EKSEKUSI KE PAYMENT GATEWAY DINAMIS
+            // ====================================================
+            $activeGateway = \App\Models\Setting::get('active_payment_gateway', 'midtrans');
+
             if (!empty($order->payment_url)) {
-                return response()->json(['snap_token' => $order->payment_url]);
+                return response()->json([
+                    'snap_token' => $order->payment_url,
+                    'redirect_url' => $order->payment_url,
+                    'active_gateway' => $activeGateway,
+                ]);
             }
 
             // HARGA TOTAL = (Harga Paket Asli) + (Biaya Admin)
             $totalAmount = $basePrice + $adminFee;
 
-            Config::$serverKey = config('midtrans.server_key');
-            Config::$isProduction = config('midtrans.is_production');
-            Config::$isSanitized = config('midtrans.is_sanitized');
-            Config::$is3ds = config('midtrans.is_3ds');
+            $gateway = \App\Services\Payment\PaymentGatewayManager::active();
+            $result = $gateway->createTransaction($order, $type, $productDetails, $basePrice, $adminFee);
 
-            $params = [
-                'transaction_details' => [
-                    'order_id' => $order->order_number,
-                    'gross_amount' => $totalAmount, // Midtrans menerima Total Akhir (e.g. 90500)
-                ],
-                'item_details' => [
-                    [
-                        'id' => substr($type, 0, 50),
-                        'price' => $basePrice, // Midtrans menampilkan Harga Paket (e.g. 89000)
-                        'quantity' => 1,
-                        'name' => substr($productDetails, 0, 50),
-                    ],
-                    [
-                        'id' => 'admin_fee',
-                        'price' => $adminFee, // Midtrans menampilkan Biaya Admin (1500)
-                        'quantity' => 1,
-                        'name' => 'Biaya Layanan Aplikasi',
-                    ],
-                ],
-                'customer_details' => [
-                    'first_name' => substr(Auth::user()->name, 0, 50),
-                    'email' => Auth::user()->email,
-                    'phone' => Auth::user()->phone_number ?? '081234567890',
-                ],
-            ];
+            if (isset($result['error'])) {
+                return response()->json(['error' => $result['error']], 500);
+            }
 
-            $snapToken = Snap::getSnapToken($params);
+            $tokenOrUrl = $result['token'] ?? '';
+            $redirectUrl = $result['redirect_url'] ?? '';
 
-            // Cukup simpan tokennya saja, JANGAN update $order->amount
-            $order->update(['payment_url' => $snapToken]);
+            // Jika Midtrans, simpan tokennya. Jika Duitku/lainnya, simpan redirect_url.
+            $saveValue = $activeGateway === 'midtrans' ? $tokenOrUrl : $redirectUrl;
+            $order->update(['payment_url' => $saveValue]);
 
-            return response()->json(['snap_token' => $snapToken]);
+            return response()->json([
+                'snap_token' => $tokenOrUrl,
+                'redirect_url' => $redirectUrl,
+                'active_gateway' => $activeGateway,
+            ]);
         } catch (\Throwable $th) {
             Log::error('Error getSnapToken: ' . $th->getMessage());
             return response()->json(['error' => 'Terjadi kendala server: ' . $th->getMessage()], 500);
         }
     }
+
     private function getActiveDays($packageId)
     {
         $package = Package::find($packageId);
@@ -236,31 +228,35 @@ class CheckoutController extends Controller
     // 🔥 FUNGSI CALLBACK WEBHOOK
     public function callback(Request $request)
     {
-        Log::info('=== MIDTRANS CALLBACK MASUK ===');
-        $serverKey = config('midtrans.server_key');
-        $hashed = hash('sha512', $request->order_id . $request->status_code . $request->gross_amount . $serverKey);
+        Log::info('=== WEBHOOK CALLBACK MASUK ===');
+        try {
+            $gateway = \App\Services\Payment\PaymentGatewayManager::active();
+            $payload = $gateway->handleNotification($request);
 
-        if ($hashed == $request->signature_key) {
-            // Karena order sudah tercatat sempurna di awal, kita tinggal panggil order_number nya!
-            $order = Order::where('order_number', $request->order_id)->first();
+            if (!$payload['success']) {
+                Log::warning('CALLBACK VERIFICATION GAGAL: ' . ($payload['message'] ?? 'Unknown Error'));
+                return response()->json(['message' => $payload['message'] ?? 'Invalid Callback'], 403);
+            }
+
+            $order = Order::where('order_number', $payload['order_number'])->first();
 
             if (!$order) {
-                Log::warning('GAGAL: Order ID ' . $request->order_id . ' tidak ditemukan di DB.');
+                Log::warning('GAGAL: Order ID ' . $payload['order_number'] . ' tidak ditemukan di DB.');
                 return response()->json(['message' => 'Order Not Found'], 404);
             }
 
             if ($order->status == 'pending') {
-                if (in_array($request->transaction_status, ['capture', 'settlement'])) {
+                if ($payload['status'] === 'success') {
                     $order->update([
                         'status' => 'success',
-                        'reference' => $request->transaction_id,
+                        'reference' => $payload['transaction_id'],
                     ]);
 
                     Payment::create([
                         'order_id' => $order->id,
-                        'transaction_id' => $request->transaction_id,
-                        'payment_type' => $request->payment_type,
-                        'payload' => json_encode($request->all()),
+                        'transaction_id' => $payload['transaction_id'],
+                        'payment_type' => $payload['payment_type'],
+                        'payload' => json_encode($payload['raw_payload']),
                     ]);
 
                     if ($order->package_id != null) {
@@ -279,18 +275,17 @@ class CheckoutController extends Controller
                         $addon = InvitationAddon::firstOrCreate(['invitation_id' => $order->invitation_id]);
                         $addon->increment('extra_quota', $tambahBerapa);
                     }
-                } elseif (in_array($request->transaction_status, ['expire', 'cancel', 'deny'])) {
-                    // Gunakan failed atau expired sesuai ketersediaan ENUM kamu
+                } elseif (in_array($payload['status'], ['expired', 'failed'])) {
                     $order->update([
-                        'status' => $request->transaction_status == 'expire' ? 'expired' : 'failed',
+                        'status' => $payload['status'],
                     ]);
                 }
             }
             return response()->json(['message' => 'Success']);
+        } catch (\Throwable $th) {
+            Log::error('Callback handling error: ' . $th->getMessage());
+            return response()->json(['message' => 'Internal Error: ' . $th->getMessage()], 500);
         }
-
-        Log::error('KUNCI GAGAL: Hashed berbeda dengan Signature Key dari Midtrans.');
-        return response()->json(['message' => 'Invalid Signature'], 403);
     }
 
     // 🔥 FRONTEND CALLBACK
@@ -304,8 +299,17 @@ class CheckoutController extends Controller
             return response()->json(['success' => false, 'message' => 'Order ID tidak ditemukan']);
         }
 
-        Config::$serverKey = config('midtrans.server_key');
-        Config::$isProduction = config('midtrans.is_production');
+        $gatewayName = \App\Models\Setting::get('active_payment_gateway', 'midtrans');
+        if ($gatewayName !== 'midtrans') {
+            $order = Order::where('order_number', $orderId)->first();
+            if ($order && $order->status === 'success') {
+                return response()->json(['success' => true]);
+            }
+            return response()->json(['success' => false, 'message' => 'Pembayaran belum terkonfirmasi oleh server.']);
+        }
+
+        Config::$serverKey = Setting::get('midtrans_server_key', config('midtrans.server_key'));
+        Config::$isProduction = filter_var(Setting::get('midtrans_is_production', config('midtrans.is_production')), FILTER_VALIDATE_BOOLEAN);
 
         try {
             $midtransStatus = Transaction::status($orderId);

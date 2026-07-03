@@ -42,6 +42,6 @@ return [
 
     // config/services.php
     'wa_engine' => [
-        'url' => env('WA_ENGINE_URL', 'http://127.0.0.1:3000'),
+        'url' => env('WA_ENGINE_URL', 'https://wa.duacerita.my.id'),
     ],
 ];

@@ -66,6 +66,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::resource('orders', AdminOrderController::class)->only(['index', 'show']);
             Route::resource('users', AdminUserController::class)->only(['index', 'destroy']);
 
+            // settings
+            Route::get('/settings', [\App\Http\Controllers\Admin\SettingController::class, 'index'])->name('settings.index');
+            Route::post('/settings', [\App\Http\Controllers\Admin\SettingController::class, 'update'])->name('settings.update');
+
             // Profile Admin
             Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
             Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
