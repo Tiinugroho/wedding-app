@@ -787,7 +787,7 @@ function startWaSession() {
                     checkStatus();
                 }
 
-            }, 2500);
+            }, 1000);
 
         }
 
