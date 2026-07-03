@@ -833,8 +833,8 @@
                 return res.json();
             })
             .then((data) => {
-                const statusValue = data?.status || null;
-                const qrValue = data?.qr || null;
+                const statusValue = data?.status || data?.state || data?.session_status || 'loading';
+                const qrValue = data?.qr || data?.qrCode || data?.qr_code || data?.image || data?.qr_url || data?.qrUrl || null;
 
                 if (qrValue) {
                     qrLoading.classList.add('hidden');
@@ -932,20 +932,22 @@
             }
 
             const data = await res.json();
+            const statusValue = data?.status || data?.state || data?.session_status || 'loading';
+            const qrValue = data?.qr || data?.qrCode || data?.qr_code || data?.image || data?.qr_url || data?.qrUrl || null;
 
             // status tidak berubah dan QR juga sama
             if (
-                data.status === lastStatus &&
-                data.qr === lastQr
+                statusValue === lastStatus &&
+                qrValue === lastQr
             ) {
                 isRequesting = false;
                 return;
             }
 
-            lastStatus = data.status;
-            lastQr = data.qr;
+            lastStatus = statusValue;
+            lastQr = qrValue;
 
-            switch (data.status) {
+            switch (statusValue) {
 
                 case 'qr_ready':
 
@@ -957,8 +959,8 @@
 
                     qrImage.classList.remove('hidden');
 
-                    if (qrImage.src !== data.qr) {
-                        qrImage.src = data.qr;
+                    if (qrImage.src !== qrValue) {
+                        qrImage.src = qrValue;
                     }
 
                     status.innerText = 'Scan QR';

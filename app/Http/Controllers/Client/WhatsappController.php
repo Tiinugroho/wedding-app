@@ -13,7 +13,6 @@ use App\Models\WaSession;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Facades\Excel;
 
 class WhatsappController extends Controller
@@ -134,42 +133,62 @@ class WhatsappController extends Controller
         return Excel::download(new TemplateGuestExport, 'Template_Tamu_RuangRestu.xlsx');
     }
 
+    private function normalizeWaPayload($payload, $fallbackStatus = 'loading')
+    {
+        if (!is_array($payload)) {
+            return ['status' => $fallbackStatus, 'message' => 'WA engine mengirim respons yang tidak valid'];
+        }
+
+        $status = $payload['status'] ?? $payload['state'] ?? $payload['session_status'] ?? null;
+        $qr = $payload['qr'] ?? $payload['qrCode'] ?? $payload['qr_code'] ?? $payload['image'] ?? $payload['qr_url'] ?? $payload['qrUrl'] ?? null;
+
+        if ($qr === null && isset($payload['data']) && is_array($payload['data'])) {
+            $status = $status ?? ($payload['data']['status'] ?? $payload['data']['state'] ?? null);
+            $qr = $payload['data']['qr'] ?? $payload['data']['qrCode'] ?? $payload['data']['qr_code'] ?? $payload['data']['image'] ?? $payload['data']['qr_url'] ?? $payload['data']['qrUrl'] ?? null;
+        }
+
+        if ($status === null && $qr) {
+            $status = 'qr_ready';
+        }
+
+        return [
+            'status' => $status ?? $fallbackStatus,
+            'qr' => $qr,
+            'message' => $payload['message'] ?? null,
+            'user' => $payload['user'] ?? ($payload['data']['user'] ?? null),
+        ];
+    }
+
     public function startSession()
     {
         $sessionId = 'user_' . Auth::id();
-        $waUrl = config('services.wa_engine.url', 'https://wa.duacerita.my.id/');
+        $waUrl = rtrim(config('services.wa_engine.url', 'https://wa.duacerita.my.id'), '/');
+        $candidates = [
+            ['url' => $waUrl . '/api/wa/start', 'method' => 'post'],
+            ['url' => $waUrl . '/api/start', 'method' => 'post'],
+            ['url' => $waUrl . '/start', 'method' => 'post'],
+        ];
 
-        try {
-            $response = Http::timeout(15)->post($waUrl . '/api/wa/start', [
-                'session_id' => $sessionId,
-            ]);
+        foreach ($candidates as $candidate) {
+            try {
+                $response = $candidate['method'] === 'post'
+                    ? Http::timeout(15)->asForm()->post($candidate['url'], ['session_id' => $sessionId])
+                    : Http::timeout(5)->get($candidate['url']);
 
-            $payload = $response->json();
-            if (!is_array($payload)) {
-                $payload = ['status' => 'loading', 'message' => 'WA server mengirim respons non-JSON'];
+                if ($response->successful()) {
+                    return response()->json($this->normalizeWaPayload($response->json(), 'loading'));
+                }
+            } catch (\Illuminate\Http\Client\ConnectionException $e) {
+                continue;
+            } catch (\Exception $e) {
+                continue;
             }
-
-            if ($response->failed()) {
-                return response()->json([
-                    'status' => 'error',
-                    'message' => 'Server WhatsApp mengembalikan error saat memulai sesi.',
-                ], $response->status());
-            }
-
-            return response()->json($payload);
-        } catch (\Illuminate\Http\Client\ConnectionException $e) {
-            Log::error("Gagal start WA session: " . $e->getMessage());
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Server WhatsApp tidak dapat dihubungi. Pastikan server WA sedang berjalan.',
-            ], 503);
-        } catch (\Exception $e) {
-            Log::error("Error start WA session: " . $e->getMessage());
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Terjadi kesalahan internal.',
-            ], 500);
         }
+
+        return response()->json([
+            'status' => 'loading',
+            'message' => 'WA engine sedang memulai sesi, silakan coba lagi sebentar.',
+        ], 200);
     }
 
     public function blast(Request $request, $invitation_id)
@@ -268,19 +287,25 @@ class WhatsappController extends Controller
     // 🔥 FUNGSI BARU SEBAGAI JEMBATAN (PROXY) CEK STATUS 🔥
     public function checkStatus($session_id)
     {
-        $waUrl = config('services.wa_engine.url', 'https://wa.duacerita.my.id');
+        $waUrl = rtrim(config('services.wa_engine.url', 'https://wa.duacerita.my.id'), '/');
+        $candidates = [
+            "{$waUrl}/api/wa/status/{$session_id}",
+            "{$waUrl}/api/status/{$session_id}",
+            "{$waUrl}/status/{$session_id}",
+        ];
 
-        try {
-            $response = Http::timeout(5)->get("{$waUrl}/api/wa/status/{$session_id}");
+        foreach ($candidates as $candidate) {
+            try {
+                $response = Http::timeout(5)->get($candidate);
 
-            if ($response->failed()) {
-                return response()->json(['status' => 'loading', 'message' => 'Status WA belum siap'], 200);
+                if ($response->successful()) {
+                    return response()->json($this->normalizeWaPayload($response->json(), 'loading'));
+                }
+            } catch (\Exception $e) {
+                continue;
             }
-
-            return response()->json($response->json());
-        } catch (\Exception $e) {
-            Log::warning("Gagal cek status WA: " . $e->getMessage());
-            return response()->json(['status' => 'loading', 'message' => 'Status WA sedang dipantau ulang'], 200);
         }
+
+        return response()->json(['status' => 'loading', 'message' => 'Status WA sedang dipantau ulang'], 200);
     }
 }
