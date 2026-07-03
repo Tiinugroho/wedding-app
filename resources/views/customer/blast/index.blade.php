@@ -669,6 +669,7 @@
         let isRequesting = false;
         let lastStatus = null;
         let lastQr = null;
+        let pollEnabled = false;
 
         const qrImage = document.getElementById('qr-image');
         const qrLoading = document.getElementById('qr-loading');
@@ -754,6 +755,7 @@
                 clearInterval(pollInterval);
                 pollInterval = null;
             }
+            pollEnabled = false;
         }
 
         function startWaSession() {
@@ -791,19 +793,7 @@
                 return res.json();
             })
             .then(() => {
-
-                if (!pollInterval) {
-
-                    pollInterval = setInterval(() => {
-
-                        if (!isRequesting && document.visibilityState !== 'hidden') {
-                            checkStatus();
-                        }
-
-                    }, 5000);
-
-                }
-
+                checkStatus();
             })
             .catch(err => {
 
@@ -850,6 +840,8 @@
             switch (data.status) {
 
                 case 'qr_ready':
+
+                    stopPolling();
 
                     qrLoading.classList.add('hidden');
 
@@ -905,6 +897,8 @@
 
                 case 'restarting':
 
+                    stopPolling();
+
                     qrImage.classList.add('hidden');
 
                     connectedIcon.classList.add('hidden');
@@ -947,6 +941,20 @@
         }
 
     }
+
+        window.addEventListener('focus', () => {
+            if (document.visibilityState === 'visible' && (lastStatus === 'qr_ready' || lastStatus === 'loading' || lastStatus === 'restarting')) {
+                checkStatus();
+            }
+        });
+
+        window.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible' && (lastStatus === 'qr_ready' || lastStatus === 'loading' || lastStatus === 'restarting')) {
+                checkStatus();
+            }
+        });
+
+        window.addEventListener('beforeunload', stopPolling);
 
         function logoutWa() {
 
