@@ -859,12 +859,22 @@
                     return;
                 }
 
-                if (statusValue === 'already_running' || statusValue === 'qr_ready' || statusValue === 'loading') {
-                    scheduleStatusCheck(1500);
+                if (statusValue === 'error') {
+                    qrLoading.innerText = data.message || 'Gagal memulai sesi WhatsApp.';
+                    status.innerText = 'Gagal';
+                    status.className = "inline-block px-6 py-2 bg-red-100 text-red-600 rounded-full font-extrabold text-[10px] uppercase tracking-widest";
+                    isStarting = false;
+                    btnStart.disabled = false;
+                    stopPolling();
                     return;
                 }
 
-                scheduleStatusCheck(1500);
+                if (statusValue === 'already_running' || statusValue === 'qr_ready' || statusValue === 'loading' || !statusValue) {
+                    scheduleStatusCheck(1000);
+                    return;
+                }
+
+                scheduleStatusCheck(1000);
             })
             .catch(err => {
 
