@@ -743,33 +743,25 @@
             status.innerText = 'Loading...';
             btnStart.disabled = true;
 
-            fetch("{{ route('customer.blast.start') }}", {
+            // 🔥 Panggil WA server LANGSUNG dari browser
+            // PHP di shared hosting tidak bisa loopback ke wa.duacerita.my.id
+            fetch(`${waBaseUrl}/api/wa/start`, {
                     method: 'POST',
-                    headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Content-Type': 'application/json' }
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ session_id: sessionId })
                 })
                 .then(res => {
-                    // 🔥 Cek HTTP status — jangan buat polling kalau server error
-                    if (!res.ok) {
-                        return res.json().then(data => {
-                            throw new Error(data.message || 'Server error ' + res.status);
-                        }).catch(() => {
-                            throw new Error('Server WhatsApp tidak dapat dihubungi (HTTP ' + res.status + ')');
-                        });
-                    }
+                    if (!res.ok) throw new Error('WA server error: ' + res.status);
                     return res.json();
                 })
                 .then(data => {
-                    if (data.status === 'error') {
-                        throw new Error(data.message || 'Gagal menghubungi server WA.');
-                    }
-                    // 🔥 Hanya buat interval kalau tidak ada error
+                    // Mulai polling status setelah server menerima request
                     if (pollInterval) clearInterval(pollInterval);
                     pollInterval = setInterval(checkStatus, 2500);
                 })
                 .catch(err => {
                     resetUI();
                     isStarting = false;
-                    // Tampilkan pesan error ke user
                     qrLoading.innerText = 'Gagal terhubung ke server WA';
                     status.innerText = 'Error';
                     status.className = "inline-block px-6 py-2 bg-red-100 text-red-600 rounded-full font-extrabold text-[10px] uppercase tracking-widest";
@@ -830,18 +822,25 @@
             btnLogout.innerText = "Memproses...";
             btnLogout.disabled = true;
 
-            fetch("{{ route('customer.blast.logout') }}", {
+            // 🔥 Panggil WA server langsung — sama seperti startWaSession
+            fetch(`${waBaseUrl}/api/wa/logout`, {
                     method: 'POST',
-                    headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Content-Type': 'application/json' }
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ session_id: sessionId })
                 })
                 .then(() => {
                     clearInterval(pollInterval);
+                    pollInterval = null;
                     isStarting = false;
                     resetUI();
                     btnLogout.innerText = "Putuskan Koneksi WA";
-                    setTimeout(() => { startWaSession(); }, 1500);
+                    // 🔥 TIDAK auto-reconnect setelah logout — user harus klik manual
                 })
-                .catch(err => console.error("Logout error:", err));
+                .catch(err => {
+                    console.error("Logout error:", err);
+                    btnLogout.innerText = "Putuskan Koneksi WA";
+                    btnLogout.disabled = false;
+                });
         }
     </script>
 @endpush
