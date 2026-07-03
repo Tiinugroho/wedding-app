@@ -664,7 +664,6 @@
 
         const waBaseUrl = "{{ config('services.wa_engine.url', 'http://wa.duacerita.my.id') }}";
         const sessionId = "{{ $sessionId ?? 'default' }}";
-        let pollInterval = null;
         let isStarting = false;
         let isRequesting = false;
         let lastStatus = null;
@@ -730,20 +729,7 @@
         }
 
         function stopPolling() {
-            if (pollInterval) {
-                clearInterval(pollInterval);
-                pollInterval = null;
-            }
-        }
-
-        function startPolling() {
-            if (pollInterval) return;
-
-            pollInterval = setInterval(() => {
-                if (!isRequesting && document.visibilityState !== 'hidden') {
-                    checkStatus();
-                }
-            }, 10000);
+            return;
         }
 
         function startWaSession() {
@@ -780,9 +766,37 @@
 
                 return res.json();
             })
-            .then(() => {
-                checkStatus();
-                startPolling();
+            .then((data) => {
+                const statusValue = data?.status || null;
+                const qrValue = data?.qr || null;
+
+                if (qrValue) {
+                    qrLoading.classList.add('hidden');
+                    connectedIcon.classList.add('hidden');
+                    qrImage.classList.remove('hidden');
+                    qrImage.src = qrValue;
+                    status.innerText = 'Scan QR';
+                    status.className = "inline-block px-6 py-2 bg-yellow-100 text-yellow-600 rounded-full font-extrabold text-[10px] uppercase tracking-widest";
+                    userDiv.classList.add('hidden');
+                    btnLogout.classList.add('hidden');
+                    isStarting = false;
+                    btnStart.disabled = false;
+                    return;
+                }
+
+                if (statusValue === 'connected') {
+                    handleConnectedState(data);
+                    isStarting = false;
+                    btnStart.disabled = false;
+                    return;
+                }
+
+                if (statusValue === 'already_running' || statusValue === 'qr_ready' || statusValue === 'loading') {
+                    setTimeout(() => checkStatus(), 1500);
+                    return;
+                }
+
+                setTimeout(() => checkStatus(), 1500);
             })
             .catch(err => {
 
@@ -794,6 +808,22 @@
 
             });
 
+        }
+
+        function handleConnectedState(data) {
+            qrLoading.classList.add('hidden');
+            qrImage.classList.add('hidden');
+            connectedIcon.classList.remove('hidden');
+            connectedIcon.classList.add('flex');
+            status.innerText = 'Terhubung';
+            status.className = "inline-block px-6 py-2 bg-emerald-100 text-emerald-600 rounded-full font-extrabold text-[10px] uppercase tracking-widest";
+            btnStart.style.display = 'none';
+            btnLogout.classList.remove('hidden');
+
+            if (data.user) {
+                userDiv.innerText = "Login sebagai: " + data.user.name;
+                userDiv.classList.remove('hidden');
+            }
         }
 
         async function checkStatus() {
@@ -855,32 +885,7 @@
 
                 case 'connected':
 
-                    stopPolling();
-
-                    qrLoading.classList.add('hidden');
-
-                    qrImage.classList.add('hidden');
-
-                    connectedIcon.classList.remove('hidden');
-                    connectedIcon.classList.add('flex');
-
-                    status.innerText = 'Terhubung';
-
-                    status.className =
-                        "inline-block px-6 py-2 bg-emerald-100 text-emerald-600 rounded-full font-extrabold text-[10px] uppercase tracking-widest";
-
-                    btnStart.style.display = 'none';
-
-                    btnLogout.classList.remove('hidden');
-
-                    if (data.user) {
-
-                        userDiv.innerText =
-                            "Login sebagai: " + data.user.name;
-
-                        userDiv.classList.remove('hidden');
-
-                    }
+                    handleConnectedState(data);
 
                     break;
 
@@ -926,6 +931,8 @@
         } finally {
 
             isRequesting = false;
+            isStarting = false;
+            btnStart.disabled = false;
 
         }
 
