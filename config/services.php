@@ -42,6 +42,8 @@ return [
 
     // config/services.php
     'wa_engine' => [
-        'url' => env('WA_ENGINE_URL', 'https://wa.duacerita.my.id'),
+        'url' => env('WA_ENGINE_URL', 'https://wa.duacerita.my.id') === 'http://wa.duacerita.my.id'
+            ? 'https://wa.duacerita.my.id'
+            : env('WA_ENGINE_URL', 'https://wa.duacerita.my.id'),
     ],
 ];
