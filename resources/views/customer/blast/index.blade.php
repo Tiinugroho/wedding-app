@@ -777,13 +777,13 @@
 
         function checkStatus() {
             // 🔥 TEMBAK KE ROUTE GET STATUS LARAVEL YANG BARU KITA BUAT
-           fetch(`/customer/blast/status/${sessionId}`, {
-    method: 'GET',
-    headers: {
-        'Accept': 'application/json',
-        'X-Requested-With': 'XMLHttpRequest'
-    }
-})
+            fetch(`/customer/blast/status/${sessionId}`, {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
                 .then(res => res.json())
                 .then(data => {
                     switch (data.status) {
@@ -797,21 +797,27 @@
                             userDiv.classList.add('hidden');
                             break;
                         case 'connected':
-                            qrImage.classList.add('hidden');
-                            qrLoading.classList.add('hidden');
-                            
-                            connectedIcon.classList.remove('hidden');
-                            connectedIcon.classList.add('flex');
-                            
-                            status.innerText = 'Terhubung';
-                            status.className = "inline-block px-6 py-2 bg-emerald-100 text-emerald-600 rounded-full font-extrabold text-[10px] uppercase tracking-widest";
-                            btnStart.style.display = 'none';
-                            btnLogout.classList.remove('hidden');
-                            if (data.user) {
-                                userDiv.innerText = "Login sebagai: " + data.user.name;
-                                userDiv.classList.remove('hidden');
-                            }
-                            break;
+    // TAMBAHKAN INI UNTUK MENGHENTIKAN LOOPING
+    if (pollInterval) {
+        clearInterval(pollInterval);
+        pollInterval = null;
+    }
+
+    qrImage.classList.add('hidden');
+    qrLoading.classList.add('hidden');
+    
+    connectedIcon.classList.remove('hidden');
+    connectedIcon.classList.add('flex');
+    
+    status.innerText = 'Terhubung';
+    status.className = "inline-block px-6 py-2 bg-emerald-100 text-emerald-600 rounded-full font-extrabold text-[10px] uppercase tracking-widest";
+    btnStart.style.display = 'none';
+    btnLogout.classList.remove('hidden');
+    if (data.user) {
+        userDiv.innerText = "Login sebagai: " + data.user.name;
+        userDiv.classList.remove('hidden');
+    }
+    break;
                         case 'restarting':
                             qrImage.classList.add('hidden');
                             connectedIcon.classList.add('hidden');
@@ -826,6 +832,8 @@
                             resetUI();
                             isStarting = false;
                             break;
+                            
+                            
                     }
                 })
                 .catch(err => console.error("Polling error:", err));
