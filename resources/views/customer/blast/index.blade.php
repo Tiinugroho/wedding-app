@@ -743,15 +743,21 @@
             status.innerText = 'Loading...';
             btnStart.disabled = true;
 
-            // 🔥 Panggil WA server LANGSUNG dari browser
-            // PHP di shared hosting tidak bisa loopback ke wa.duacerita.my.id
-            fetch(`${waBaseUrl}/api/wa/start`, {
+            // Mengambil CSRF token dari meta tag bawaan Laravel
+            let csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+            // 🔥 SEKARANG KITA TEMBAK KE ROUTE LARAVEL, BUKAN KE NODEJS LANGSUNG
+            fetch(`/customer/blast/start`, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken, // Wajib ada untuk POST di Laravel
+                        'Accept': 'application/json'
+                    },
                     body: JSON.stringify({ session_id: sessionId })
                 })
                 .then(res => {
-                    if (!res.ok) throw new Error('WA server error: ' + res.status);
+                    if (!res.ok) throw new Error('Server error: ' + res.status);
                     return res.json();
                 })
                 .then(data => {
@@ -762,7 +768,7 @@
                 .catch(err => {
                     resetUI();
                     isStarting = false;
-                    qrLoading.innerText = 'Gagal terhubung ke server WA';
+                    qrLoading.innerText = 'Gagal terhubung ke server';
                     status.innerText = 'Error';
                     status.className = "inline-block px-6 py-2 bg-red-100 text-red-600 rounded-full font-extrabold text-[10px] uppercase tracking-widest";
                     console.error('startWaSession error:', err.message);
@@ -770,7 +776,14 @@
         }
 
         function checkStatus() {
-            fetch(`${waBaseUrl}/api/wa/status/${sessionId}`)
+            // 🔥 TEMBAK KE ROUTE GET STATUS LARAVEL YANG BARU KITA BUAT
+            fetch(`/customer/blast/status/${sessionId}`, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
                 .then(res => res.json())
                 .then(data => {
                     switch (data.status) {
@@ -822,10 +835,16 @@
             btnLogout.innerText = "Memproses...";
             btnLogout.disabled = true;
 
-            // 🔥 Panggil WA server langsung — sama seperti startWaSession
-            fetch(`${waBaseUrl}/api/wa/logout`, {
+            let csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+            // 🔥 TEMBAK KE ROUTE LOGOUT LARAVEL
+            fetch(`/customer/wa/logout`, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken,
+                        'Accept': 'application/json'
+                    },
                     body: JSON.stringify({ session_id: sessionId })
                 })
                 .then(() => {
@@ -834,7 +853,6 @@
                     isStarting = false;
                     resetUI();
                     btnLogout.innerText = "Putuskan Koneksi WA";
-                    // 🔥 TIDAK auto-reconnect setelah logout — user harus klik manual
                 })
                 .catch(err => {
                     console.error("Logout error:", err);
