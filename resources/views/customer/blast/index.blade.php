@@ -670,7 +670,12 @@
         let lastQr = null;
         let statusPollTimer = null;
         let statusPollAttempts = 0;
+        let reconnectTimer = null;
+        let reconnectAttempts = 0;
+        let wasConnected = false;
+        let lastConnectedAt = 0;
         const maxStatusPollAttempts = 12;
+        const maxReconnectAttempts = 2;
 
         const qrImage = document.getElementById('qr-image');
         const qrLoading = document.getElementById('qr-loading');
@@ -729,6 +734,9 @@
             btnStart.style.display = 'block';
             btnStart.disabled = false;
             btnLogout.classList.add('hidden');
+            wasConnected = false;
+            lastConnectedAt = 0;
+            reconnectAttempts = 0;
         }
 
         function clearStatusPollTimer() {
@@ -741,6 +749,31 @@
         function stopPolling() {
             clearStatusPollTimer();
             statusPollAttempts = 0;
+        }
+
+        function clearReconnectTimer() {
+            if (reconnectTimer) {
+                clearTimeout(reconnectTimer);
+                reconnectTimer = null;
+            }
+        }
+
+        function scheduleReconnect(delay = 2500) {
+            clearReconnectTimer();
+            if (reconnectAttempts >= maxReconnectAttempts) {
+                resetUI();
+                isStarting = false;
+                wasConnected = false;
+                return;
+            }
+
+            reconnectAttempts += 1;
+            reconnectTimer = setTimeout(() => {
+                qrLoading.innerText = 'Menyambungkan ulang...';
+                status.innerText = 'Menyambungkan ulang...';
+                status.className = "inline-block px-6 py-2 bg-blue-100 text-blue-600 rounded-full font-extrabold text-[10px] uppercase tracking-widest";
+                startWaSession();
+            }, delay);
         }
 
         function scheduleStatusCheck(delay = 2000) {
@@ -763,6 +796,8 @@
         function startWaSession() {
 
             if (isStarting) return;
+
+            clearReconnectTimer();
 
             isStarting = true;
 
@@ -850,6 +885,10 @@
             status.className = "inline-block px-6 py-2 bg-emerald-100 text-emerald-600 rounded-full font-extrabold text-[10px] uppercase tracking-widest";
             btnStart.style.display = 'none';
             btnLogout.classList.remove('hidden');
+            wasConnected = true;
+            lastConnectedAt = Date.now();
+            reconnectAttempts = 0;
+            clearReconnectTimer();
 
             if (data.user) {
                 userDiv.innerText = "Login sebagai: " + data.user.name;
@@ -957,9 +996,12 @@
 
                     stopPolling();
 
-                    resetUI();
-
-                    isStarting = false;
+                    if (wasConnected && (Date.now() - lastConnectedAt) < 20000) {
+                        scheduleReconnect(2500);
+                    } else {
+                        resetUI();
+                        isStarting = false;
+                    }
 
                     break;
 
