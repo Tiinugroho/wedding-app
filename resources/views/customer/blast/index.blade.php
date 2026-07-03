@@ -747,13 +747,33 @@
                     method: 'POST',
                     headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Content-Type': 'application/json' }
                 })
-                .then(() => {
+                .then(res => {
+                    // 🔥 Cek HTTP status — jangan buat polling kalau server error
+                    if (!res.ok) {
+                        return res.json().then(data => {
+                            throw new Error(data.message || 'Server error ' + res.status);
+                        }).catch(() => {
+                            throw new Error('Server WhatsApp tidak dapat dihubungi (HTTP ' + res.status + ')');
+                        });
+                    }
+                    return res.json();
+                })
+                .then(data => {
+                    if (data.status === 'error') {
+                        throw new Error(data.message || 'Gagal menghubungi server WA.');
+                    }
+                    // 🔥 Hanya buat interval kalau tidak ada error
                     if (pollInterval) clearInterval(pollInterval);
                     pollInterval = setInterval(checkStatus, 2500);
                 })
                 .catch(err => {
                     resetUI();
                     isStarting = false;
+                    // Tampilkan pesan error ke user
+                    qrLoading.innerText = 'Gagal terhubung ke server WA';
+                    status.innerText = 'Error';
+                    status.className = "inline-block px-6 py-2 bg-red-100 text-red-600 rounded-full font-extrabold text-[10px] uppercase tracking-widest";
+                    console.error('startWaSession error:', err.message);
                 });
         }
 

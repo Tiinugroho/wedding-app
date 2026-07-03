@@ -136,22 +136,45 @@ class WhatsappController extends Controller
     public function startSession()
     {
         $sessionId = 'user_' . Auth::id();
-        $waUrl = config('services.wa_engine.url', 'http://127.0.0.1:3000');
+        $waUrl = config('services.wa_engine.url', 'http://wa.duacerita.my.id/');
 
-        // 🔥 CEK STATUS DULU
-        $status = Http::get($waUrl . "/api/wa/status/$sessionId")->json();
+        try {
+            // 🔥 CEK STATUS DULU (dengan timeout agar tidak hang lama)
+            $statusResponse = Http::timeout(5)->get($waUrl . "/api/wa/status/$sessionId");
+            $status = $statusResponse->json();
 
-        if ($status['status'] === 'connected' || $status['status'] === 'qr_ready') {
-            return response()->json([
-                'status' => 'already_running',
-            ]);
+            // Guard: jika response bukan JSON valid atau key 'status' tidak ada
+            $currentStatus = $status['status'] ?? null;
+
+            if ($currentStatus === 'connected' || $currentStatus === 'qr_ready') {
+                return response()->json(['status' => 'already_running']);
+            }
+        } catch (\Illuminate\Http\Client\ConnectionException $e) {
+            // Server WA tidak bisa dihubungi — lanjut coba start saja
+            \Log::warning("WA server tidak merespons saat cek status: " . $e->getMessage());
+        } catch (\Exception $e) {
+            \Log::warning("Error cek status WA: " . $e->getMessage());
         }
 
-        $response = Http::post($waUrl . '/api/wa/start', [
-            'session_id' => $sessionId,
-        ]);
+        try {
+            $response = Http::timeout(10)->post($waUrl . '/api/wa/start', [
+                'session_id' => $sessionId,
+            ]);
 
-        return response()->json($response->json());
+            return response()->json($response->json());
+        } catch (\Illuminate\Http\Client\ConnectionException $e) {
+            \Log::error("Gagal start WA session: " . $e->getMessage());
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Server WhatsApp tidak dapat dihubungi. Pastikan server WA sedang berjalan.',
+            ], 503);
+        } catch (\Exception $e) {
+            \Log::error("Error start WA session: " . $e->getMessage());
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Terjadi kesalahan internal.',
+            ], 500);
+        }
     }
 
     public function blast(Request $request, $invitation_id)
@@ -238,7 +261,7 @@ class WhatsappController extends Controller
     public function logoutSession()
     {
         $sessionId = 'user_' . Auth::id();
-        $waUrl = config('services.wa_engine.url', 'http://127.0.0.1:3000');
+        $waUrl = config('services.wa_engine.url', 'http://wa.duacerita.my.id/');
 
         $response = Http::post($waUrl . '/api/wa/logout', [
             'session_id' => $sessionId,
