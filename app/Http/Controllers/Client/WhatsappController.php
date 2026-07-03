@@ -13,6 +13,7 @@ use App\Models\WaSession;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Facades\Excel;
 
 class WhatsappController extends Controller
@@ -151,9 +152,9 @@ class WhatsappController extends Controller
             }
         } catch (\Illuminate\Http\Client\ConnectionException $e) {
             // Server WA tidak bisa dihubungi — lanjut coba start saja
-            \Log::warning("WA server tidak merespons saat cek status: " . $e->getMessage());
+            Log::warning("WA server tidak merespons saat cek status: " . $e->getMessage());
         } catch (\Exception $e) {
-            \Log::warning("Error cek status WA: " . $e->getMessage());
+            Log::warning("Error cek status WA: " . $e->getMessage());
         }
 
         try {
@@ -163,13 +164,13 @@ class WhatsappController extends Controller
 
             return response()->json($response->json());
         } catch (\Illuminate\Http\Client\ConnectionException $e) {
-            \Log::error("Gagal start WA session: " . $e->getMessage());
+            Log::error("Gagal start WA session: " . $e->getMessage());
             return response()->json([
                 'status' => 'error',
                 'message' => 'Server WhatsApp tidak dapat dihubungi. Pastikan server WA sedang berjalan.',
             ], 503);
         } catch (\Exception $e) {
-            \Log::error("Error start WA session: " . $e->getMessage());
+            Log::error("Error start WA session: " . $e->getMessage());
             return response()->json([
                 'status' => 'error',
                 'message' => 'Terjadi kesalahan internal.',
@@ -276,12 +277,16 @@ class WhatsappController extends Controller
         $waUrl = config('services.wa_engine.url', 'https://wa.duacerita.my.id');
 
         try {
-            // Laravel yang akan menembak HTTP (tidak akan diblokir karena dilakukan di backend)
             $response = Http::timeout(5)->get("{$waUrl}/api/wa/status/{$session_id}");
+
+            if ($response->failed()) {
+                return response()->json(['status' => 'loading', 'message' => 'Status WA belum siap'], 200);
+            }
+
             return response()->json($response->json());
         } catch (\Exception $e) {
-            \Log::error("Gagal cek status WA: " . $e->getMessage());
-            return response()->json(['status' => 'disconnected']);
+            Log::warning("Gagal cek status WA: " . $e->getMessage());
+            return response()->json(['status' => 'loading', 'message' => 'Status WA sedang dipantau ulang'], 200);
         }
     }
 }

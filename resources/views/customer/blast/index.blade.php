@@ -674,8 +674,10 @@
         let reconnectAttempts = 0;
         let wasConnected = false;
         let lastConnectedAt = 0;
+        let fetchErrorCount = 0;
         const maxStatusPollAttempts = 12;
         const maxReconnectAttempts = 2;
+        const maxFetchErrorCount = 3;
 
         const qrImage = document.getElementById('qr-image');
         const qrLoading = document.getElementById('qr-loading');
@@ -737,6 +739,7 @@
             wasConnected = false;
             lastConnectedAt = 0;
             reconnectAttempts = 0;
+            fetchErrorCount = 0;
         }
 
         function clearStatusPollTimer() {
@@ -909,8 +912,14 @@
                 headers: {
                     'Accept': 'application/json',
                     'X-Requested-With': 'XMLHttpRequest'
-                }
+                },
+                credentials: 'same-origin',
+                cache: 'no-store'
             });
+
+            if (!res.ok) {
+                throw new Error(`HTTP ${res.status}`);
+            }
 
             const data = await res.json();
 
@@ -1015,7 +1024,17 @@
 
         } catch (err) {
 
-            console.error(err);
+            fetchErrorCount += 1;
+            console.warn('Polling error:', err);
+
+            if (fetchErrorCount < maxFetchErrorCount) {
+                scheduleStatusCheck(3000);
+            } else {
+                qrLoading.innerText = 'Koneksi terputus sementara. Menunggu koneksi ulang...';
+                status.innerText = 'Mencoba ulang';
+                status.className = "inline-block px-6 py-2 bg-amber-100 text-amber-600 rounded-full font-extrabold text-[10px] uppercase tracking-widest";
+                scheduleStatusCheck(4000);
+            }
 
         } finally {
 
