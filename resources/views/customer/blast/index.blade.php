@@ -698,26 +698,6 @@
             if (selector && selector.value === 'formal' && textArea.value === '') {
                 textArea.value = templates['formal'];
             }
-
-            if (!document.getElementById('wa-status')) return;
-
-            fetch(`${waBaseUrl}/api/wa/status/${sessionId}`)
-                .then(res => res.json())
-                .then(data => {
-                    if (data.status === 'connected') {
-                        checkStatus();
-                    } else if (data.status === 'qr_ready' || data.status === 'loading') {
-                        if (data.qr) {
-                            qrLoading.classList.add('hidden');
-                            connectedIcon.classList.add('hidden');
-                            qrImage.classList.remove('hidden');
-                            qrImage.src = data.qr;
-                            status.innerText = 'Scan QR';
-                            status.className = "inline-block px-6 py-2 bg-yellow-100 text-yellow-600 rounded-full font-extrabold text-[10px] uppercase tracking-widest";
-                        }
-                    }
-                })
-                .catch(err => console.log("Menunggu server Node..."));
         });
 
         function openLogoutModal() {
@@ -941,20 +921,6 @@
         }
 
     }
-
-        window.addEventListener('focus', () => {
-            if (document.visibilityState === 'visible' && (lastStatus === 'qr_ready' || lastStatus === 'loading' || lastStatus === 'restarting')) {
-                checkStatus();
-            }
-        });
-
-        window.addEventListener('visibilitychange', () => {
-            if (document.visibilityState === 'visible' && (lastStatus === 'qr_ready' || lastStatus === 'loading' || lastStatus === 'restarting')) {
-                checkStatus();
-            }
-        });
-
-        window.addEventListener('beforeunload', stopPolling);
 
         function logoutWa() {
 
