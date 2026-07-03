@@ -777,13 +777,13 @@
 
         function checkStatus() {
             // 🔥 TEMBAK KE ROUTE GET STATUS LARAVEL YANG BARU KITA BUAT
-            fetch(`/customer/blast/status/${sessionId}`, {
-                    method: 'GET',
-                    headers: {
-                        'Accept': 'application/json',
-                        'X-Requested-With': 'XMLHttpRequest'
-                    }
-                })
+           fetch(`/customer/blast/status/${sessionId}`, {
+    method: 'GET',
+    headers: {
+        'Accept': 'application/json',
+        'X-Requested-With': 'XMLHttpRequest'
+    }
+})
                 .then(res => res.json())
                 .then(data => {
                     switch (data.status) {

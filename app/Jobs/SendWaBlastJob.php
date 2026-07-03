@@ -37,7 +37,7 @@ class SendWaBlastJob implements ShouldQueue
         );
 
         // Tembak ke Node.js local / prod server
-        $waUrl = config('services.wa_engine.url', 'http://127.0.0.1:3000');
+        $waUrl = config('services.wa_engine.url', 'http://wa.duacerita.my.id/');
         $response = Http::post($waUrl . '/api/wa/send', [
             'session_id' => $this->sessionId,
             'number' => $this->guest->phone_number,
