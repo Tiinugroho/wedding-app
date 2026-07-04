@@ -1,0 +1,45 @@
+name: Deploy Laravel 12 to DirectAdmin
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 🚚 Checkout Code
+        uses: actions/checkout@v3
+
+      - name: 📦 Setup PHP & Composer
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.4"
+
+      - name: 🛠️ Install PHP Dependencies
+        run: composer install --optimize-autoloader --no-dev
+
+      - name: 📦 Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "20"
+
+      - name: 🛠️ Build Frontend Assets
+        run: |
+          npm install
+          npm run build
+
+      - name: 🚀 Deploy to Server via rsync
+        uses: easingthemes/ssh-deploy@main
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          # Exclude folder yang tidak perlu atau berpotensi menimpa data penting di server
+          ARGS: "-rltgoDzvO --delete --exclude=.env --exclude=storage/ --exclude=node_modules/ --exclude=.git/"
+          SOURCE: "./"
+          REMOTE_HOST: ${{ secrets.HOST_NAME }}
+          REMOTE_USER: ${{ secrets.USERNAME }}
+          REMOTE_PORT: ${{ secrets.PORT }}
+          # PENTING: Ganti domain-anda.com dengan nama domain asli Anda
+          # Mengarahkan file langsung ke dalam folder laravel_app
+          TARGET: "/home/${{ secrets.USERNAME }}/domains/duacerita.my.id/laravel_app/"
