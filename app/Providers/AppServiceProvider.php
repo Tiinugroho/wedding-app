@@ -22,7 +22,7 @@ class AppServiceProvider extends ServiceProvider
     {
         // Tambahkan 3 baris ini di dalam boot()
         if (config('app.env') === 'production') {
-            URL::forceScheme('http');
+            URL::forceScheme('https');
         }
     }
 }
