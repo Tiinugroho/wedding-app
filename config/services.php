@@ -41,9 +41,5 @@ return [
     ],
 
     // config/services.php
-    'wa_engine' => [
-        'url' => env('WA_ENGINE_URL', 'https://wa.duacerita.my.id') === 'http://wa.duacerita.my.id'
-            ? 'https://wa.duacerita.my.id'
-            : env('WA_ENGINE_URL', 'https://wa.duacerita.my.id'),
-    ],
+    'wa_engine' => ['url' => env('WA_ENGINE_URL', 'https://wa.duacerita.my.id'), 'api_key' => env('WA_ENGINE_API_KEY', 'wag_ae5bdf74713264977e7bbf3501e641c7a6005513896c828ca53e176920021fb6'),],
 ];

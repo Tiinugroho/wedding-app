@@ -9,54 +9,74 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 class SendWaBlastJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    public $guest;
-    public $messageTemplate;
-    public $invitationLink;
-    public $sessionId;
+    protected $guest;
+    protected $messageTemplate;
+    protected $linkUndangan;
+    protected $sessionId;
 
-    public function __construct(Guest $guest, $messageTemplate, $invitationLink, $sessionId)
+    /**
+     * Create a new job instance.
+     */
+    public function __construct(Guest $guest, $messageTemplate, $linkUndangan, $sessionId)
     {
         $this->guest = $guest;
         $this->messageTemplate = $messageTemplate;
-        $this->invitationLink = $invitationLink;
+        $this->linkUndangan = $linkUndangan;
         $this->sessionId = $sessionId;
     }
 
+    /**
+     * Execute the job.
+     */
     public function handle(): void
     {
-        $linkTamu = $this->invitationLink . '?to=' . urlencode($this->guest->name);
-        $pesanFinal = str_replace(
-            ['{nama}', '{link}'],
-            [$this->guest->nama, $linkTamu],
-            $this->messageTemplate
-        );
+        // 1. Format Pesan (Ganti placeholder jika ada)
+        // Placeholder yang didukung:
+        // [nama] -> Nama Tamu
+        // [link] -> Link Undangan Tamu
+        $message = $this->messageTemplate;
+        $message = str_replace('[nama]', $this->guest->name, $message);
 
-        // Tembak ke Node.js local / prod server
-        $waUrl = config('services.wa_engine.url', 'http://wa.duacerita.my.id/');
-        $response = Http::post($waUrl . '/api/wa/send', [
-            'session_id' => $this->sessionId,
-            'number' => $this->guest->phone_number,
-            'message' => $pesanFinal
-        ]);
+        // Link undangan personal (misal: https://domain.com/wedding-slug?to=Nama+Tamu)
+        $personalLink = $this->linkUndangan . '?to=' . $this->guest->slug_name;
+        $message = str_replace('[link]', $personalLink, $message);
 
-        if ($response->successful()) {
-            // Berhasil dikirim, catat waktu blast
-            $this->guest->update([
-                'blasted_at' => now()
-            ]);
-        } else {
-            // JIKA GAGAL: Kembalikan status blast agar kuota/tamu bisa di-blast ulang
-            $this->guest->update([
-                'is_blasted' => false
-            ]);
+        // 2. Konfigurasi Endpoint WA Gateway
+        $waUrl = config('services.wa_engine.url', 'https://wa.duacerita.my.id');
+        $apiKey = config('services.wa_engine.api_key');
 
-            // Catat di Log Laravel untuk memudahkan Anda melakukan debug
-            \Log::error("Gagal mengirim WA ke {$this->guest->name} ({$this->guest->phone_number}). Status Node.js: " . $response->status());
+        // 3. Kirim HTTP POST Request ke Node.js Gateway
+        try {
+            $response = Http::withHeaders([
+                'x-api-key' => $apiKey,
+                'Content-Type' => 'application/json'
+            ])->timeout(10)->post($waUrl . '/api/message/send/text', [
+                        'sessionId' => $this->sessionId,
+                        'to' => $this->guest->phone_number,
+                        'message' => $message
+                    ]);
+
+            $result = $response->json();
+
+            if ($response->successful() && isset($result['success']) && $result['success'] === true) {
+                Log::info("WA Blast berhasil terkirim ke {$this->guest->name} ({$this->guest->phone_number})");
+            } else {
+                Log::error("Gagal kirim WA Blast ke {$this->guest->name}: " . json_encode($result));
+                // Opsional: Tandai is_blasted kembali ke 0 jika gagal agar bisa di-retry
+                $this->guest->update(['is_blasted' => 0]);
+            }
+        } catch (\Exception $e) {
+            Log::error("Exception saat kirim WA Blast ke {$this->guest->name}: " . $e->getMessage());
+            $this->guest->update(['is_blasted' => 0]);
+
+            // Lempar kembali exception agar Laravel Queue merekam sebagai failed job jika diperlukan
+            throw $e;
         }
     }
 }

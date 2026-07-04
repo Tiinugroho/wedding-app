@@ -113,20 +113,20 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::get('/invitations/{id}/scanner', [AttendanceController::class, 'scanner'])->name('invitations.scanner');
 
             // 🔥 ROUTE WA BLAST 🔥
-            // Menambahkan kembali semua rute yang dibutuhkan oleh WhatsappController
-            Route::get('/blast/{invitation_id}', [WhatsappController::class, 'index'])->name('blast.index');
-            Route::post('/blast/import/{invitation_id}', [WhatsappController::class, 'importExcel'])->name('blast.import');
-            Route::post('/blast/manual/{invitation_id}', [WhatsappController::class, 'storeGuest'])->name('blast.manual');
-            Route::get('/blast/template-excel/download', [WhatsappController::class, 'downloadTemplate'])->name('blast.template');
-            Route::delete('/blast/guest/{id}', [WhatsappController::class, 'destroyGuest'])->name('blast.deleteGuest');
+            Route::prefix('blast')->name('blast.')->group(function () {
+                Route::get('/{invitation_id}', [WhatsappController::class, 'index'])->name('index');
+                Route::post('/{invitation_id}/import', [WhatsappController::class, 'importExcel'])->name('import');
+                Route::post('/{invitation_id}/guest', [WhatsappController::class, 'storeGuest'])->name('manual');
+                Route::get('/template/download', [WhatsappController::class, 'downloadTemplate'])->name('template');
+                Route::delete('/guest/{id}', [WhatsappController::class, 'destroyGuest'])->name('deleteGuest');
+                Route::post('/{invitation_id}/send', [WhatsappController::class, 'blast'])->name('send');
 
-            // Route API internal untuk Node.js WA Server
-            Route::post('/blast/start', [WhatsappController::class, 'startSession'])->name('blast.start');
-            Route::post('/blast/send/{invitation_id}', [WhatsappController::class, 'blast'])->name('blast.send');
-            Route::post('/wa/logout', [WhatsappController::class, 'logoutSession'])->name('blast.logout');
-
-            // 🔥 TAMBAHKAN ROUTE INI UNTUK JEMBATAN STATUS WA 🔥
-            Route::get('/blast/status/{session_id}', [WhatsappController::class, 'checkStatus'])->name('blast.status');
+                // Route API internal untuk Node.js WA Server
+                Route::post('/wa/start', [WhatsappController::class, 'startSession'])->name('start-session');
+                Route::get('/wa/status', [WhatsappController::class, 'checkStatus'])->name('check-status');
+                Route::get('/wa/qr', [WhatsappController::class, 'getQr'])->name('get-qr');
+                Route::post('/wa/logout', [WhatsappController::class, 'logoutSession'])->name('logout-session');
+            });
         });
 });
 
